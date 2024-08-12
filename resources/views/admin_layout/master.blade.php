@@ -310,8 +310,25 @@
         $(document).ready(function(){
             $('.dropdown-toggle').click(function(){
                 $('.dropdown-menu-s1').toggle();
-            })
+                disabledEventPropagation(event);
+            });
+
+            $('.dropdown-menu-s1').click(function(event) {
+                disabledEventPropagation(event);
+            });
         })
+
+        $(document).click(function() {
+            $(".dropdown-menu-s1").hide();
+        });
+
+        function disabledEventPropagation(event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            } else if (window.event) {
+                window.event.cancelBubble = true;
+            }
+        }
     </script>
 </body>
 

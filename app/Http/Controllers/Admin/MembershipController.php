@@ -12,60 +12,64 @@ use App\Models\Membership;
 use App\Models\MembershipLocation;
 use App\Models\MembershipInstances;
 use App\Models\TimeClockShift;
+use App\Models\Credit;
 
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
-        // $client = new Client();
-        // // $url="https://kbxf.marianatek.com/api/membership_transactions";
-        // // $url = "https://kbxf.marianatek.com/api/memberships";
+        $client = new Client();
+        // $url="https://kbxf.marianatek.com/api/membership_transactions";
+        // $url = "https://kbxf.marianatek.com/api/memberships";
+        $url = "https://kbxf.marianatek.com/api/credits";
         // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
-        // $bearerToken = env('API_ACCESS_TOKEN');
+        $bearerToken = env('API_ACCESS_TOKEN');
 
-        // $currentPage = 1;
-        // $pageSize = 143;
-        // $hasMorePages = true;
+        $currentPage = 1;
+        $pageSize = 9;
+        $hasMorePages = true;
 
-        // while ($hasMorePages) {
-        //     $response = $client->request('GET', $url, [
-        //         'headers' => [
-        //             'Authorization' => 'Bearer ' . $bearerToken,
-        //         ],
-        //         'query' => [
-        //             'page' => $currentPage,
-        //             'page_size' => $pageSize,
-        //         ],
-        //     ]);
+        while ($hasMorePages) {
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $bearerToken,
+                ],
+                'query' => [
+                    'page' => $currentPage,
+                    'page_size' => $pageSize,
+                ],
+            ]);
 
-        //     $statuscode = $response->getStatusCode();
+            $statuscode = $response->getStatusCode();
 
-        //     if ($statuscode == 200) {
-        //         $body = $response->getBody()->getContents();
-        //         $data = json_decode($body, true);
+            if ($statuscode == 200) {
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, true);
 
-        //         // $savedMemberships = $this->saveMemberships($data['data']);
-        //         $saveTimeShifts = $this->saveTimeClockShift($data['data']);
-        //         // dd($data['data']);
-        //         if($saveTimeShifts) {
-        //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
-        //             if ($currentPage >= $totalPages) {
-        //                 $hasMorePages = false;
-        //             } else {
-        //                 $hasMorePages = false;
-        //                 $currentPage++;
-        //             }
-        //         } else {
+                // $savedMemberships = $this->saveMemberships($data['data']);
+                // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
+
+                $saveCredits = $this->saveCredits($data['data']);
+                // dd($data['data']);
+                if($saveCredits) {
+                    $totalPages = $data['meta']['pagination']['pages'] ?? 0;
+                    if ($currentPage >= $totalPages) {
+                        $hasMorePages = false;
+                    } else {
+                        $hasMorePages = false;
+                        $currentPage++;
+                    }
+                } else {
                     
-        //             die();
-        //         }
+                    die();
+                }
                 
-        //     } else {
-        //         $hasMorePages = false;
-        //     }
-        // } 
+            } else {
+                $hasMorePages = false;
+            }
+        } 
 
-        // return response()->json(['Memberships saved into database']);
+        return response()->json(['Memberships saved into database']);
     }
 
     public function saveMembershipsTransaction($membership_transaction){
@@ -149,6 +153,42 @@ class MembershipController extends Controller
         }
     }
 
+    public function saveCredits($creditss){
+        try {
+            foreach($creditss as $data){            
+                $attributes = $data['attributes'] ?? [];
+                $relationships = $data['relationships'] ?? [];
+                
+                // dd(json_encode($data['attributes']['currency_codes']));
+
+                $credits = new Credit;
+                $credits->type = $data['type'];
+                $credits->credit_id = $data['id'];
+                $credits->name = $data['attributes']['name'];
+                $credits->guest_usage = $data['attributes']['guest_usage'];
+                $credits->is_active = $data['attributes']['is_active'];
+                $credits->location_availability_override = $data['attributes']['location_availability_override'];
+                $credits->user_has_any_locations = $data['attributes']['user_has_any_locations'];
+                $credits->user_has_all_locations = $data['attributes']['user_has_all_locations'];
+                $credits->currency_codes = json_encode($data['attributes']['currency_codes']);
+                $credits->is_live_stream = $data['attributes']['is_live_stream'];
+                $credits->ding_exempt = $data['attributes']['ding_exempt'];
+                $credits->relationships = json_encode($relationships);
+                $credits->credit_slots_id = json_encode($relationships['credit_slots']['data']);
+                $credits->booking_windows_id = json_encode($relationships['booking_window']['data']);
+                $credits->late_cancel_windows_id = json_encode($relationships['late_cancel_window']['data']);
+                $credits->locations_id = json_encode($relationships['locations']['data']);
+                $credits->class_session_tags_id = json_encode($relationships['class_tag_rules']['data']);
+                $credits->save();
+
+            }
+            return true;
+
+        } catch(Exception $e) {
+            return response()->json([$e->getMessage()]);
+        }
+    }
+
     public function MembershipsTransaction(){
         return view('admin_dashboard.membership_transaction.index');
     }
@@ -199,4 +239,7 @@ class MembershipController extends Controller
     public function getMembershipTransactionByDate(Request $request){
         return $request->all();
     }
+
+
+
 }

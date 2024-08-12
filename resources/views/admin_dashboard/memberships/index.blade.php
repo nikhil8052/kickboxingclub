@@ -17,7 +17,7 @@
                </div>
                <div class="col-md-3">
                     <div class="form-group">
-                         <button class="btn btn-dark">Search</button>
+                         <button class="btn btn-dark" onclick="dateFilter()">Search</button>
                     </div>
                </div>
           </div>
@@ -32,7 +32,7 @@
                                              <div class="nk-block-head-content"></div>
                                              <div class="nk-block-head-content">
                                                   <div class="mbsc-form-group">
-                                                       <label for="location"><span class="d-none d-sm-inline-block">Location</span></label>
+                                                       <label for="location"><span class="d-none d-sm-inline-block">Location:</span></label>
                                                        <select name="location" id="location" class="form-select">
                                                        @if(isset($locations) && $locations != null)
                                                             <option value="">All</option>
@@ -520,6 +520,24 @@
                window.location.href = url;
           });
      });
+</script>
+
+<script>
+
+     function formatDate(dateStr) {
+          var dateParts = dateStr.split("/");
+          var month = dateParts[0];
+          var day = dateParts[1];
+     }
+
+     function dateFilter(){
+          var date = $('#date-range-picker').val();
+          var dates = date.split(" - ");
+
+          var startDate = formatDate(dates[0]);
+          var endDate = formatDate(dates[1]);
+     }
+
 </script>
 
 @endsection

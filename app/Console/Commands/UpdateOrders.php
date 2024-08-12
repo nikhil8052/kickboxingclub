@@ -43,7 +43,7 @@ class UpdateOrders extends Command
         } else {
             $startDate = null;
         }
-
+        $startDate = null;
         $this->info("Latest date placed : $latestDate");
 
         $client = new Client();
@@ -79,7 +79,7 @@ class UpdateOrders extends Command
                             $hasMorePages = false;
                         } else {
                             $currentPage++;
-                            sleep(90);
+                            sleep(30);
                         }
                     } else {
                         $this->error('Failed to save orders data.');

@@ -47,6 +47,7 @@ Route ::group(['middleware' =>['admin']],function(){
     Route::get('/admin-dashboard/memberships',[AdminDashboardController::class,'memberships']);
     Route::post('/admin-dashboard/memberships/locations',[AdminDashboardController::class,'getMembershipByLocation']);
     Route::get('/admin-dashboard/memberships/status',[AdminDashboardController::class,'getUserByMemberships']);
+    Route::post('/admin-dashboard/memberships/date',[AdminDashboardController::class,'getMembershipByDate']);
 
     Route::get('get/memberships',[AdminDashboardController::class,'getMemberships']);
     Route::get('dump/memberships',[MembershipController::class,'dumpToDatabase']);

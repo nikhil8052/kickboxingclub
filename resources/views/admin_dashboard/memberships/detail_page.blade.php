@@ -69,6 +69,8 @@
           const urlParams = new URLSearchParams(queryString);
           const location = urlParams.get('location');
           const membership = urlParams.get('membership');
+          // const start = urlParams.get('start');
+          // const end = urlParams.get('end');
 
           var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership}`;
           window.location.href = url;

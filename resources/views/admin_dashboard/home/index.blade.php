@@ -119,7 +119,7 @@
                     <div class="card card-bordered card-preview line-chart-card">
                         <div class="card-inner">
                             <div class="nk-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                                <canvas class="line-chart chartjs-render-monitor line-cnva" id="salesChart" width="918" height="260" style="display: block; width: 918px; height: 260px;"></canvas>
+                                <canvas class="line-cnva" id="salesChart" width="918" height="260" style="display: block; width: 918px; height: 260px;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -321,7 +321,8 @@
                         data: salesValues,
                         borderColor: customColors[colorIndex % customColors.length],
                         backgroundColor: 'rgba(0, 0, 0, 0)',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        // pointRadius: 0
                     });
                     colorIndex++;
                 });
@@ -336,30 +337,18 @@
                     options: {
                         scales: {
                             x: {
-                                title: {
-                                    display: true,
-                                    text: 'Six-Month Period'
+                                grid: {
+                                    display: false, // This will hide the x-axis grid lines
                                 }
                             },
                             y: {
-                                title: {
-                                    display: true,
-                                    text: 'Total Sales'
-                                },
-                                beginAtZero: true
+                                grid: {
+                                    display: false, // This will hide the y-axis grid lines
+                                }
                             }
                         }
                     }
                 });
-
-                function randomColor() {
-                    var letters = '0123456789ABCDEF';
-                    var color = '#';
-                    for (var i = 0; i < 6; i++) {
-                        color += letters[Math.floor(Math.random() * 16)];
-                    }
-                    return color;
-                }
             }
         });
 

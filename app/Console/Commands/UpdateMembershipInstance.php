@@ -29,7 +29,7 @@ class UpdateMembershipInstance extends Command
      */
     public function handle()
     {
-        $latestDate = MembershipInstances::max('purchase_date');
+        $latestDate = MembershipInstances::max('created_at');
 
         if (!$latestDate) {
             // $this->info('No Memberships found.');
@@ -49,7 +49,7 @@ class UpdateMembershipInstance extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 500;
+        $pageSize = 100; 
         $hasMorePages = true;
 
         while ($hasMorePages) {
@@ -77,7 +77,7 @@ class UpdateMembershipInstance extends Command
                             $hasMorePages = false;
                         } else {
                             $currentPage++;
-                            sleep(120);
+                            sleep(30);
                         }
                     } else {
                         $this->error('Failed to save memberships data.');

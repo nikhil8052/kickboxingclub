@@ -37,17 +37,21 @@
                                     <tbody>
                                         @foreach($alldata as $data)
                                             @php
-
                                                 $startDateTime = Carbon\Carbon::parse($data->start_datetime);
-                                                $endDateTime = Carbon\Carbon::parse($data->end_datetime);
-
-                                                $interval = $startDateTime->diff($endDateTime);
-                                                $formattedDuration = $interval->format('%H:%I:%S'); 
-                                                
                                                 $formattedStartDate = $startDateTime->format('Y-m-d');
                                                 $formattedStartTime = $startDateTime->format('H:i:s');
-                                                $formattedEndDate = $endDateTime->format('Y-m-d');
-                                                $formattedEndTime = $endDateTime->format('H:i:s');
+
+                                                if ($data->end_datetime) {
+                                                    $endDateTime = Carbon\Carbon::parse($data->end_datetime);
+                                                    $interval = $startDateTime->diff($endDateTime);
+                                                    $formattedDuration = $interval->format('%H:%I:%S');
+                                                    $formattedEndDate = $endDateTime->format('Y-m-d');
+                                                    $formattedEndTime = $endDateTime->format('H:i:s');
+                                                } else {
+                                                    $formattedDuration = null;
+                                                    $formattedEndDate = null;
+                                                    $formattedEndTime = null;
+                                                }
                                             @endphp
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>

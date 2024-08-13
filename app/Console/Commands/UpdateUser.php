@@ -32,12 +32,16 @@ class UpdateUser extends Command
         $latestDate = AllUsers::max('date_joined');
 
         if (!$latestDate) {
-            $this->info('No users found.');
-            return;
+
+            $latestDate = null;
         }
 
-        $startDate = Carbon::parse($latestDate)->format('Y-m-d\TH:i:s\Z');
-
+        if($latestDate != null){
+            $startDate = Carbon::parse($latestDate)->format('Y-m-d\TH:i:s\Z');
+        } else {
+            $startDate = null;
+        }
+        // $startDate = null;
         $this->info("Latest date joined: $latestDate");
 
         $client = new Client();
@@ -45,7 +49,7 @@ class UpdateUser extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 50;
+        $pageSize = 100;
         $hasMorePages = true;
 
         while ($hasMorePages) {
@@ -73,6 +77,7 @@ class UpdateUser extends Command
                             $hasMorePages = false;
                         } else {
                             $currentPage++;
+                            sleep(30);
                         }
                     } else {
                         $this->error('Failed to save users data.');

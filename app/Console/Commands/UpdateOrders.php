@@ -43,7 +43,7 @@ class UpdateOrders extends Command
         } else {
             $startDate = null;
         }
-        $startDate = null;
+        // $startDate = null;
         $this->info("Latest date placed : $latestDate");
 
         $client = new Client();
@@ -51,7 +51,7 @@ class UpdateOrders extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 500;
+        $pageSize = 100;
         $hasMorePages = true;
 
         while ($hasMorePages) {

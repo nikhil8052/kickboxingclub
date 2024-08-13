@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+// use App\Console\Commands\YourCommandName;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +13,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('app:update-orders')->hourly()->withoutOverlapping();
+        $schedule->command('app:update-membership-instance')->hourly()->withoutOverlapping();
+        $schedule->command('app:update-user')->hourly()->withoutOverlapping();
+        // $schedule->command('app:update-order-lines')->daily();
     }
 
     /**

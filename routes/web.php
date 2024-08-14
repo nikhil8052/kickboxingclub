@@ -56,7 +56,7 @@ Route ::group(['middleware' =>['admin']],function(){
     Route::get('/admin-dashboard/get/memberships-transactions',[MembershipController::class,'getMembershipsTransaction']);
     
     Route::get('/admin-dashboard/billing-stats',[MembershipController::class,'BillingStats']);
-    Route::get('/admin-dashboard/get/billing-stats/{month}',[MembershipController::class,'getBillingStats']);
+    Route::get('/admin-dashboard/get/billing-stats',[MembershipController::class,'getBillingStats']);
 
     Route::get('/csvData',[AdminDashboardController::class,'csvData']);
 

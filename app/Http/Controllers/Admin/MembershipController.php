@@ -217,8 +217,8 @@ class MembershipController extends Controller
         return view('admin_dashboard.billing_stats.index',compact('dates'));
     }
 
-    public function getBillingStats(Request $request,$month){
-
+    public function getBillingStats(Request $request){
+        $month = $request->month;
         $date = Carbon::createFromFormat('Y-m', $month);
         $month = $date->format('m');
         $monthInt = $date->month;

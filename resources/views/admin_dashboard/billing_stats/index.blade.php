@@ -32,7 +32,7 @@
                                                   <label for="year">
                                                        <span class="d-none d-sm-inline-block"></span>
                                                        <div class="form-control">
-                                                            <button  type="button" onclick="searchByMonthANDYear()">Search</button>
+                                                            <button type="button" onclick="searchByMonthANDYear()">Search</button>
                                                        </div>
                                                   </label>
                                              </div>
@@ -59,7 +59,7 @@
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
                                                        <?php 
-                                                            $membership_instances = App\Models\MembershipInstances::where('purchase_date_copy',$current_date)->with('locations')->get();
+                                                            $membership_instances = App\Models\MembershipInstances::where('purchase_date',$current_date)->with('locations')->get();
                                                        ?>
                                                        
                                                        @foreach($membership_instances as $instance)
@@ -104,9 +104,21 @@
 @endsection
 
 <script>
+$(document).ready(function(){
+     const queryString = window.location.search;
+     const urlParams = new URLSearchParams(queryString);
+     const month = urlParams.get('month');
+     
+     if(month !== '' && month !== null && month !== undefined){
+          $('#month').val(month);
+     }
+})
+</script>
+
+<script>
      function searchByMonthANDYear(){
           var month = $('#month').val();
-          var url = `{{ url('admin-dashboard/get/billing-stats/${month}') }}`;
+          var url = `{{ url('admin-dashboard/get/billing-stats') }}?month=${month}`;
           window.location.href = url;
      }
 </script>

@@ -150,7 +150,7 @@ class UpdateMembershipInstance extends Command
                     $or->start_date = $order['attributes']['start_date'] ? Carbon::parse($order['attributes']['start_date']) : null;
                     $or->status = $order['attributes']['status'] ?? null;
                     $or->usage_interval_limit = $order['attributes']['usage_interval_limit'] ?? null;
-
+                    
                     $or->current_membership_transaction_type = $order['relationships']['current_membership_transaction']['data']['type'] ?? null;
                     $or->current_membership_transaction_id = $order['relationships']['current_membership_transaction']['data']['id'] ?? null;
 

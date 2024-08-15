@@ -202,7 +202,7 @@ class MembershipController extends Controller
         return response()->json($membershipTransaction);
     }
 
-    public function BillingStats(){
+    public function BillingStats(){ 
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 
@@ -212,6 +212,7 @@ class MembershipController extends Controller
 
         for($day = 1; $day <= $daysInMonth; $day++){
             $dates[] = Carbon::createFromDate($year, $month, $day);
+            
         }
 
         return view('admin_dashboard.billing_stats.index',compact('dates'));
@@ -232,13 +233,16 @@ class MembershipController extends Controller
         for($day=1; $day <= $daysInMonth; $day++){
             $dates[] = Carbon::createFromDate($year, $month, $day);
         }
+        $membership_transactions = MembershipTransaction::with('membership_instance')->get();
+    
+        // foreach($membership_transactions as $data){
+        //     echo '<pre>';
+        //     print_r($data->membership_instances_id);
+
+        // }
+        // die();
 
         return view('admin_dashboard.billing_stats.index',compact('dates'));
     }
-
-   
-
-
-
 
 }

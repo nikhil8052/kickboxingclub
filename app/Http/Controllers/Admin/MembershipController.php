@@ -190,6 +190,9 @@ class MembershipController extends Controller
     }
 
     public function MembershipsTransaction(){
+        $membershipTransaction = MembershipTransaction::where('type','membership_transactions')->first();
+        // dd($membershipTransaction->transaction_datetime);
+
         return view('admin_dashboard.membership_transaction.index');
     }
 
@@ -198,7 +201,7 @@ class MembershipController extends Controller
                                 ->select('membership_name',DB::raw('count(*) as total_count'))
                                 ->groupBy('membership_name')
                                 ->get();
-
+    
         return response()->json($membershipTransaction);
     }
 
@@ -233,11 +236,13 @@ class MembershipController extends Controller
         for($day=1; $day <= $daysInMonth; $day++){
             $dates[] = Carbon::createFromDate($year, $month, $day);
         }
-        $membership_transactions = MembershipTransaction::with('membership_instance')->get();
     
+        // $membership_transactions = MembershipTransaction::with('membership_instance')->get();
+    
+
         // foreach($membership_transactions as $data){
         //     echo '<pre>';
-        //     print_r($data->membership_instances_id);
+        //     print_r($data->membership_instance->purchase_location_id);
 
         // }
         // die();

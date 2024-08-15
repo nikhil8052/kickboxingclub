@@ -33229,9 +33229,9 @@ body.toggle-shown {
 .nk-ck {
   height: 260px;
 }
-.nk-ck-sm {
+/*.nk-ck-sm {
   height: 180px;
-}
+}*/
 
 .nk-ck1 {
   height: 120px;
@@ -33264,9 +33264,9 @@ body.toggle-shown {
   .nk-ck {
     height: 260px;
   }
-  .nk-ck-sm {
+/*  .nk-ck-sm {
     height: 180px;
-  }
+  }*/
   .nk-ck1 {
     height: 120px;
   }
@@ -42082,8 +42082,82 @@ table#membership_transaction_table {
   justify-content: center;
   border-radius: 5px;
 }
+.user-filter {
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.user-filter>div {
+    max-width: 300px;
+}
+.nk-content.membership-status .main-head-status .status-head .form-group button.status-btn {
+    max-width: 130px;
+    padding: 10px 20px;
+     font-size: 18px;
+    
+}
 
 
+.dataTables_wrapper .row {
+    align-items: flex-end;
+}
+
+.nk-app-root .nk-wrap .nk-content .nk-block .card .card-inner {
+    padding: 20px 0px;
+}
+
+.dataTables_wrapper .row .datatable-filter div#membership-table_length label {
+    margin-bottom: 0;
+}
+
+.nk-app-root .nk-wrap .nk-content .nk-content-inner .card-inner .dataTables_wrapper .dataTables_length {
+    margin-bottom: 10px;
+}
+
+.form-select:focus {
+    box-shadow: none!!important;
+    outline: none;
+    border-color: #000!important;
+}
+
+input.form-control:focus {
+    box-shadow: none;
+    outline: none;
+     border-color: #000!important;
+}
+.custom-select, div.dataTables_wrapper div.dataTables_length select:focus {
+    border-color: #000;
+    box-shadow: none;
+    outline: none;
+}
+.nk-block.top_sec .row.g-gs> div {
+    margin-bottom: 20px;
+}
+.form-control:focus, .dual-listbox .dual-listbox__search:focus, div.dataTables_wrapper div.dataTables_filter input:focus {
+    border-color: #000;
+    outline: none;
+    box-shadow: none;
+}
+
+
+.nk-app-root .nk-wrap .nk-content .nk-block .card .card-inner .card-head.text-center.bsn_hd h6.title {
+    text-align: center;
+}
+@media only screen and (max-width: 991px) {
+.nk-block-head.nk-block-head-sm.chart-filter-block.busns_top .busns_sls {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.nk-block-head.nk-block-head-sm.chart-filter-block.busns_top .busns_sls .toggle-expand-content ul.nk-block-tools {
+    padding-left: 0;
+}
+.nk-block.busines-info-blk .card.card-bordered.card-full.main_box-crcl {
+    height: 100%;
+}
+
+}
 @media only screen and (max-width: 767px) {
 .nk-content.membership-status .main-head-status {
   justify-content: flex-start;
@@ -42091,6 +42165,10 @@ table#membership_transaction_table {
   margin: 20px 0px!important;
   flex-direction: column;
   gap: 20px;
+}
+.nk-block.top_sec .row.g-gs {
+    flex-direction: column;
+    gap: 15px;
 }
 }
 

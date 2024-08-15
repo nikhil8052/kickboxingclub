@@ -13,7 +13,6 @@ use App\Models\MembershipInstances;
 use Carbon\Carbon;
 use App\Models\AllUsers;
 use App\Models\Employees;
-use App\Models\TimeClockShift;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -401,14 +400,5 @@ class OrdersController extends Controller
         $allemployees = Employees::where('type','employees')->get();
         return response()->json($allemployees);
     }
-
-    public function Payroles()
-    {
-      
-        $alldata = TimeClockShift::all();
-        return view('admin_dashboard.payroles.payrole',compact('alldata'));
-    }
-
-
 
 }

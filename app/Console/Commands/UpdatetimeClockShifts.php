@@ -109,8 +109,8 @@ class UpdatetimeClockShifts extends Command
                     $time_clock = new TimeClockShift();
                     $time_clock->type = $data['type'];
                     $time_clock->time_clock_id = $data['id'];
-                    $time_clock->start_datetime = $attributes['start_datetime'];
-                    $time_clock->end_datetime = $attributes['end_datetime'];
+                    $time_clock->start_datetime = $attributes['start_datetime'] ? Carbon::parse($attributes['start_datetime']) : null;
+                    $time_clock->end_datetime =  $attributes['end_datetime'] ? Carbon::parse($attributes['end_datetime']) : null;
                     $time_clock->duration = $attributes['duration'];
                     $time_clock->user_has_turf_access = $attributes['user_has_turf_access'];
                     $time_clock->relationships = json_encode($relationships);

@@ -9,7 +9,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="date-range-picker">Date Filter</label>
-                    <input type="text" id="date-range-picker" class="form-control" />
+                    <input type="text" id="date-range-picker" placeholder="MM/DD/YYYY - MM/DD/YYYY" class="form-control" />
                 </div>
             </div>
            
@@ -185,167 +185,190 @@
 @endsection
 
 <script type="text/javascript">
-$(document).ready(function () {
-    var table = $("#order_data_table").DataTable({
-        processing: true,
-        serverSide: false,
-        pageLength: 50,
-        lengthMenu: [50, 100, 150],
-        ajax: {
-            url: "{{ url('/admin-dashboard/get-orders') }}",
-            type: "GET",
-            dataSrc: "",
-            data: function(d) {
-                var dateRangePicker = $('#date-range-picker').data('daterangepicker');
-                if (dateRangePicker) {
-                    var start = dateRangePicker.startDate ? dateRangePicker.startDate.format('YYYY-MM-DD') : '';
-                    var end = dateRangePicker.endDate ? dateRangePicker.endDate.format('YYYY-MM-DD') : '';
-                    var selectedStatus = $('#status_filter').val();
-                    d.startDate = start;
-                    d.endDate = end;
-                    d.status = selectedStatus;
+    $(document).ready(function () {
+        var start = moment().startOf("month");
+        var end = moment().endOf("month");
+
+        $("#date-range-picker").daterangepicker(
+            {
+                opens: "left",
+                autoUpdateInput: false, 
+                ranges: {
+                    Today: [moment(), moment()],
+                    Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                    "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                    "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                    "This Month": [moment().startOf("month"), moment().endOf("month")],
+                    "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
                 }
             }
-        },
-        columns: [
-            { data: "order_id" },
-            { data: "location" },
-            { data: "currency" },
-            { data: "total" },
-            { data: "status" },
-            { data: "date_placed" }
-        ],
-        initComplete: function () {
-            $.fn.dataTable.ext.search.push(
-                function (settings, data, dataIndex) {
+        );
+
+        $("#date-range-picker").on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        $("#date-range-picker").on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val(''); 
+        });
+
+        // Ensure that daterangepicker is initialized
+        $("#date-range-picker").data('daterangepicker').setStartDate(start);
+        $("#date-range-picker").data('daterangepicker').setEndDate(end);
+
+
+        var table = $("#order_data_table").DataTable({
+            processing: true,
+            serverSide: false,
+            pageLength: 50,
+            lengthMenu: [50, 100, 150],
+            ajax: {
+                url: "{{ url('/admin-dashboard/get-orders') }}",
+                type: "GET",
+                dataSrc: "",
+                data: function(d) {
                     var dateRangePicker = $('#date-range-picker').data('daterangepicker');
                     if (dateRangePicker) {
-                        var min = moment(dateRangePicker.startDate).startOf('day');
-                        var max = moment(dateRangePicker.endDate).endOf('day');
-                        var datePlaced = moment(data[5], 'YYYY-MM-DD HH:mm:ss'); // Ensure format matches
+                        var start = dateRangePicker.startDate ? dateRangePicker.startDate.format('YYYY-MM-DD') : '';
+                        var end = dateRangePicker.endDate ? dateRangePicker.endDate.format('YYYY-MM-DD') : '';
+                        var selectedStatus = $('#status_filter').val();
+                        d.startDate = start;
+                        d.endDate = end;
+                        d.status = selectedStatus;
+                    }
+                }
+            },
+            columns: [
+                { data: "order_id" },
+                { data: "location" },
+                { data: "currency" },
+                { data: "total" },
+                { data: "status" },
+                { data: "date_placed" }
+            ],
+            initComplete: function () {
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        var dateRangePicker = $('#date-range-picker').data('daterangepicker');
+                        if (dateRangePicker) {
+                            var min = moment(dateRangePicker.startDate).startOf('day');
+                            var max = moment(dateRangePicker.endDate).endOf('day');
+                            var datePlaced = moment(data[5], 'YYYY-MM-DD HH:mm:ss'); // Ensure format matches
 
-                        if (
-                            (isNaN(min) && isNaN(max)) ||
-                            (isNaN(min) && datePlaced <= max) ||
-                            (min <= datePlaced && isNaN(max)) ||
-                            (min <= datePlaced && datePlaced <= max)
-                        ) {
-                            // Status filtering
-                            var selectedLocation = $('#location_filter').val();
-                            if (selectedLocation === "" || data[1] === selectedLocation) {
-                                return true;
+                            if (
+                                (isNaN(min) && isNaN(max)) ||
+                                (isNaN(min) && datePlaced <= max) ||
+                                (min <= datePlaced && isNaN(max)) ||
+                                (min <= datePlaced && datePlaced <= max)
+                            ) {
+                                // Status filtering
+                                var selectedLocation = $('#location_filter').val();
+                                if (selectedLocation === "" || data[1] === selectedLocation) {
+                                    return true;
+                                }
                             }
                         }
+                        return false;
                     }
-                    return false;
-                }
-            );
-        }
-    });
-
-    var start = moment().startOf("month");
-    var end = moment().endOf("month");
-
-    $("#date-range-picker").daterangepicker(
-        {
-            opens: "left",
-            startDate: start,
-            endDate: end,
-            ranges: {
-                Today: [moment(), moment()],
-                Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                "This Month": [moment().startOf("month"), moment().endOf("month")],
-                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-            }
-        }
-    );
-
-    // Ensure that daterangepicker is initialized
-    $("#date-range-picker").data('daterangepicker').setStartDate(start);
-    $("#date-range-picker").data('daterangepicker').setEndDate(end);
-
-    $("#apply-filters").on('click', function () {
-        table.draw(); 
-        updateTotals();
-    });
-
-    function updateTotals() {
-        // Retrieve filtered data
-        var data = table.rows({ search: 'applied' }).data().toArray();
-        var totalSales = 0; 
-        var totalRefunds = 0; 
-        var completedSales = 0; 
-        var totalPending = 0; 
-        var totalcancelled = 0; 
-        var totalpaymentFailed = 0; 
-
-        var totalCounts = 0;
-        var countCompleted = 0;
-        var countRefunded = 0;
-        var countPending = 0;
-        var countCancelled = 0;
-        var countPaymentFailed = 0;
-
-
-        data.forEach(function (item) {
-            var totalAmount = parseFloat(item.total) || 0; 
-
-            totalSales += totalAmount;
-            totalCounts++;
-
-            switch (item.status) {
-                case "Completed":
-                    completedSales += totalAmount;
-                    countCompleted++;
-                    break;
-                case "Refunded":
-                    //totalRefunds += parseFloat(item.refund_total) || 0;
-                    totalRefunds += totalAmount;
-                    countRefunded++;
-                    break;
-                case "Deferred":
-                    totalPending += totalAmount;
-                    countPending++;
-                    break;
-                case "Pending":
-                    totalPending += totalAmount;
-                    countPending++;
-                    break;
-                case "Cancelled":
-                    totalcancelled += totalAmount;
-                    countCancelled++;
-                    break;
-                case "Payment Failure":
-                    totalpaymentFailed += totalAmount;
-                    countPaymentFailed++;
-                    break;
+                );
             }
         });
 
-        console.log('pf'+countPaymentFailed);
-        console.log('cf'+countCancelled);
-        console.log( 'cp' +countPending);
+        $("#apply-filters").trigger('click');
 
-        $("#total-sales").text('$' + totalSales.toFixed(2));
-        $("#total").text(totalCounts);
-        $("#completed-amount").text('$' + completedSales.toFixed(2));
-        $("#completed-count").text(countCompleted);
-        $("#total-refunds").text('$' + totalRefunds.toFixed(2));
-        $("#refund-count").text(countRefunded);
-        $("#pending-amount").text('$' + totalPending.toFixed(2));
-        $("#pending-count").text(countPending);
-        $("#paymentFailure-amount").text('$' + totalpaymentFailed.toFixed(2));
-        $("#paymentFailure-count").text(countPaymentFailed);
-        $("#cancelled-amount").text('$' + totalcancelled.toFixed(2));
-        $("#cancelled-count").text(countCancelled);
-    }
+        $("#apply-filters").on('click', function () {
+            table.draw(); 
+            updateTotals();
+        });
 
-    table.on('draw', function () {
-        updateTotals();
+        function updateTotals() {
+            // Retrieve filtered data
+            var data = table.rows({ search: 'applied' }).data().toArray();
+            var totalSales = 0; 
+            var totalRefunds = 0; 
+            var completedSales = 0; 
+            var totalPending = 0; 
+            var totalcancelled = 0; 
+            var totalpaymentFailed = 0; 
+            var totalSalesDiscounts = 0; 
+
+            var totalCounts = 0;
+            var countCompleted = 0;
+            var countRefunded = 0;
+            var countPending = 0;
+            var countCancelled = 0;
+            var countPaymentFailed = 0;
+
+
+            data.forEach(function (item) {
+                var totalAmount = parseFloat(item.total) || 0; 
+                // var totalAmount = parseFloat(item.total) || 0; 
+
+
+                totalSales += totalAmount;
+                totalSalesDiscounts += parseFloat(item.total_discount) || 0;
+                totalCounts++;
+
+                switch (item.status) {
+                    case "Completed":
+                        completedSales += totalAmount;
+                        countCompleted++;
+                        break;
+                    case "Refunded":
+                        totalRefunds += parseFloat(item.total_amount_refunded) || 0;
+                        completedSales += totalAmount;
+                        // totalRefunds += totalAmount;
+                        countRefunded++;
+                        break;
+                    case "Partially Refunded":
+                        totalRefunds += parseFloat(item.total_amount_refunded) || 0;
+                        completedSales += totalAmount;
+                        // totalRefunds += totalAmount;
+                        countRefunded++;
+                        break;
+                    case "Deferred":
+                        totalPending += totalAmount;
+                        countPending++;
+                        break;
+                    case "Pending":
+                        totalPending += totalAmount;
+                        countPending++;
+                        break;
+                    case "Cancelled":
+                        totalcancelled += totalAmount;
+                        countCancelled++;
+                        break;
+                    case "Payment Failure":
+                        totalpaymentFailed += totalAmount;
+                        countPaymentFailed++;
+                        break;
+                }
+            });
+
+            // console.log('pf'+countPaymentFailed);
+            // console.log('cf'+countCancelled);
+            // console.log( 'cp' +countPending);
+
+            completedSalesonly = totalSales -(totalRefunds +totalPending+totalpaymentFailed+totalcancelled);
+            $("#total-sales").text('$' + parseFloat(totalSales).toFixed(2).toLocaleString());
+            $("#total").text(totalCounts);
+            // $("#completed-amount").text('$' + (completedSales.toFixed(2)-totalRefunds.toFixed(2)).toLocaleString());
+            $("#completed-amount").text('$' + (completedSales- totalRefunds).toLocaleString());
+            $("#completed-count").text(countCompleted);
+            $("#total-refunds").text('$' + totalRefunds.toLocaleString());
+            $("#refund-count").text(countRefunded);
+            $("#pending-amount").text('$' + totalPending.toLocaleString());
+            $("#pending-count").text(countPending);
+            $("#paymentFailure-amount").text('$' +totalpaymentFailed.toLocaleString());
+            $("#paymentFailure-count").text(countPaymentFailed);
+            $("#cancelled-amount").text('$' + totalcancelled.toLocaleString());
+            $("#cancelled-count").text(countCancelled);
+        }
+
+        table.on('draw', function () {
+            updateTotals();
+        });
     });
-});
 
 </script>
 

@@ -16,11 +16,6 @@
                     </div>
                </div>
                <div class="col-md-3">
-                    <div class="form-group">
-                         <button class="btn btn-dark" onclick="dateFilter()">Search</button>
-                    </div>
-               </div>
-               <div class="col-md-3">
                     <div class="form-control-wrap">
                          <label class="form-label" for="location">Locations</label>
                          <select name="location" id="location" class="form-select">
@@ -33,8 +28,12 @@
                          </select>
                     </div>
                </div>
+               <!-- <div class="col-md-3">
+                    <div class="form-group">
+                         <button class="btn btn-dark" onclick="dateFilter()">Search</button>
+                    </div>
+               </div> -->
           </div>
-
           <div class="nk-content-inner">
                <div class="nk-content-body">
                     <div class="nk-block">
@@ -301,196 +300,419 @@
 
 <script>
      $(document).ready(function(){
+          var location = '';
+          var startDate = '';
+          var endDate = '';
+
           $('#location').on('change',function(){
                if($(this).val() !== undefined && $(this).val() !== '' && $(this).val() !== null){
-                    var data = {
-                         id: $(this).val(),
-                         _token: "{{ csrf_token() }}"
-                    }
-
-                    $.ajax({
-                         url: "{{ url('admin-dashboard/memberships/locations') }}",
-                         type: "POST",
-                         data: data,
-                         dataType: "json",
-                         success: function(response){
-                              if(response.status === 200){
-                                   
-                                   if(response.active !== null){
-                                        var starter = response.active[0];
-                                        var club = response.active[1];
-                                        var gold = response.active[2];
-                                        var vip = response.active[3];
-                                        var active_total = response.active[4];
-
-                                        if(starter){
-                                             var starter_quantity = starter.length;
-                                             var starter_billing = 0;
-                                             $.each(starter,function(key,val){
-                                                  starter_billing += parseFloat(val.renewal_rate);
-                                             });
-
-                                             var starter_row = `<td>Starter</td><td>${starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(starter_billing)}</td>`;
-                                             $('#starter').html(starter_row);
-                                        }
-
-                                        if(club){
-                                             var club_quantity = club.length;
-                                             var club_billing = 0;
-                                             $.each(club,function(key,val){
-                                                  club_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var club_row = `<td>Club</td><td>${club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(club_billing)}</td>`;
-                                             $('#club').html(club_row);
-                                        }
-     
-
-                                        if(gold){
-                                             var gold_quantity = gold.length;
-                                             var gold_billing = 0;
-                                             $.each(gold,function(key,val){
-                                                  gold_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var gold_row = `<td>Gold</td><td>${gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(gold_billing)}</td>`;
-                                             $('#gold').html(gold_row);
-                                        }
-
-                                        if(vip){
-                                             var vip_quantity = vip.length;
-                                             var vip_billing = 0;
-                                             $.each(vip,function(key,val){
-                                                  vip_billing += parseFloat(val.renewal_rate);
-                                                  
-                                             });
-                                             var vip_row = `<td>VIP</td><td>${vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(vip_billing)}</td>`;
-                                             $('#vip').html(vip_row);
-                                        }
-                                        var total_quantity = starter_quantity + club_quantity + gold_quantity + vip_quantity;
-                                        var billing_total = starter_billing + club_billing + gold_billing + vip_billing;
-                                        var total_row = `<th>Totals</th><th>${total_quantity}</th><th>$${new Intl.NumberFormat('en-IN').format(billing_total)}</th>`;
-                                        $('#totals').html(total_row);
-                                   }
-
-                                   if(response.pending !== null){
-                                        var pending_starter = response.pending[0];
-                                        var pending_club = response.pending[1];
-                                        var pending_gold = response.pending[2];
-                                        var pending_vip = response.pending[3];
-                                        var pending_total = response.pending[4];
-               
-                                        if(pending_starter){
-                                             var pending_starter_quantity = pending_starter.length;
-                                             var pending_starter_billing = 0;
-                                             $.each(pending_starter,function(key,val){
-                                                  pending_starter_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var pending_starter_row = `<td>Starter</td><td>${pending_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_starter_billing)}</td>`;
-                                             $('#starter_pending').html(pending_starter_row);
-                                        }
-
-                                        if(pending_club){
-                                             var pending_club_quantity = pending_club.length;
-                                             var pending_club_billing = 0;
-                                             $.each(pending_club,function(key,val){
-                                                  pending_club_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var pending_club_row = `<td>Club</td><td>${pending_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_club_billing)}</td>`;
-                                             $('#club_pending').html(pending_club_row);
-                                        }
-
-                                        if(pending_gold){
-                                             var pending_gold_quantity = pending_gold.length;
-                                             var pending_gold_billing = 0;
-                                             $.each(pending_gold,function(key,val){
-                                                  pending_gold_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var pending_gold_row = `<td>Gold</td><td>${pending_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_gold_billing)}</td>`;
-                                             $('#gold_pending').html(pending_gold_row);
-                                        }
-
-                                        if(pending_vip){
-                                             var pending_vip_quantity = pending_vip.length;
-                                             var pending_vip_billing = 0;
-                                             $.each(pending_vip,function(key,val){
-                                                  pending_vip_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var pending_vip_row = `<td>VIP</td><td>${pending_vip_quantity}</td><td>$${pending_vip_billing}</td>`;
-                                             $('#vip_pending').html(pending_vip_row);
-                                        }
-
-                                        var pending_billing_total = pending_starter_billing + pending_club_billing + pending_gold_billing + pending_vip_billing;
-                                        var pending_total_row = `<th>Totals</th><th>${pending_total}</th><th>$${new Intl.NumberFormat('en-IN').format(pending_billing_total)}</th>`;
-                                        $('#total_pending').html(pending_total_row);
-
-                                   }
-
-                                   if(response.cancel !== null){
-                                        var cancel_starter = response.cancel[0];
-                                        var cancel_club = response.cancel[1];
-                                        var cancel_gold = response.cancel[2];
-                                        var cancel_vip = response.cancel[3];
-                                        var cancel_total = response.cancel[4];
-
-                                        if(cancel_starter.length >= 0){
-                                             var cancel_starter_quantity = cancel_starter.length;
-                                             var cancel_starter_billing = 0;
-                                             $.each(cancel_starter,function(key,val){
-                                                  cancel_starter_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var cancel_starter_row = `<td>Starter</td><td>${cancel_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_starter_billing)}</td>`;
-                                             $('#starter_cancel').html(cancel_starter_row);
-                                        }
-
-                                        if(cancel_club){
-                                             var cancel_club_quantity = cancel_club.length;
-                                             var cancel_club_billing = 0;
-                                             $.each(cancel_club,function(key,val){
-                                                  cancel_club_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var cancel_club_row = `<td>Club</td><td>${cancel_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_club_billing)}</td>`;
-                                             $('#club_cancel').html(cancel_club_row);
-                                        }
-
-                                        if(cancel_gold){
-                                             var cancel_gold_quantity = cancel_gold.length;
-                                             var cancel_gold_billing = 0;
-                                             $.each(cancel_gold,function(key,val){
-                                                  cancel_gold_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var cancel_gold_row = `<td>Gold</td><td>${cancel_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_gold_billing)}</td>`;
-                                             $('#gold_cancel').html(cancel_gold_row);
-                                        }
-
-                                        if(cancel_vip){
-                                             var cancel_vip_quantity = cancel_vip.length;
-                                             var cancel_vip_billing = 0;
-                                             $.each(cancel_vip,function(key,val){
-                                                  cancel_vip_billing += parseFloat(val.renewal_rate);
-                                             });
-                                             var cancel_vip_row = `<td>VIP</td><td>${cancel_vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_vip_billing)}</td>`;
-                                             $('#vip_cancel').html(cancel_vip_row);
-                                        }
-
-                                        var cancel_billing_total = cancel_starter_billing + cancel_club_billing + cancel_gold_billing + cancel_vip_billing;
-                                        var cancel_total_row = `<th>Totals</th><th>${cancel_total}</th><th>$${new Intl.NumberFormat('en-IN').format(cancel_billing_total)}</th>`;
-                                        $('#total_cancel').html(cancel_total_row);
-                                   }
-                              }
-                         }
-
-                    })
+                    location = $(this).val();
+                    membershipFilter(location,startDate,endDate);
                }else{
-                    window.location.href = "{{ url('admin-dashboard/memberships') }}";
+                    location = $(this).val();
+                    membershipFilter(location,startDate,endDate);
                }
           });
-     });
+          
+          $('#date-range-picker').on('change',function(){
+               var date = $('#date-range-picker').val();
+               var dates = date.split(" - ");
+               startDate = dates[0];
+               endDate = dates[1];    
+               
+               membershipFilter(location,startDate,endDate)
+          });
+
+
+          function membershipFilter(location,startDate,endDate){
+               var data = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    location_id: location,
+                    _token: "{{ csrf_token() }}"
+               }
+
+               $.ajax({
+                    url: "{{ url('admin-dashboard/memberships/date') }}",
+                    type: "post",
+                    data: data,
+                    dataType: "json",
+                    success:function(response){
+                         if(response.status === 200){
+                              if(response.active !== null){
+                                   var starter = response.active[0];
+                                   var club = response.active[1];
+                                   var gold = response.active[2];
+                                   var vip = response.active[3];
+                                   var active_total = response.active[4];
+
+                                   if(starter){
+                                        var starter_quantity = starter.length;
+                                        var starter_billing = 0;
+                                        $.each(starter,function(key,val){
+                                             // starter_billing = val.renewal_rate*val.renewal_count;
+                                             var s_bill = val.renewal_rate*val.renewal_count;
+                                             starter_billing += parseFloat(s_bill);
+                                        });
+
+                                        var starter_row = `<td>Starter</td><td>${starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(starter_billing)}</td>`;
+                                        $('#starter').html(starter_row);
+                                   }
+
+                                   if(club){
+                                        var club_quantity = club.length;
+                                        var club_billing = 0;
+                                        $.each(club,function(key,val){
+                                             var c_bill = val.renewal_rate*val.renewal_count;
+                                             club_billing += parseFloat(c_bill);
+                                        });
+                                        var club_row = `<td>Club</td><td>${club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(club_billing)}</td>`;
+                                        $('#club').html(club_row);
+                                   }
+                              
+                                   if(gold){
+                                        var gold_quantity = gold.length;
+                                        var gold_billing = 0;
+                                        $.each(gold,function(key,val){
+                                             var g_bill = val.renewal_rate*val.renewal_count;
+                                             gold_billing += parseFloat(g_bill);
+                                        });
+                                        var gold_row = `<td>Gold</td><td>${gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(gold_billing)}</td>`;
+                                        $('#gold').html(gold_row);
+                                   }
+
+                                   if(vip){
+                                        var vip_quantity = vip.length;
+                                        var vip_billing = 0;
+                                        $.each(vip,function(key,val){
+                                             var v_bill = val.renewal_rate*val.renewal_count;
+                                             vip_billing += parseFloat(v_bill);
+                                             
+                                        });
+                                        var vip_row = `<td>VIP</td><td>${vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(vip_billing)}</td>`;
+                                        $('#vip').html(vip_row);
+                                   }
+                                   var total_quantity = starter_quantity + club_quantity + gold_quantity + vip_quantity;
+                                   var billing_total = starter_billing + club_billing + gold_billing + vip_billing;
+                                   var total_row = `<th>Totals</th><th>${total_quantity}</th><th>$${new Intl.NumberFormat('en-IN').format(billing_total)}</th>`;
+                                   $('#totals').html(total_row);
+                              }
+
+                              if(response.pending !== null){
+                                   var pending_starter = response.pending[0];
+                                   var pending_club = response.pending[1];
+                                   var pending_gold = response.pending[2];
+                                   var pending_vip = response.pending[3];
+                                   var pending_total = response.pending[4];
+     
+                                   if(pending_starter){
+                                        var pending_starter_quantity = pending_starter.length;
+                                        var pending_starter_billing = 0;
+                                        $.each(pending_starter,function(key,val){
+                                             var ps_bill = val.renewal_rate*val.renewal_count;
+                                             pending_starter_billing += parseFloat(ps_bill);
+                                        });
+                                        var pending_starter_row = `<td>Starter</td><td>${pending_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_starter_billing)}</td>`;
+                                        $('#starter_pending').html(pending_starter_row);
+                                   }
+
+                                   if(pending_club){
+                                        var pending_club_quantity = pending_club.length;
+                                        var pending_club_billing = 0;
+                                        $.each(pending_club,function(key,val){
+                                             var pc_bill = val.renewal_rate*val.renewal_count;
+                                             pending_club_billing += parseFloat(pc_bill);
+                                        });
+                                        var pending_club_row = `<td>Club</td><td>${pending_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_club_billing)}</td>`;
+                                        $('#club_pending').html(pending_club_row);
+                                   }
+
+                                   if(pending_gold){
+                                        var pending_gold_quantity = pending_gold.length;
+                                        var pending_gold_billing = 0;
+                                        $.each(pending_gold,function(key,val){
+                                             var pg_bill = val.renewal_rate*val.renewal_count;
+                                             pending_gold_billing += parseFloat(pg_bill);
+                                        });
+                                        var pending_gold_row = `<td>Gold</td><td>${pending_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_gold_billing)}</td>`;
+                                        $('#gold_pending').html(pending_gold_row);
+                                   }
+
+                                   if(pending_vip){
+                                        var pending_vip_quantity = pending_vip.length;
+                                        var pending_vip_billing = 0;
+                                        $.each(pending_vip,function(key,val){
+                                             var pv_bill = val.renewal_rate*val.renewal_count;
+                                             pending_vip_billing += parseFloat(pv_bill);
+                                        });
+                                        var pending_vip_row = `<td>VIP</td><td>${pending_vip_quantity}</td><td>$${pending_vip_billing}</td>`;
+                                        $('#vip_pending').html(pending_vip_row);
+                                   }
+
+                                   var pending_billing_total = pending_starter_billing + pending_club_billing + pending_gold_billing + pending_vip_billing;
+                                   var pending_total_row = `<th>Totals</th><th>${pending_total}</th><th>$${new Intl.NumberFormat('en-IN').format(pending_billing_total)}</th>`;
+                                   $('#total_pending').html(pending_total_row);
+
+                              }
+
+                              if(response.cancel !== null){
+                                   var cancel_starter = response.cancel[0];
+                                   var cancel_club = response.cancel[1];
+                                   var cancel_gold = response.cancel[2];
+                                   var cancel_vip = response.cancel[3];
+                                   var cancel_total = response.cancel[4];
+
+                                   if(cancel_starter.length >= 0){
+                                        var cancel_starter_quantity = cancel_starter.length;
+                                        var cancel_starter_billing = 0;
+                                        $.each(cancel_starter,function(key,val){
+                                             var cs_bill = val.renewal_rate*val.renewal_count;
+                                             cancel_starter_billing += parseFloat(cs_bill);
+                                        });
+                                        var cancel_starter_row = `<td>Starter</td><td>${cancel_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_starter_billing)}</td>`;
+                                        $('#starter_cancel').html(cancel_starter_row);
+                                   }
+
+                                   if(cancel_club){
+                                        var cancel_club_quantity = cancel_club.length;
+                                        var cancel_club_billing = 0;
+                                        $.each(cancel_club,function(key,val){
+                                             var cc_bill = val.renewal_rate*val.renewal_count;
+                                             cancel_club_billing += parseFloat(cc_bill);
+                                        });
+                                        var cancel_club_row = `<td>Club</td><td>${cancel_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_club_billing)}</td>`;
+                                        $('#club_cancel').html(cancel_club_row);
+                                   }
+
+                                   if(cancel_gold){
+                                        var cancel_gold_quantity = cancel_gold.length;
+                                        var cancel_gold_billing = 0;
+                                        $.each(cancel_gold,function(key,val){
+                                             var cg_bill = val.renewal_rate*val.renewal_count;
+                                             cancel_gold_billing += parseFloat(cg_bill);
+                                        });
+                                        var cancel_gold_row = `<td>Gold</td><td>${cancel_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_gold_billing)}</td>`;
+                                        $('#gold_cancel').html(cancel_gold_row);
+                                   }
+
+                                   if(cancel_vip){
+                                        var cancel_vip_quantity = cancel_vip.length;
+                                        var cancel_vip_billing = 0;
+                                        $.each(cancel_vip,function(key,val){
+                                             var cv_bill = val.renewal_rate*val.renewal_count;
+                                             cancel_vip_billing += parseFloat(cv_bill);
+                                        });
+                                        var cancel_vip_row = `<td>VIP</td><td>${cancel_vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_vip_billing)}</td>`;
+                                        $('#vip_cancel').html(cancel_vip_row);
+                                   }
+
+                                   var cancel_billing_total = cancel_starter_billing + cancel_club_billing + cancel_gold_billing + cancel_vip_billing;
+                                   var cancel_total_row = `<th>Totals</th><th>${cancel_total}</th><th>$${new Intl.NumberFormat('en-IN').format(cancel_billing_total)}</th>`;
+                                   $('#total_cancel').html(cancel_total_row);
+                              }
+                         }
+                    }
+               })
+          }
+     })
+</script>
+
+<script>
+     // $(document).ready(function(){
+     //      $('#location').on('change',function(){
+     //           if($(this).val() !== undefined && $(this).val() !== '' && $(this).val() !== null){
+     //                var data = {
+     //                     id: $(this).val(),
+     //                     _token: "{{ csrf_token() }}"
+     //                }
+
+     //                $.ajax({
+     //                     url: "{{ url('admin-dashboard/memberships/locations') }}",
+     //                     type: "POST",
+     //                     data: data,
+     //                     dataType: "json",
+     //                     success: function(response){
+     //                          if(response.status === 200){
+                                   
+     //                               if(response.active !== null){
+     //                                    var starter = response.active[0];
+     //                                    var club = response.active[1];
+     //                                    var gold = response.active[2];
+     //                                    var vip = response.active[3];
+     //                                    var active_total = response.active[4];
+
+     //                                    if(starter){
+     //                                         var starter_quantity = starter.length;
+     //                                         var starter_billing = 0;
+     //                                         $.each(starter,function(key,val){
+     //                                              starter_billing += parseFloat(val.renewal_rate);
+     //                                         });
+
+     //                                         var starter_row = `<td>Starter</td><td>${starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(starter_billing)}</td>`;
+     //                                         $('#starter').html(starter_row);
+     //                                    }
+
+     //                                    if(club){
+     //                                         var club_quantity = club.length;
+     //                                         var club_billing = 0;
+     //                                         $.each(club,function(key,val){
+     //                                              club_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var club_row = `<td>Club</td><td>${club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(club_billing)}</td>`;
+     //                                         $('#club').html(club_row);
+     //                                    }
+     
+
+     //                                    if(gold){
+     //                                         var gold_quantity = gold.length;
+     //                                         var gold_billing = 0;
+     //                                         $.each(gold,function(key,val){
+     //                                              gold_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var gold_row = `<td>Gold</td><td>${gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(gold_billing)}</td>`;
+     //                                         $('#gold').html(gold_row);
+     //                                    }
+
+     //                                    if(vip){
+     //                                         var vip_quantity = vip.length;
+     //                                         var vip_billing = 0;
+     //                                         $.each(vip,function(key,val){
+     //                                              vip_billing += parseFloat(val.renewal_rate);
+                                                  
+     //                                         });
+     //                                         var vip_row = `<td>VIP</td><td>${vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(vip_billing)}</td>`;
+     //                                         $('#vip').html(vip_row);
+     //                                    }
+     //                                    var total_quantity = starter_quantity + club_quantity + gold_quantity + vip_quantity;
+     //                                    var billing_total = starter_billing + club_billing + gold_billing + vip_billing;
+     //                                    var total_row = `<th>Totals</th><th>${total_quantity}</th><th>$${new Intl.NumberFormat('en-IN').format(billing_total)}</th>`;
+     //                                    $('#totals').html(total_row);
+     //                               }
+
+     //                               if(response.pending !== null){
+     //                                    var pending_starter = response.pending[0];
+     //                                    var pending_club = response.pending[1];
+     //                                    var pending_gold = response.pending[2];
+     //                                    var pending_vip = response.pending[3];
+     //                                    var pending_total = response.pending[4];
+               
+     //                                    if(pending_starter){
+     //                                         var pending_starter_quantity = pending_starter.length;
+     //                                         var pending_starter_billing = 0;
+     //                                         $.each(pending_starter,function(key,val){
+     //                                              pending_starter_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var pending_starter_row = `<td>Starter</td><td>${pending_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_starter_billing)}</td>`;
+     //                                         $('#starter_pending').html(pending_starter_row);
+     //                                    }
+
+     //                                    if(pending_club){
+     //                                         var pending_club_quantity = pending_club.length;
+     //                                         var pending_club_billing = 0;
+     //                                         $.each(pending_club,function(key,val){
+     //                                              pending_club_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var pending_club_row = `<td>Club</td><td>${pending_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_club_billing)}</td>`;
+     //                                         $('#club_pending').html(pending_club_row);
+     //                                    }
+
+     //                                    if(pending_gold){
+     //                                         var pending_gold_quantity = pending_gold.length;
+     //                                         var pending_gold_billing = 0;
+     //                                         $.each(pending_gold,function(key,val){
+     //                                              pending_gold_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var pending_gold_row = `<td>Gold</td><td>${pending_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_gold_billing)}</td>`;
+     //                                         $('#gold_pending').html(pending_gold_row);
+     //                                    }
+
+     //                                    if(pending_vip){
+     //                                         var pending_vip_quantity = pending_vip.length;
+     //                                         var pending_vip_billing = 0;
+     //                                         $.each(pending_vip,function(key,val){
+     //                                              pending_vip_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var pending_vip_row = `<td>VIP</td><td>${pending_vip_quantity}</td><td>$${pending_vip_billing}</td>`;
+     //                                         $('#vip_pending').html(pending_vip_row);
+     //                                    }
+
+     //                                    var pending_billing_total = pending_starter_billing + pending_club_billing + pending_gold_billing + pending_vip_billing;
+     //                                    var pending_total_row = `<th>Totals</th><th>${pending_total}</th><th>$${new Intl.NumberFormat('en-IN').format(pending_billing_total)}</th>`;
+     //                                    $('#total_pending').html(pending_total_row);
+
+     //                               }
+
+     //                               if(response.cancel !== null){
+     //                                    var cancel_starter = response.cancel[0];
+     //                                    var cancel_club = response.cancel[1];
+     //                                    var cancel_gold = response.cancel[2];
+     //                                    var cancel_vip = response.cancel[3];
+     //                                    var cancel_total = response.cancel[4];
+
+     //                                    if(cancel_starter.length >= 0){
+     //                                         var cancel_starter_quantity = cancel_starter.length;
+     //                                         var cancel_starter_billing = 0;
+     //                                         $.each(cancel_starter,function(key,val){
+     //                                              cancel_starter_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var cancel_starter_row = `<td>Starter</td><td>${cancel_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_starter_billing)}</td>`;
+     //                                         $('#starter_cancel').html(cancel_starter_row);
+     //                                    }
+
+     //                                    if(cancel_club){
+     //                                         var cancel_club_quantity = cancel_club.length;
+     //                                         var cancel_club_billing = 0;
+     //                                         $.each(cancel_club,function(key,val){
+     //                                              cancel_club_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var cancel_club_row = `<td>Club</td><td>${cancel_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_club_billing)}</td>`;
+     //                                         $('#club_cancel').html(cancel_club_row);
+     //                                    }
+
+     //                                    if(cancel_gold){
+     //                                         var cancel_gold_quantity = cancel_gold.length;
+     //                                         var cancel_gold_billing = 0;
+     //                                         $.each(cancel_gold,function(key,val){
+     //                                              cancel_gold_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var cancel_gold_row = `<td>Gold</td><td>${cancel_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_gold_billing)}</td>`;
+     //                                         $('#gold_cancel').html(cancel_gold_row);
+     //                                    }
+
+     //                                    if(cancel_vip){
+     //                                         var cancel_vip_quantity = cancel_vip.length;
+     //                                         var cancel_vip_billing = 0;
+     //                                         $.each(cancel_vip,function(key,val){
+     //                                              cancel_vip_billing += parseFloat(val.renewal_rate);
+     //                                         });
+     //                                         var cancel_vip_row = `<td>VIP</td><td>${cancel_vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_vip_billing)}</td>`;
+     //                                         $('#vip_cancel').html(cancel_vip_row);
+     //                                    }
+
+     //                                    var cancel_billing_total = cancel_starter_billing + cancel_club_billing + cancel_gold_billing + cancel_vip_billing;
+     //                                    var cancel_total_row = `<th>Totals</th><th>${cancel_total}</th><th>$${new Intl.NumberFormat('en-IN').format(cancel_billing_total)}</th>`;
+     //                                    $('#total_cancel').html(cancel_total_row);
+     //                               }
+     //                          }
+     //                     }
+
+     //                })
+     //           }else{
+     //                window.location.href = "{{ url('admin-dashboard/memberships') }}";
+     //           }
+     //      });
+     // });
 </script>
 
 <script type="text/javascript">
     $(document).ready(function () {
+          var start = moment().startOf("month");
+          var end = moment().endOf("month");
           $("#date-range-picker").daterangepicker(
                {
                     opens: "left",
+                    startDate: start,
+                    endDate: end,
                     ranges: {
                          Today: [moment(), moment()],
                          Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
@@ -528,203 +750,16 @@
                var status = $(this).data('status');
                var location = $('#location').val();
                var membership_name = $(this).data('member');
-               // var date = $('#date-range-picker').val();
-               // var dates = date.split(" - ");
-               // var startDate = dates[0];
-               // var endDate = dates[1];
+               var date = $('#date-range-picker').val();
+               var dates = date.split(" - ");
+               var startDate = dates[0];
+               var endDate = dates[1];
 
-               var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership_name}`;
+               var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership_name} &start=${startDate} &end=${endDate}`;
                window.location.href = url;
           });
      });
 </script>
 
-<script>
-
-     function dateFilter(){
-          var date = $('#date-range-picker').val();
-          var dates = date.split(" - ");
-          var startDate = dates[0];
-          var endDate = dates[1];
-          var location = $('#location').val();
-
-          var data = {
-               startDate: startDate,
-               endDate: endDate,
-               location_id: location,
-               _token: "{{ csrf_token() }}"
-          }
-
-          $.ajax({
-               url: "{{ url('admin-dashboard/memberships/date') }}",
-               type: "post",
-               data: data,
-               dataType: "json",
-               success:function(response){
-                    if(response.status === 200){
-                         if(response.active !== null){
-                              var starter = response.active[0];
-                              var club = response.active[1];
-                              var gold = response.active[2];
-                              var vip = response.active[3];
-                              var active_total = response.active[4];
-
-                              if(starter){
-                                   var starter_quantity = starter.length;
-                                   var starter_billing = 0;
-                                   $.each(starter,function(key,val){
-                                        starter_billing += parseFloat(val.renewal_rate);
-                                   });
-
-                                   var starter_row = `<td>Starter</td><td>${starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(starter_billing)}</td>`;
-                                   $('#starter').html(starter_row);
-                              }
-
-                              if(club){
-                                   var club_quantity = club.length;
-                                   var club_billing = 0;
-                                   $.each(club,function(key,val){
-                                        club_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var club_row = `<td>Club</td><td>${club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(club_billing)}</td>`;
-                                   $('#club').html(club_row);
-                              }
-                              
-                              if(gold){
-                                   var gold_quantity = gold.length;
-                                   var gold_billing = 0;
-                                   $.each(gold,function(key,val){
-                                        gold_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var gold_row = `<td>Gold</td><td>${gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(gold_billing)}</td>`;
-                                   $('#gold').html(gold_row);
-                              }
-
-                              if(vip){
-                                   var vip_quantity = vip.length;
-                                   var vip_billing = 0;
-                                   $.each(vip,function(key,val){
-                                        vip_billing += parseFloat(val.renewal_rate);
-                                        
-                                   });
-                                   var vip_row = `<td>VIP</td><td>${vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(vip_billing)}</td>`;
-                                   $('#vip').html(vip_row);
-                              }
-                              var total_quantity = starter_quantity + club_quantity + gold_quantity + vip_quantity;
-                              var billing_total = starter_billing + club_billing + gold_billing + vip_billing;
-                              var total_row = `<th>Totals</th><th>${total_quantity}</th><th>$${new Intl.NumberFormat('en-IN').format(billing_total)}</th>`;
-                              $('#totals').html(total_row);
-                         }
-
-                         if(response.pending !== null){
-                              var pending_starter = response.pending[0];
-                              var pending_club = response.pending[1];
-                              var pending_gold = response.pending[2];
-                              var pending_vip = response.pending[3];
-                              var pending_total = response.pending[4];
-     
-                              if(pending_starter){
-                                   var pending_starter_quantity = pending_starter.length;
-                                   var pending_starter_billing = 0;
-                                   $.each(pending_starter,function(key,val){
-                                        pending_starter_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var pending_starter_row = `<td>Starter</td><td>${pending_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_starter_billing)}</td>`;
-                                   $('#starter_pending').html(pending_starter_row);
-                              }
-
-                              if(pending_club){
-                                   var pending_club_quantity = pending_club.length;
-                                   var pending_club_billing = 0;
-                                   $.each(pending_club,function(key,val){
-                                        pending_club_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var pending_club_row = `<td>Club</td><td>${pending_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_club_billing)}</td>`;
-                                   $('#club_pending').html(pending_club_row);
-                              }
-
-                              if(pending_gold){
-                                   var pending_gold_quantity = pending_gold.length;
-                                   var pending_gold_billing = 0;
-                                   $.each(pending_gold,function(key,val){
-                                        pending_gold_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var pending_gold_row = `<td>Gold</td><td>${pending_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(pending_gold_billing)}</td>`;
-                                   $('#gold_pending').html(pending_gold_row);
-                              }
-
-                              if(pending_vip){
-                                   var pending_vip_quantity = pending_vip.length;
-                                   var pending_vip_billing = 0;
-                                   $.each(pending_vip,function(key,val){
-                                        pending_vip_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var pending_vip_row = `<td>VIP</td><td>${pending_vip_quantity}</td><td>$${pending_vip_billing}</td>`;
-                                   $('#vip_pending').html(pending_vip_row);
-                              }
-
-                              var pending_billing_total = pending_starter_billing + pending_club_billing + pending_gold_billing + pending_vip_billing;
-                              var pending_total_row = `<th>Totals</th><th>${pending_total}</th><th>$${new Intl.NumberFormat('en-IN').format(pending_billing_total)}</th>`;
-                              $('#total_pending').html(pending_total_row);
-
-                         }
-
-                         if(response.cancel !== null){
-                              var cancel_starter = response.cancel[0];
-                              var cancel_club = response.cancel[1];
-                              var cancel_gold = response.cancel[2];
-                              var cancel_vip = response.cancel[3];
-                              var cancel_total = response.cancel[4];
-
-                              if(cancel_starter.length >= 0){
-                                   var cancel_starter_quantity = cancel_starter.length;
-                                   var cancel_starter_billing = 0;
-                                   $.each(cancel_starter,function(key,val){
-                                        cancel_starter_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var cancel_starter_row = `<td>Starter</td><td>${cancel_starter_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_starter_billing)}</td>`;
-                                   $('#starter_cancel').html(cancel_starter_row);
-                              }
-
-                              if(cancel_club){
-                                   var cancel_club_quantity = cancel_club.length;
-                                   var cancel_club_billing = 0;
-                                   $.each(cancel_club,function(key,val){
-                                        cancel_club_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var cancel_club_row = `<td>Club</td><td>${cancel_club_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_club_billing)}</td>`;
-                                   $('#club_cancel').html(cancel_club_row);
-                              }
-
-                              if(cancel_gold){
-                                   var cancel_gold_quantity = cancel_gold.length;
-                                   var cancel_gold_billing = 0;
-                                   $.each(cancel_gold,function(key,val){
-                                        cancel_gold_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var cancel_gold_row = `<td>Gold</td><td>${cancel_gold_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_gold_billing)}</td>`;
-                                   $('#gold_cancel').html(cancel_gold_row);
-                              }
-
-                              if(cancel_vip){
-                                   var cancel_vip_quantity = cancel_vip.length;
-                                   var cancel_vip_billing = 0;
-                                   $.each(cancel_vip,function(key,val){
-                                        cancel_vip_billing += parseFloat(val.renewal_rate);
-                                   });
-                                   var cancel_vip_row = `<td>VIP</td><td>${cancel_vip_quantity}</td><td>$${new Intl.NumberFormat('en-IN').format(cancel_vip_billing)}</td>`;
-                                   $('#vip_cancel').html(cancel_vip_row);
-                              }
-
-                              var cancel_billing_total = cancel_starter_billing + cancel_club_billing + cancel_gold_billing + cancel_vip_billing;
-                              var cancel_total_row = `<th>Totals</th><th>${cancel_total}</th><th>$${new Intl.NumberFormat('en-IN').format(cancel_billing_total)}</th>`;
-                              $('#total_cancel').html(cancel_total_row);
-                         }
-                    }
-               }
-          })
-     }
-
-</script>
 
 @endsection

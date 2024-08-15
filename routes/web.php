@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\OrdersController;
 use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\EmployeeStatController;
 use App\Http\Controllers\Admin\UpdateDatabaseController;
+use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Webhooks\WebhookController;
 use App\Http\Controllers\MarianaController;
 use App\Http\Controllers\Auth\AuthController;
@@ -48,6 +49,7 @@ Route ::group(['middleware' =>['admin']],function(){
     Route::post('/admin-dashboard/memberships/locations',[AdminDashboardController::class,'getMembershipByLocation']);
     Route::get('/admin-dashboard/memberships/status',[AdminDashboardController::class,'getUserByMemberships']);
     Route::post('/admin-dashboard/memberships/date',[AdminDashboardController::class,'getMembershipByDate']);
+    Route::post('/admin-dashboard/memberships/users',[AdminDashboardController::class,'userFilter']);
 
     Route::get('get/memberships',[AdminDashboardController::class,'getMemberships']);
     Route::get('dump/memberships',[MembershipController::class,'dumpToDatabase']);
@@ -76,8 +78,9 @@ Route ::group(['middleware' =>['admin']],function(){
 
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 
-    Route::get('admin-dashboard/payroles',[OrdersController::class,'Payroles']);
-    // Route::get('admin-dashboard/get-payroles',[OrdersController::class,'GetPayroles']);
+    Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll']);
+    Route::get('admin-dashboard/payroll-stats',[PayrollController::class,'PayrollStates']);
+    Route::get('admin-dashboard/get-payroll',[PayrollController::class,'GetPayroll']);
 
 
 });

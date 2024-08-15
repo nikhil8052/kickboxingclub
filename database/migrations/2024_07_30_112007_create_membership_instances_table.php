@@ -58,6 +58,8 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->string('usage_interval_limit')->nullable();
 
+            $table->json('relationships')->nullable();
+            
             $table->string('current_membership_transaction_type')->nullable();
             $table->string('current_membership_transaction_id')->nullable();
 

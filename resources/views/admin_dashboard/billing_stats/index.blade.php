@@ -64,6 +64,7 @@
                                                        
                              
                                                        @foreach($membership_instances as $instance)
+                                                            <?php $membership_instances_id = $instance->membership_id; ?>
                                                             @if($instance->locations->name === 'Torrance')
                                                                  <?php $torrance_billing += $instance->renewal_rate; ?>
                                                             

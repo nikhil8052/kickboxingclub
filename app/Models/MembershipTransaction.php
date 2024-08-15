@@ -12,4 +12,8 @@ class MembershipTransaction extends Model
     public function membership_instance(){
         return $this->hasOne(MembershipInstances::class,'membership_id','membership_instances_id');
     }
+
+    public function getTransactionDateTimeAttribute($value){
+        return formatDate($value);
+    }
 }

@@ -1,6 +1,11 @@
 @extends('admin_layout/master')
 @section('content')
 
+@section('css')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+@endsection
+
 <div class="nk-content membership-status">
      <div class="container-fluid">
           <?php if($_GET['membership'] === 'Vip'){
@@ -22,17 +27,55 @@
                          <button class="btn btn-light status-btn" id="cancelled" onclick="getUserByStatus('cancelled')">Cancelled</button>
                     </div>
                </div>
-               <!-- <div class="search-box">
+          
+               <!-- <div class="export">
                     <div class="form-group">
-                         <input type="text" placeholder="Search here" id="search"><i class="fa fa-search" aria-hidden="true"></i>
+                         <a class="btn btn-dark">Export</a>
                     </div>
                </div> -->
           </div>
+          <div class="d-flex user-filter">
+               <div class="col-md-4">
+                    <div class="form-control-wrap">
+                         <label class="form-label" for="date-range-picker">Date</label>
+                         <input type="text" id="date-range-picker" class="form-control" />
+                    </div>
+               </div>
+               
+               <div class="col-md-3">
+                    <div class="form-control-wrap">
+                         <label class="form-label" for="location">Locations</label>
+                         <select name="location" id="location" class="form-select">
+                         @if(isset($locations) && $locations != null)
+                              <option value="">All</option>
+                              @foreach($locations as $location)
+                                   @if(isset($_GET['location']))
+                                        @if($_GET['location'] == $location->location_id)
+                                        <option value="{{ $location->location_id ?? '' }}" selected>{{ $location->name ?? '' }}</option>
+                                        @else
+                                        <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
+                                        @endif
+                                   @endif
+                              @endforeach
+                         @endif
+                         </select>
+                    </div>
+               </div>
+               <div class="col-md-3">
+                    <div class="form-control-wrap">
+                         <button class="btn btn-dark" onclick="userFilter()">Search</button>
+                    </div>
+               </div>
+          </div>
           <div class="nk-content-inner">
                <div class="nk-content-body">
-                    <div class="nk-block">
-                         <div class="nk-block">
+                    <div class="components-preview">
+                         <div class="nk-block nk-block-lg">
                               <div class="card card-bordered card-preview">
+                                   @if(isset($_GET['start']) && isset($_GET['end']))
+                                   <input type="hidden" id="startdate" value="{{ $_GET['start'] }}">
+                                   <input type="hidden" id="enddate" value="{{ $_GET['end'] }}">
+                                   @endif
                                    <div class="card-inner">
                                         <table class="datatable-init nowrap nk-tb-list nk-tb-ulist table table-bordered" id="membership-table" data-auto-responsive="false">
                                              <thead>
@@ -42,7 +85,7 @@
                                                        <th scope="col">Phone Number</th>
                                                   </tr>
                                              </thead>
-                                             <tbody>
+                                             <tbody id="users_data">
                                              @if(isset($memberships) && $memberships != null)
                                                   @foreach($memberships as $membership)
                                                   <tr>
@@ -63,16 +106,24 @@
      </div>
 </div>
 
+@section('js')
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+@endsection
+
 <script>
      function getUserByStatus(status){
           const queryString = window.location.search;
           const urlParams = new URLSearchParams(queryString);
           const location = urlParams.get('location');
           const membership = urlParams.get('membership');
-          // const start = urlParams.get('start');
-          // const end = urlParams.get('end');
+          const start = urlParams.get('start');
+          const end = urlParams.get('end');
 
-          var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership}`;
+          var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership} &start=${start} &end=${end}`;
           window.location.href = url;
      }
 
@@ -84,7 +135,67 @@
           if(status !== '' && status !== null && status !== undefined){
                $('#'+status).addClass('active');
           }
-     })
+     });
 </script>
 
+<script>
+     function userFilter(){
+          var date = $('#date-range-picker').val();
+          var dates = date.split(" - ");
+          var startDate = dates[0];
+          var endDate = dates[1]; 
+          var location = $('#location').val();
+
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+          const membership = urlParams.get('membership');
+          const status = urlParams.get('status');
+
+          var url = `{{ url('admin-dashboard/memberships/status') }}?status=${status} &location=${location} &membership=${membership} &start=${startDate} &end=${endDate}`;
+          window.location.href = url;
+          
+     }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+          // var start = moment().startOf("month");
+          // var end = moment().endOf("month");
+          var start = $('#startdate').val();
+          var end = $('#enddate').val();
+          $("#date-range-picker").daterangepicker(
+               {
+                    opens: "left",
+                    startDate: start,
+                    endDate: end,
+                    ranges: {
+                         Today: [moment(), moment()],
+                         Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                         "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                         "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                         "This Month": [moment().startOf("month"), moment().endOf("month")],
+                         "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                    },
+               },
+               function (start, end, label) {
+                    filterData(start, end);
+               }
+          );
+
+          function filterData(start, end) {
+               $("#data-list li").each(function () {
+                    var date = moment($(this).data("date"));
+                    if (date.isBetween(start, end, "day", "[]")) {
+                         $(this).show();
+                    } else {
+                         $(this).hide();
+                    }
+               });
+          }
+
+          var start = moment().startOf("day");
+          var end = moment().endOf("day");
+          filterData(start, end);
+    });
+</script>
 @endsection

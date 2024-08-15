@@ -17,7 +17,7 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <button class="btn btn-dark" onclick="filterByDate()">Search</button>
+                    <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                                             <th class="nk-tb-col"><span class="sub-text">Total</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody>
                                         
                                     </tbody>
                                 </table>
@@ -74,11 +74,6 @@
             },
             columns: [
                 { data: 'membership_name' },
-                // { data: 'transaction_amount' },
-                // { data: 'membership_instances_id' },
-                // { data: 'total' },
-                // { data: 'transaction_datetime' },
-                // { data: 'user_id'},
                 { data: 'total_count' }
             ]
         });
@@ -87,9 +82,13 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        // var start = moment().startOf("month");
+        // var end = moment().endOf("month");
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
+                // startDate: start,
+                // endDate: end,
                 ranges: {
                     Today: [moment(), moment()],
                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
@@ -123,21 +122,27 @@
 </script>
 
 <script>
-    function filterByDate(){
-        const date = $('#date-range-picker').val();
-        const [startDateString, endDateString] = dateRange.split(" - ");
-        const startDate = new Date(startDateString);
-        const endDate = new Date(endDateString);
+    // function filterByDate(){
+    //     var date = $('#date-range-picker').val();
+    //     var dates = date.split(" - ");
+    //     startDate = dates[0];
+    //     endDate = dates[1]; 
 
-        const formatDate = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0'); 
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-        const formattedStartDate = formatDate(startDate);
-        const formattedEndDate = formatDate(endDate);
-    }
+    //     var data = {
+    //         start: startDate,
+    //         end: endDate,
+    //         _token: "{{ csrf_token() }}"
+    //     }
+
+    //     $.ajax({
+    //         url: "{{ url('/admin-dashboard/get/memberships-transactions') }}",
+    //         type: "get",
+    //         data: data,
+    //         success: function(response){
+    //             console.log(response);
+    //         }
+    //     })
+    // }
 
 </script>
 

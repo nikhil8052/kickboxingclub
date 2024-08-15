@@ -49,7 +49,7 @@
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
                                         <div class="card-title">
-                                            <h6 class="subtitle">Total Forcasted Sales</h6>
+                                            <h6 class="subtitle">Total Forecasted Sales</h6>
                                         </div>
                                         <div class="card-tools">
                                             <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="nk-block busines-info-blk">
                     <div class="row g-gs bsn_rw">
-                        <div class="col-md-4 mt-2">
+                        <div class="col-lg-4 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
                                     <div class="card-head text-center bsn_hd">
@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mt-2">
+                        <div class="col-lg-4 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
                                     <div class="card-head text-center bsn_hd">
@@ -206,7 +206,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mt-2">
+                        <div class="col-lg-4 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
                                     <div class="card-head text-center bsn_hd">
@@ -218,7 +218,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mt-2">
+                        <div class="col-lg-4 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
                                     <div class="card-head text-center bsn_hd">

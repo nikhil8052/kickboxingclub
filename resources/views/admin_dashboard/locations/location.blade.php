@@ -17,11 +17,11 @@
                         </div>
                     </div><!-- .nk-block-head -->
                     <div class="nk-block nk-block-lg">
-                        <div class="nk-block-head">
+                        <!-- <div class="nk-block-head">
                             <div class="nk-block-head-content">
                                 <h4 class="nk-block-title">Locations List</h4>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
                                 <table class="datatable-init nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">

@@ -65,17 +65,103 @@
 @endsection
 
 <script type="text/javascript">
+    // $(document).ready(function() {
+    //     $('#instance_data_table').DataTable({
+    //         processing: true,
+    //         serverSide: false, 
+    //         ajax: {
+    //             url: "{{ url('/admin-dashboard/get-instances') }}", 
+    //             type: 'GET',
+    //             dataSrc: '' 
+    //         },
+    //         columns: [
+    //             // { data: 'membership_id' },
+    //             { data: 'membership_name' },
+    //             { data: 'purchase_location_id' },
+    //             { data: 'user_id' },
+    //             { data: 'start_date' },
+    //             { data: 'end_date' },
+    //             { data: 'status' },
+    //             { data: 'purchase_date' }
+                
+    //         ]
+    //     });
+    // });
+</script>
+
+<script type="text/javascript">
+    // $(document).ready(function () {
+    //     $("#date-range-picker").daterangepicker(
+    //         {
+    //             opens: "left",
+    //             ranges: {
+    //                     Today: [moment(), moment()],
+    //                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+    //                     "Last 7 Days": [moment().subtract(6, "days"), moment()],
+    //                     "Last 30 Days": [moment().subtract(29, "days"), moment()],
+    //                     "This Month": [moment().startOf("month"), moment().endOf("month")],
+    //                     "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+    //             },
+    //         },
+    //         function (start, end, label) {
+    //             filterData(start, end);
+    //         }
+    //     );
+
+    //     function filterData(start, end) {
+    //         $("#data-list li").each(function () {
+    //             var date = moment($(this).data("date"));
+    //             if (date.isBetween(start, end, "day", "[]")) {
+    //                     $(this).show();
+    //             } else {
+    //                     $(this).hide();
+    //             }
+    //         });
+    //     }
+
+    //     // Initial filter to show today's data
+    //     var start = moment().startOf("day");
+    //     var end = moment().endOf("day");
+    //     filterData(start, end);
+    // });
+</script>
+
+<script type="text/javascript">
     $(document).ready(function() {
-        $('#instance_data_table').DataTable({
+        // Initialize Date Range Picker
+        $("#date-range-picker").daterangepicker({
+            opens: "left",
+            ranges: {
+                Today: [moment(), moment()],
+                Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                "This Month": [moment().startOf("month"), moment().endOf("month")],
+                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+            }
+        }, function (start, end) {
+            // Refresh DataTable with new date range
+            table.ajax.reload();
+        });
+
+        // Initialize DataTable
+        var table = $('#instance_data_table').DataTable({
             processing: true,
-            serverSide: false, 
+            serverSide: true, // Enable server-side processing if needed
             ajax: {
-                url: "{{ url('/admin-dashboard/get-instances') }}", 
+                url: "{{ url('/admin-dashboard/get-instances') }}",
                 type: 'GET',
+                data: function(d) {
+                    var picker = $('#date-range-picker').data('daterangepicker');
+                    // Ensure date range picker is initialized and accessible
+                    if (picker) {
+                        d.start_date = picker.startDate.format('YYYY-MM-DD');
+                        d.end_date = picker.endDate.format('YYYY-MM-DD');
+                    }
+                },
                 dataSrc: '' 
             },
             columns: [
-                // { data: 'membership_id' },
                 { data: 'membership_name' },
                 { data: 'purchase_location_id' },
                 { data: 'user_id' },
@@ -83,47 +169,17 @@
                 { data: 'end_date' },
                 { data: 'status' },
                 { data: 'purchase_date' }
-                
             ]
         });
+
+        // Trigger initial load with default date range
+        var initialStartDate = moment().startOf('day');
+        var initialEndDate = moment().endOf('day');
+        $("#date-range-picker").data('daterangepicker').setStartDate(initialStartDate);
+        $("#date-range-picker").data('daterangepicker').setEndDate(initialEndDate);
+        table.ajax.reload(); // Reload DataTable with initial dates
     });
 </script>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#date-range-picker").daterangepicker(
-            {
-                opens: "left",
-                ranges: {
-                        Today: [moment(), moment()],
-                        Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                        "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                        "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                        "This Month": [moment().startOf("month"), moment().endOf("month")],
-                        "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-                },
-            },
-            function (start, end, label) {
-                filterData(start, end);
-            }
-        );
-
-        function filterData(start, end) {
-            $("#data-list li").each(function () {
-                var date = moment($(this).data("date"));
-                if (date.isBetween(start, end, "day", "[]")) {
-                        $(this).show();
-                } else {
-                        $(this).hide();
-                }
-            });
-        }
-
-        // Initial filter to show today's data
-        var start = moment().startOf("day");
-        var end = moment().endOf("day");
-        filterData(start, end);
-    });
-</script>
 
 @endsection

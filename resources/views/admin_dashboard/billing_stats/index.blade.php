@@ -62,6 +62,7 @@
                                                             $membership_instances = App\Models\MembershipInstances::where('purchase_date',$current_date)->with('locations')->get();
                                                        ?>
                                                        
+                             
                                                        @foreach($membership_instances as $instance)
                                                             @if($instance->locations->name === 'Torrance')
                                                                  <?php $torrance_billing += $instance->renewal_rate; ?>
@@ -76,6 +77,7 @@
                                                             
                                                             @endif
                                                        @endforeach
+
                                                        <td>${{ number_format($torrance_billing) ?? '' }}</td>
                                                        <td>${{ number_format($lakewood_billing) ?? '' }}</td>
                                                        <td>${{ number_format($orange_billing) ?? '' }}</td>

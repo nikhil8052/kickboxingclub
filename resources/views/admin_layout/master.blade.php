@@ -166,7 +166,7 @@
                                 <li class="nk-menu-item has-sub main-li">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
-                                        <span class="nk-menu-text">AllUsers</span>
+                                        <span class="nk-menu-text">All Users</span>
                                     </a>
                                     <ul class="nk-menu-sub ul-sub">
                                         <li class="nk-menu-item li-sub">
@@ -199,11 +199,14 @@
                                 <li class="nk-menu-item has-sub main-li">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
-                                        <span class="nk-menu-text">Payroles</span>
+                                        <span class="nk-menu-text">Payroll</span>
                                     </a>
                                     <ul class="nk-menu-sub ul-sub"> 
                                         <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/payroles') }}" class="nk-menu-link"><span class="nk-menu-text">Stats</span></a>
+                                            <a href="{{ url('/admin-dashboard/payroll') }}" class="nk-menu-link"><span class="nk-menu-text">List</span></a>
+                                        </li>
+                                        <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/payroll-stats') }}" class="nk-menu-link"><span class="nk-menu-text">Stats</span></a>
                                         </li>
                                     </ul>
                                 </li>

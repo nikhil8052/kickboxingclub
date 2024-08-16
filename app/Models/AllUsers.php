@@ -12,4 +12,12 @@ class AllUsers extends Model
     public function location(){
         return $this->hasOne(Locations::class,'location_id','home_location_id');
     }
+
+    public function getDateJoinedAttribute($value){
+        return formatDate($value);
+    }
+    
+    public function getWaiverSignedDatetimeAttribute($value){
+        return formatDate($value);
+    } 
 }

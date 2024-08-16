@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class MembershipTransaction extends Model
 {
@@ -13,7 +14,4 @@ class MembershipTransaction extends Model
         return $this->hasOne(MembershipInstances::class,'membership_id','membership_instances_id');
     }
 
-    public function getTransactionDateTimeAttribute($value){
-        return formatDate($value);
-    }
 }

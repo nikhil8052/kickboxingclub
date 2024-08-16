@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('user_id')->default(0);
             $table->string('membership_instances_id')->nullable();
             $table->string('status')->nullable();
+            $table->string('transaction_date')->nullable();
             $table->dateTime('transaction_datetime')->nullable();
             $table->timestamps();
         });

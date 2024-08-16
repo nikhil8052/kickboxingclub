@@ -278,7 +278,6 @@
 
         $("#apply-filters").on('click', function () {
             table.draw(); 
-            CallAjaxToUpdate();
             updateTotals();
         });  
 
@@ -379,7 +378,7 @@
         var startDate = '';
         var endDate = '';
 
-        $('#apply-filters').on('click', function(){
+        $("#apply-filters").on('click', function () {
             var dateRange = $('#date-range-picker').val();
             var dates = dateRange.split(" - ");
             startDate = dates[0];

@@ -58,7 +58,7 @@
                                     <h6 class="subtitle">Refunds</h6>
                                 </div>
                                 <div class="card-tools">
-                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Refunds MTD" data-bs-original-title="Total Refunds MTD"></em>
                                 </div>
                             </div>
                             <div class="card-amount">
@@ -76,7 +76,7 @@
                                     <h6 class="subtitle">Cancelled</h6>
                                 </div>
                                 <div class="card-tools">
-                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Cancelled MTD" data-bs-original-title="Total Cancelled MTD"></em>
                                 </div>
                             </div>
                             <div class="card-amount">
@@ -104,7 +104,7 @@
                         </div>
                     </div>
                 </div> --}}
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <div class="card top_box card-bordered card-full">
                         <div class="card-inner">
                             <div class="card-title-group align-start mb-0">
@@ -112,7 +112,7 @@
                                     <h6 class="subtitle">Pending</h6>
                                 </div>
                                 <div class="card-tools">
-                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Pending MTD" data-bs-original-title="Total Forcasted Sales"></em>
                                 </div>
                             </div>
                             <div class="card-amount">
@@ -121,7 +121,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
         {{-- <div class="nk-block top_sec">
@@ -410,12 +410,12 @@
             });
         }
 
-        function updateMembershipTable(data) {
+        function updateRecord(data) {
             $("#completed-amount").text('$' + (data.totalcompletedSale));
-            $("#total-refunds").text('$' + (totalRefunds));
-            $("#pending-amount").text('$' + (totalPending));
-            $("#paymentFailure-amount").text('$' +(totalPF));
-            $("#cancelled-amount").text('$' + (totalcancelled));
+            $("#total-refunds").text('$' + (data.totalRefunds));
+            $("#pending-amount").text('$' + (data.totalPending));
+            $("#paymentFailure-amount").text('$' +(data.totalPF));
+            $("#cancelled-amount").text('$' + (data.totalcancelled));
         }
 
     });

@@ -348,8 +348,8 @@ class OrdersController extends Controller
 
     public function TotalSales(Request $request)
     {
-        $startDate = $request->startDate;
-        $endDate = $request->endDate;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
         $location = $request->location;
 
         // $current_location = Locations::where('location_id',$location_id)->first();

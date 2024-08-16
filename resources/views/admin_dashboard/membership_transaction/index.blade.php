@@ -17,6 +17,19 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
+                    <label class="form-label" for="location">Locations</label>
+                    <select name="location" id="location" class="form-select" name="location">
+                    @if(isset($locations) && $locations != null)
+                        <option value="">All</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
+                        @endforeach
+                    @endif
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
                     <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
@@ -24,26 +37,24 @@
         <div class="nk-content-inner">
             <div class="nk-content-body">
                 <div class="nk-block">
-                    <div class="nk-block">
-                        <div class="card card-bordered card-preview">
-                            <div class="card-inner">
-                                 <!-- <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">  -->
-                                <table id="membership_transaction_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">
-                                    <thead>
-                                        <tr class="nk-tb-item nk-tb-head">
-                                            <th class="nk-tb-col"><span class="sub-text">Membership name</span></th>
-                                            <!-- <th class="nk-tb-col"><span class="sub-text">Transaction amount</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Membership instance id</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Transaction Date</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">User id</span></th> -->
-                                            <th class="nk-tb-col"><span class="sub-text">Total</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="card card-bordered card-preview">
+                        <div class="card-inner">
+                                <!-- <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">  -->
+                            <table id="membership_transaction_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx dataTable" data-auto-responsive="false">
+                                <thead>
+                                    <tr class="nk-tb-item nk-tb-head">
+                                        <th class="nk-tb-col"><span class="sub-text">Membership name</span></th>
+                                        <!-- <th class="nk-tb-col"><span class="sub-text">Transaction amount</span></th>
+                                        <th class="nk-tb-col"><span class="sub-text">Membership instance id</span></th>
+                                        <th class="nk-tb-col"><span class="sub-text">Transaction Date</span></th>
+                                        <th class="nk-tb-col"><span class="sub-text">User id</span></th> -->
+                                        <th class="nk-tb-col"><span class="sub-text">Total</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transaction_data">
+                                    
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -63,32 +74,32 @@
 @endsection
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('#membership_transaction_table').DataTable({
-            processing: true,
-            serverSide: false, 
-            ajax: {
-                url: "{{ url('/admin-dashboard/get/memberships-transactions') }}", 
-                type: 'GET',
-                dataSrc: '' 
-            },
-            columns: [
-                { data: 'membership_name' },
-                { data: 'total_count' }
-            ]
-        });
-    });
+    // $(document).ready(function() {
+    //     $('#membership_transaction_table').DataTable({
+    //         processing: true,
+    //         serverSide: false, 
+    //         ajax: {
+    //             url: "{{ url('/admin-dashboard/get/memberships-transactions') }}", 
+    //             type: 'GET',
+    //             dataSrc: '' 
+    //         },
+    //         columns: [
+    //             { data: 'membership_name' },
+    //             { data: 'total_count' }
+    //         ]
+    //     });
+    // });
 </script>
 
 <script type="text/javascript">
     $(document).ready(function () {
-        // var start = moment().startOf("month");
-        // var end = moment().endOf("month");
+        var start = moment().startOf("month");
+        var end = moment().endOf("month");
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
-                // startDate: start,
-                // endDate: end,
+                startDate: start,
+                endDate: end,
                 ranges: {
                     Today: [moment(), moment()],
                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
@@ -121,29 +132,83 @@
     });
 </script>
 
+
 <script>
-    // function filterByDate(){
-    //     var date = $('#date-range-picker').val();
-    //     var dates = date.split(" - ");
-    //     startDate = dates[0];
-    //     endDate = dates[1]; 
 
-    //     var data = {
-    //         start: startDate,
-    //         end: endDate,
-    //         _token: "{{ csrf_token() }}"
-    //     }
+$(document).ready(function () {
+    $('#membership_transaction_table').DataTable();
+    $('#filter').on('click', function(){
+        var dateRange = $('#date-range-picker').val();
+        var dates = dateRange.split(" - ");
+        startDate = dates[0];
+        endDate = dates[1];
 
-    //     $.ajax({
-    //         url: "{{ url('/admin-dashboard/get/memberships-transactions') }}",
-    //         type: "get",
-    //         data: data,
-    //         success: function(response){
-    //             console.log(response);
-    //         }
-    //     })
-    // }
+        var location = $('#location').val();
 
+        transactionFilter(location, startDate, endDate);
+    });
+
+    function transactionFilter(location, startDate, endDate) {
+        var data = {
+            start_date: startDate,
+            end_date: endDate,
+            location_id: location,
+        };
+
+        $.ajax({
+            url: "{{ url('/admin-dashboard/get/memberships-transactions') }}", 
+            type: "GET", 
+            data: data, 
+            success: function(response) {
+                updateTransactionTable(response.data);
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", status, error);
+            }
+        });
+    }
+
+    function updateTransactionTable(data) {
+        var table = $('#membership_transaction_table').DataTable();
+        table.clear(); 
+        var rows = [];
+
+        $.each(data, function(index, item) {
+            var membershipName = item.membership_name ;
+            var total = item.total_count;
+
+            rows.push([
+                membershipName,
+                total
+            ]);
+        });
+        table.rows.add(rows); 
+        table.draw();
+    }
+
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return { date: null, time: null };
+        let date = new Date(dateTimeString);
+        return {
+            date: date.toISOString().split('T')[0],  
+            time: date.toTimeString().split(' ')[0]  
+        };
+    }
+
+    function secondsToTime(seconds) {
+        var hours = Math.floor(seconds / 3600);
+        var minutes = Math.floor((seconds % 3600) / 60);
+        var secs = seconds % 60;
+
+        return [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            secs.toString().padStart(2, '0')
+        ].join(':');
+    }
+
+    transactionFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
+});
 </script>
 
 @endsection

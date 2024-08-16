@@ -13,6 +13,15 @@ class Orders extends Model
     // protected $casts = [
     //     'date_placed' => ReadableNumber::class,
     // ];  
+
+    // public function orderline(){
+    //     return $this->hasOne(OrderLine::class,'order_line_id','order_line_id');
+    // }
+
+    public function orderlines()
+    {
+        return $this->hasMany(OrderLine::class, 'order_id','order_id');
+    }
     
     
     public function getDatePlacedAttribute($value){

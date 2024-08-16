@@ -36,11 +36,9 @@ class TestController extends Controller
                 'Authorization' => 'Bearer ' . env('API_ACCESS_TOKEN'),
             ],
             'query' => [
-                // 'min_updated_datetime' => Carbon::now()->startOfDay()->format('Y-m-d\TH:i:s\Z'),
-                // 'max_updated_datetime' => $startDate,
-                // 'status' =>'Payment Failure',
-                // 'page' => 1,
-                'page_size' => 10,
+                // 'product_classes' => 929,
+                'employee_id' => 6238,
+                'page_size' => 20,
             ],
         ]);  
       

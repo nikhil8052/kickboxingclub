@@ -16,11 +16,11 @@
             <div class="col-md-3">
                 <div class="form-control-wrap">
                     <label class="form-label" for="location_filter">Filter by Location:</label>
-                    <select id="location_filter" class="form-select" name="location_filter">
-                        <option value="">All</option>
-                        <option value="Torrance">Torrance</option>
-                        <option value="Lakewood">Lakewood</option>
-                        <option value="Orange">Orange</option>
+                    <select  id="location_filter" class="form-select" name="location_filter">
+                        
+                        @foreach($locations as $location)
+                            <option data-id="{{ $location->id }}" value="{{ $location->name }}">{{ $location->name }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                             <div class="card-amount">
-                                <span class="amount" id="completed-amount">$00</span>
+                                <span class="amount" id="completed-amount">${{ $masterArray['totalcompletedSale'] ?? 0 }}</span>
                                 (<span id="completed-count"></span>)
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                             <div class="card-amount">
-                                <span class="amount" id="total-refunds">$00 </span>
+                                <span class="amount" id="total-refunds">${{ $masterArray['totalRefunds'] ?? 0 }}</span>
                                  (<span id="refund-count"></span>)
                             </div>
                         </div>
@@ -80,13 +80,13 @@
                                 </div>
                             </div>
                             <div class="card-amount">
-                                <span class="amount" id="cancelled-amount">$00 </span>
+                                <span class="amount" id="cancelled-amount">${{ $masterArray['totalcancelled'] ?? 0 }}</span>
                                  (<span id="cancelled-count"></span>)
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <div class="card top_box card-bordered card-full">
                         <div class="card-inner">
                             <div class="card-title-group align-start mb-0">
@@ -98,12 +98,12 @@
                                 </div>
                             </div>
                             <div class="card-amount">
-                                <span class="amount" id="paymentFailure-amount">$00 </span>
+                                <span class="amount" id="paymentFailure-amount">${{ $masterArray['totalPF'] ?? 0 }}</span>
                                  (<span id="paymentFailure-count"></span>)
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-md-4">
                     <div class="card top_box card-bordered card-full">
                         <div class="card-inner">
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
                             <div class="card-amount">
-                                <span class="amount" id="pending-amount">$00 </span>
+                                <span class="amount" id="pending-amount">${{ $masterArray['totalPending'] ?? 0 }}</span>
                                  (<span id="pending-count"></span>)
                             </div>
                         </div>
@@ -278,11 +278,11 @@
 
         $("#apply-filters").on('click', function () {
             table.draw(); 
+            CallAjaxToUpdate();
             updateTotals();
-        });
+        });  
 
         function updateTotals() {
-            // Retrieve filtered data
             var data = table.rows({ search: 'applied' }).data().toArray();
             var totalSales = 0; 
             var totalRefunds = 0; 
@@ -349,19 +349,19 @@
             // console.log('cf'+countCancelled);
             // console.log( 'cp' +countPending);
 
-            completedSalesonly = totalSales -(totalRefunds +totalPending+totalpaymentFailed+totalcancelled);
-            $("#total-sales").text('$' + parseFloat(totalSales).toFixed(2).toLocaleString());
-            $("#total").text(totalCounts);
+            // completedSalesonly = totalSales -(totalRefunds +totalPending+totalpaymentFailed+totalcancelled);
+            // $("#total-sales").text('$' + parseFloat(totalSales).toFixed(2).toLocaleString());
+            // $("#total").text(totalCounts);
             // $("#completed-amount").text('$' + (completedSales.toFixed(2)-totalRefunds.toFixed(2)).toLocaleString());
-            $("#completed-amount").text('$' + (completedSales- totalRefunds).toLocaleString());
+            // $("#completed-amount").text('$' + (completedSales- totalRefunds).toLocaleString());
             $("#completed-count").text(countCompleted);
-            $("#total-refunds").text('$' + totalRefunds.toLocaleString());
+            // $("#total-refunds").text('$' + totalRefunds.toLocaleString());
             $("#refund-count").text(countRefunded);
-            $("#pending-amount").text('$' + totalPending.toLocaleString());
+            // $("#pending-amount").text('$' + totalPending.toLocaleString());
             $("#pending-count").text(countPending);
-            $("#paymentFailure-amount").text('$' +totalpaymentFailed.toLocaleString());
+            // $("#paymentFailure-amount").text('$' +totalpaymentFailed.toLocaleString());
             $("#paymentFailure-count").text(countPaymentFailed);
-            $("#cancelled-amount").text('$' + totalcancelled.toLocaleString());
+            // $("#cancelled-amount").text('$' + totalcancelled.toLocaleString());
             $("#cancelled-count").text(countCancelled);
         }
 
@@ -370,6 +370,56 @@
         });
     });
 
+</script>
+
+<script>
+    $(document).ready(function(){
+
+        var location = '';
+        var startDate = '';
+        var endDate = '';
+
+        $('#apply-filters').on('click', function(){
+            var dateRange = $('#date-range-picker').val();
+            var dates = dateRange.split(" - ");
+            startDate = dates[0];
+            endDate = dates[1];
+
+            var location = $('#location_filter').val();
+
+            OrderFilter(location, startDate, endDate);
+        });
+
+        function OrderFilter(location, startDate, endDate) {
+            var data = {
+                start_date: startDate,
+                end_date: endDate,
+                location: location,
+            };
+
+            $.ajax({
+                url: "{{ url('admin-dashboard/get-sales') }}", 
+                type: "GET", 
+                data: data, 
+                success: function(response) {
+                    console.log(response); 
+                    updateRecord(response.masterArray);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        }
+
+        function updateMembershipTable(data) {
+            $("#completed-amount").text('$' + (data.totalcompletedSale));
+            $("#total-refunds").text('$' + (totalRefunds));
+            $("#pending-amount").text('$' + (totalPending));
+            $("#paymentFailure-amount").text('$' +(totalPF));
+            $("#cancelled-amount").text('$' + (totalcancelled));
+        }
+
+    });
 </script>
 
 @endsection

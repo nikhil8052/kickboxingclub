@@ -17,7 +17,7 @@
                 <div class="form-control-wrap">
                     <label class="form-label" for="location_filter">Filter by Location:</label>
                     <select  id="location_filter" class="form-select" name="location_filter">
-                        
+                        <option value="">All</option>
                         @foreach($locations as $location)
                             <option data-id="{{ $location->id }}" value="{{ $location->name }}">{{ $location->name }}</option>
                         @endforeach

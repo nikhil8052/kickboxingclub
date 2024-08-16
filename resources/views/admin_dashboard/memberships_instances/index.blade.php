@@ -10,26 +10,38 @@
     <div class="container-fluid">
         <div class="d-flex paper card-preview card-bordered p-4 mb-3 date-filter">
             <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="date-range-picker">Date Filter</label>
-                        <input type="text" id="date-range-picker" class="form-control" />
-                    </div>
+                <div class="form-group">
+                    <label for="date-range-picker">Date Filter</label>
+                    <input type="text" id="date-range-picker" class="form-control" />
+                </div>
             </div>
             <div class="col-md-3">
-                    <div class="form-group">
-                        <button class="btn btn-dark">Search</button>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label" for="location">Locations</label>
+                    <select name="location" id="location" class="form-select" name="location">
+                    @if(isset($locations) && $locations != null)
+                        <option value="">All</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
+                        @endforeach
+                    @endif
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="filter">Search</button>
+                </div>
             </div>
         </div>
 
         <div class="nk-content-inner">
             <div class="nk-content-body">
                 <div class="nk-block">
-                    <div class="nk-block">
-                        <div class="card card-bordered card-preview">
-                            <div class="card-inner">
-                                 <!-- <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">  -->
-                                <table id="instance_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">
+                    <div class="card card-bordered card-preview">
+                        <div class="card-inner">
+                                <!-- <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">  -->
+                                <table id="instance_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx dataTable" data-auto-responsive="false">
                                     <thead>
                                         <tr class="nk-tb-item nk-tb-head">
                                             <!-- <th class="nk-tb-col"><span class="sub-text">Membership Id</span></th> -->
@@ -42,7 +54,7 @@
                                             <th class="nk-tb-col"><span class="sub-text">Purchased Date</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody id="instance_data">
                                         
                                     </tbody>
                                 </table>
@@ -90,94 +102,132 @@
 </script>
 
 <script type="text/javascript">
-    // $(document).ready(function () {
-    //     $("#date-range-picker").daterangepicker(
-    //         {
-    //             opens: "left",
-    //             ranges: {
-    //                     Today: [moment(), moment()],
-    //                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-    //                     "Last 7 Days": [moment().subtract(6, "days"), moment()],
-    //                     "Last 30 Days": [moment().subtract(29, "days"), moment()],
-    //                     "This Month": [moment().startOf("month"), moment().endOf("month")],
-    //                     "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-    //             },
-    //         },
-    //         function (start, end, label) {
-    //             filterData(start, end);
-    //         }
-    //     );
+    $(document).ready(function () {
+        var start = moment().startOf("month");
+        var end = moment().endOf("month");
+        $("#date-range-picker").daterangepicker(
+            {
+                opens: "left",
+                startDate: start,
+                endDate: end,
+                ranges: {
+                        Today: [moment(), moment()],
+                        Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                        "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                        "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                        "This Month": [moment().startOf("month"), moment().endOf("month")],
+                        "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                },
+            },
+            function (start, end, label) {
+                filterData(start, end);
+            }
+        );
 
-    //     function filterData(start, end) {
-    //         $("#data-list li").each(function () {
-    //             var date = moment($(this).data("date"));
-    //             if (date.isBetween(start, end, "day", "[]")) {
-    //                     $(this).show();
-    //             } else {
-    //                     $(this).hide();
-    //             }
-    //         });
-    //     }
+        function filterData(start, end) {
+            $("#data-list li").each(function () {
+                var date = moment($(this).data("date"));
+                if (date.isBetween(start, end, "day", "[]")) {
+                        $(this).show();
+                } else {
+                        $(this).hide();
+                }
+            });
+        }
 
-    //     // Initial filter to show today's data
-    //     var start = moment().startOf("day");
-    //     var end = moment().endOf("day");
-    //     filterData(start, end);
-    // });
+        // Initial filter to show today's data
+        var start = moment().startOf("day");
+        var end = moment().endOf("day");
+        filterData(start, end);
+    });
 </script>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        // Initialize Date Range Picker
-        $("#date-range-picker").daterangepicker({
-            opens: "left",
-            ranges: {
-                Today: [moment(), moment()],
-                Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                "This Month": [moment().startOf("month"), moment().endOf("month")],
-                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
-            }
-        }, function (start, end) {
-            // Refresh DataTable with new date range
-            table.ajax.reload();
+<script>
+    $(document).ready(function () {
+        $('#instance_data_table').DataTable();
+        $('#filter').on('click', function(){
+            var dateRange = $('#date-range-picker').val();
+            var dates = dateRange.split(" - ");
+            startDate = dates[0];
+            endDate = dates[1];
+
+            var location = $('#location').val();
+
+            instanceFilter(location, startDate, endDate);
         });
 
-        // Initialize DataTable
-        var table = $('#instance_data_table').DataTable({
-            processing: true,
-            serverSide: true, // Enable server-side processing if needed
-            ajax: {
-                url: "{{ url('/admin-dashboard/get-instances') }}",
-                type: 'GET',
-                data: function(d) {
-                    var picker = $('#date-range-picker').data('daterangepicker');
-                    // Ensure date range picker is initialized and accessible
-                    if (picker) {
-                        d.start_date = picker.startDate.format('YYYY-MM-DD');
-                        d.end_date = picker.endDate.format('YYYY-MM-DD');
-                    }
+        function instanceFilter(location, startDate, endDate) {
+            var data = {
+                start_date: startDate,
+                end_date: endDate,
+                location_id: location,
+            };
+
+            $.ajax({
+                url: "{{ url('/admin-dashboard/get-instances') }}", 
+                type: "GET", 
+                data: data, 
+                success: function(response) {
+                    updateInstanceTable(response.data);
                 },
-                dataSrc: '' 
-            },
-            columns: [
-                { data: 'membership_name' },
-                { data: 'purchase_location_id' },
-                { data: 'user_id' },
-                { data: 'start_date' },
-                { data: 'end_date' },
-                { data: 'status' },
-                { data: 'purchase_date' }
-            ]
-        });
+                error: function(xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        }
 
-        // Trigger initial load with default date range
-        var initialStartDate = moment().startOf('day');
-        var initialEndDate = moment().endOf('day');
-        $("#date-range-picker").data('daterangepicker').setStartDate(initialStartDate);
-        $("#date-range-picker").data('daterangepicker').setEndDate(initialEndDate);
-        table.ajax.reload(); // Reload DataTable with initial dates
+        function updateInstanceTable(data) {
+            var table = $('#instance_data_table').DataTable();
+            table.clear(); 
+            var rows = [];
+
+            $.each(data, function(index, item) {
+                var membershipName = item.membership_name;
+                var location_id = item.purchase_location_id;
+                var userId = item.user_id;
+                var startDate = item.start_date;
+                var endDate = item.end_date;
+                var status = item.status;
+                var purchaseDate = item.purchase_date;
+
+                rows.push([
+                    membershipName,
+                    location_id,
+                    userId,
+                    startDate,
+                    endDate,
+                    status,
+                    purchaseDate
+                ]);
+                
+            });
+
+            table.rows.add(rows); 
+            table.draw();
+        }
+
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return { date: null, time: null };
+            let date = new Date(dateTimeString);
+            return {
+                date: date.toISOString().split('T')[0],  
+                time: date.toTimeString().split(' ')[0]  
+            };
+        }
+
+        function secondsToTime(seconds) {
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds % 3600) / 60);
+            var secs = seconds % 60;
+
+            return [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                secs.toString().padStart(2, '0')
+            ].join(':');
+        }
+
+        instanceFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
     });
 </script>
 

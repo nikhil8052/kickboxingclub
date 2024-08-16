@@ -36,7 +36,7 @@
                                             <th class="nk-tb-col"><span class="sub-text">Full Name</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Email</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Account Balance</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">date_joined</span></th>
+                                            <th class="nk-tb-col"><span class="sub-text">Joining Date</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Signed Waiver</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Waiver Signed Date</span></th>
                                         </tr>

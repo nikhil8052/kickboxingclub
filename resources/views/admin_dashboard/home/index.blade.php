@@ -25,14 +25,14 @@
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
                                         <div class="card-title">
-                                            <h6 class="subtitle">Total Sales MTD</h6>
+                                            <h6 class="subtitle">Total Sales </h6>
                                         </div>
                                         <div class="card-tools">
                                             <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Sales MTD" data-bs-original-title="Total Sales MTD"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount">${{ $totalsales ?? 0 }}
+                                        <span class="amount">${{ $totaloverAllsales ?? 0 }}
                                              <!-- <span class="currency currency-usd">USD</span> -->
                                             </span>
                                     </div>
@@ -45,6 +45,24 @@
                             </div>
                         </div>
                         <div class="col-md-4">
+                            <div class="card top_box card-bordered card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Total Credit Sales</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount">${{ $totalcreditSales ?? 0 }} 
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- <div class="col-md-4">
                             <div class="card top_box card-bordered card-full">
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
@@ -78,7 +96,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-md-4">
                             <div class="card top_box card-bordered  card-full">
                                 <div class="card-inner">
@@ -91,7 +109,7 @@
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount"> $79,358.50 
+                                        <span class="amount"> ${{$totalMembershipSales ?? 0}}
                                             <!-- <span class="currency currency-usd">USD</span> -->
                                         </span>
                                     </div>

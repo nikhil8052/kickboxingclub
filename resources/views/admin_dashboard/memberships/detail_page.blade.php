@@ -35,7 +35,7 @@
                </div> -->
           </div>
           <div class="d-flex user-filter">
-               <div class="col-md-4">
+               <div class="col-md-3">
                     <div class="form-control-wrap">
                          <label class="form-label" for="date-range-picker">Date</label>
                          <input type="text" id="date-range-picker" class="form-control" />
@@ -66,6 +66,11 @@
                          <button class="btn btn-dark" onclick="userFilter()">Search</button>
                     </div>
                </div>
+               <div class="col-md-3">
+                    <div class="form-group">
+                         <button class="btn btn-dark" id="export-button">Export</button>
+                    </div>
+               </div>
           </div>
           <div class="nk-content-inner">
                <div class="nk-content-body">
@@ -79,7 +84,7 @@
                                    <div class="card-inner">
                                         <table class="datatable-init nowrap nk-tb-list nk-tb-ulist table table-bordered" id="membership-table" data-auto-responsive="false">
                                              <thead>
-                                                  <tr>
+                                                  <tr class="nk-tb-item nk-tb-head">
                                                        <th scope="col">Name</th>
                                                        <th scope="col">Email Address</th>
                                                        <th scope="col">Phone Number</th>
@@ -198,4 +203,46 @@
           filterData(start, end);
     });
 </script>
+
+<script>
+$(document).ready(function () {
+     $('#export-button').on('click', function () {
+          var csvContent = '';
+
+          var headers = [];
+          $('#membership-table thead tr.nk-tb-head td').each(function () {
+          var headerText = $(this).text().trim();
+          if (headerText !== '') { 
+               headers.push(headerText.replace(/,/g, "")); 
+          }
+          });
+
+          csvContent += headers.join(',') + "\n"; 
+
+          $('#membership-table tbody tr').each(function () {
+               var rowData = [];
+               $(this).find('td').each(function () {
+                    var cellText = $(this).text().trim(); 
+                    rowData.push(cellText.replace(/,/g, "")); 
+               });
+               csvContent += rowData.join(',') + "\n"; 
+          });
+
+          var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+          var link = document.createElement('a');
+          if (link.download !== undefined) { 
+               var url = URL.createObjectURL(blob);
+               link.setAttribute('href', url);
+               link.setAttribute('download', 'users.csv');
+               link.style.visibility = 'hidden';
+               document.body.appendChild(link);
+               link.click();
+               document.body.removeChild(link);
+          }
+     });
+});
+
+</script>
+
 @endsection

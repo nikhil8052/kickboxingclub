@@ -13,20 +13,21 @@ use App\Models\MembershipLocation;
 use App\Models\MembershipInstances;
 use App\Models\TimeClockShift;
 use App\Models\Credit;
+use App\Models\Locations;
 
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
         // $client = new Client();
-        // // $url="https://kbxf.marianatek.com/api/membership_transactions";
+        // $url="https://kbxf.marianatek.com/api/membership_transactions";
         // // $url = "https://kbxf.marianatek.com/api/memberships";
-        // $url = "https://kbxf.marianatek.com/api/credits";
+        // // $url = "https://kbxf.marianatek.com/api/credits";
         // // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
         // $bearerToken = env('API_ACCESS_TOKEN');
 
-        // $currentPage = 1;
-        // $pageSize = 9;
+        // $currentPage = 29;
+        // $pageSize = 959;
         // $hasMorePages = true;
 
         // while ($hasMorePages) {
@@ -49,9 +50,12 @@ class MembershipController extends Controller
         //         // $savedMemberships = $this->saveMemberships($data['data']);
         //         // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
 
-        //         $saveCredits = $this->saveCredits($data['data']);
+        //         // $saveCredits = $this->saveCredits($data['data']);
         //         // dd($data['data']);
-        //         if($saveCredits) {
+
+        //         $saveTransaction = $this->saveMembershipsTransaction($data['data']);
+
+        //         if($saveTransaction) {
         //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
         //             if ($currentPage >= $totalPages) {
         //                 $hasMorePages = false;
@@ -85,6 +89,7 @@ class MembershipController extends Controller
                 $membership_transaction->user_id = $membership['relationships']['user']['data']['id'];
                 $membership_transaction->membership_instances_id = $membership['relationships']['membership_instance']['data']['id'];
                 $membership_transaction->transaction_datetime = Carbon::parse($membership['attributes']['transaction_datetime']);
+                $membership_transaction->transaction_date = Carbon::parse($membership['attributes']['transaction_datetime'])->format('Y-m-d');
                 $membership_transaction->save();
             }
             return true;
@@ -190,19 +195,44 @@ class MembershipController extends Controller
     }
 
     public function MembershipsTransaction(){
-        $membershipTransaction = MembershipTransaction::where('type','membership_transactions')->first();
-        // dd($membershipTransaction->transaction_datetime);
-
-        return view('admin_dashboard.membership_transaction.index');
-    }
-
-    public function getMembershipsTransaction(){
+        $locations = Locations::all();
         $membershipTransaction = MembershipTransaction::where('type','membership_transactions')
                                 ->select('membership_name',DB::raw('count(*) as total_count'))
                                 ->groupBy('membership_name')
                                 ->get();
+        return view('admin_dashboard.membership_transaction.index',compact('locations','membershipTransaction'));
+    }
+
+    public function getMembershipsTransaction(Request $request){
+        $query = MembershipTransaction::query();
+        $query = $query->where('type','membership_transactions');
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
+
+        if($startDate && $endDate){
+            $start= Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+
+            $query->whereBetween('transaction_date',[$start,$end]);
+        }
+
+        if($location != null){
+            $query->whereHas('membership_instance', function ($query) use ($location) {
+                $query->where('purchase_location_id', $location);
+            });
+        }
+
+        $query->select('membership_name',DB::raw('count(*) as total_count'))
+            ->groupBy('membership_name');
+
+        $membershipTransaction = $query->get();
+
+        return response()->json([
+            'data' => $membershipTransaction
+        ]);
     
-        return response()->json($membershipTransaction);
     }
 
     public function BillingStats(){ 
@@ -237,17 +267,43 @@ class MembershipController extends Controller
             $dates[] = Carbon::createFromDate($year, $month, $day);
         }
     
-        // $membership_transactions = MembershipTransaction::with('membership_instance')->get();
-    
-
-        // foreach($membership_transactions as $data){
-        //     echo '<pre>';
-        //     print_r($data->membership_instance->purchase_location_id);
-
-        // }
-        // die();
-
         return view('admin_dashboard.billing_stats.index',compact('dates'));
+    }
+
+
+    public function Instances(){
+        $locations = Locations::all();
+        $allinstances = MembershipInstances::where('type','membership_instances')->with('user')->get();
+
+        return view('admin_dashboard.memberships_instances.index',compact('locations','allinstances'));
+    }
+
+    public function GetInstances(Request $request){
+        $query = MembershipInstances::query();
+        $query = $query->where('type','membership_instances');
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
+
+        if($startDate && $endDate){
+            $start= Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+
+            $query->whereBetween('purchase_date',[$start,$end]);
+        }
+
+        if($location != null){
+            $query->where('purchase_location_id', $location);
+        }
+
+        $query->with('user');
+
+        $membershipInstance = $query->get();
+
+        return response()->json([
+            'data' => $membershipInstance
+        ]);
     }
 
 }

@@ -73,8 +73,11 @@ Route ::group(['middleware' =>['admin']],function(){
     Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees');
     Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees']);
 
-    Route::get('/admin-dashboard/memberships-instances',[OrdersController::class,'Instances'])->name('admin.dashboard.Instances');
-    Route::get('/admin-dashboard/get-instances',[OrdersController::class,'GetInstances']);
+    // Route::get('/admin-dashboard/memberships-instances',[OrdersController::class,'Instances'])->name('admin.dashboard.Instances');
+    // Route::get('/admin-dashboard/get-instances',[OrdersController::class,'GetInstances']);
+
+    Route::get('/admin-dashboard/memberships-instances',[MembershipController::class,'Instances'])->name('admin.dashboard.Instances');
+    Route::get('/admin-dashboard/get-instances',[MembershipController::class,'GetInstances']);
 
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 

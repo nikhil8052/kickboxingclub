@@ -51,7 +51,7 @@ class UpdateOrders extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 100;
+        $pageSize = 500;
         $hasMorePages = true;
 
         while ($hasMorePages) {
@@ -115,7 +115,27 @@ class UpdateOrders extends Command
                     $or->location = $order['attributes']['location'] ?? null;
                     $or->net_total = $order['attributes']['net_total'] ?? null;
                     $or->number = $order['attributes']['number'] ?? null;
-                    // $or->payment_sources = $order['attributes']['payment_sources'] ?? null;
+                    $or->payment_sources = json_encode($order['attributes']['payment_sources']) ?? null;
+
+                    $paymentSource = $order['attributes']['payment_sources'];
+
+                    if (isset($order['attributes']['payment_sources'][0])) {
+                        $paymentSource = $order['attributes']['payment_sources'][0];
+                    
+                        $or->payment_label = $paymentSource['label'] ?? null;
+                        $or->amount_allocated = $paymentSource['amount_allocated'] ?? null;
+                        $or->date_created = isset($paymentSource['date_created']) 
+                            ? Carbon::parse($paymentSource['date_created']) 
+                            : null;
+                    } else {
+                        $or->payment_label = null;
+                        $or->amount_allocated = null;
+                        $or->date_created = null;
+                    }
+
+                    // $or->payment_label = $order['attributes']['payment_sources'][0]['label'] ?? null;
+                    // $or->amount_allocated = $order['attributes']['payment_sources'][0]['amount_allocated'];
+                    // $or->date_created = $order['attributes']['payment_sources'][0]['date_created'] ? Carbon::parse($order['attributes']['payment_sources'][0]['date_created']) : null;
                     $or->refund_subtotal = $order['attributes']['refund_subtotal'] ?? null;
                     $or->refund_total = $order['attributes']['refund_total'] ?? null;
                     $or->refund_total_tax = $order['attributes']['refund_total_tax'] ?? null;
@@ -126,7 +146,7 @@ class UpdateOrders extends Command
                     $or->total =$order['attributes']['total'] ?? null;
                     $or->total_amount_refunded = $order['attributes']['total_amount_refunded'] ?? null;
                     $or->total_discount =$order['attributes']['total_discount'] ?? null;
-                    // $or->deferred_item_count = $order['attributes']['status'];
+                   
                     // $or->deferred_item_total =$order['attributes']['status'];
                     // $or->deferred_item_total_incl_tax = $order['attributes']['status'];
                     $or->total_tax = $order['attributes']['total_tax'] ?? null;

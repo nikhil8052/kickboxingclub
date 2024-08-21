@@ -81,6 +81,15 @@ use Illuminate\Support\Facades\Http;
     }
 
 
+    function convertToUSATimezone($utcDate)
+    {
+        
+        $date = Carbon::parse($utcDate);
+
+        $usaDate = $date->setTimezone('America/New_York');
+
+        return $usaDate->toDateTimeString(); 
+    }
 
 
 

@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:update-orders')->hourly()->withoutOverlapping();
         $schedule->command('app:update-membership-instance')->hourly()->withoutOverlapping();
         $schedule->command('app:update-user')->hourly()->withoutOverlapping();
-        // $schedule->command('app:update-order-lines')->daily();
+        $schedule->command('app:update-order-lines')->hourly()->withoutOverlapping();
     }
 
     /**

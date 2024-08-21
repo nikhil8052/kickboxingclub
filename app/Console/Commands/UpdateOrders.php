@@ -140,7 +140,7 @@ class UpdateOrders extends Command
                     $or->user_types = $order['relationships']['user']['data']['type'] ?? null;
                     $or->user_id = $order['relationships']['user']['data']['id'] ?? null;
                     $or->order_lines_types = $order['relationships']['order_lines']['data'][0]['type'] ?? null;
-                    $or->order_lines_id = $order['relationships']['order_lines']['data'][0]['id'] ?? null;
+                    $or->order_line_id = $order['relationships']['order_lines']['data'][0]['id'] ?? null;
                     $or->originating_partner_types = $order['relationships']['originating_partner']['data']['type'] ?? null;
                     $or->originating_partner_id = $order['relationships']['originating_partner']['data']['id'] ?? null;
                     $or->save();

@@ -511,6 +511,11 @@
                         backgroundColor: ['#6576FF', '#36A2EB', '#FFCE56']
                     }]
                 },
+                options: {
+                    tooltips: {
+                        enabled: false // Disable tooltips on hover
+                    }
+                }
             });
 
             paymentslabels.html(`<div class="pi_labesl">
@@ -556,6 +561,11 @@
                         backgroundColor: ['#B40200', '#FFDEDE']
                     }]
                 },
+                options: {
+                    tooltips: {
+                        enabled: false // Disable tooltips on hover
+                    }
+                }
             });
 
             membershipslabels.html(`<div class="pi_labesl">
@@ -588,6 +598,11 @@
                         backgroundColor: ['#000000']
                     }]
                 },
+                options: {
+                    tooltips: {
+                        enabled: false // Disable tooltips on hover
+                    }
+                }
             });
 
             TrialSoldlabels.html(`<div class="pi_labesl">
@@ -611,6 +626,11 @@
                         backgroundColor: ['#B40200']
                     }]
                 },
+                options: {
+                    tooltips: {
+                        enabled: false // Disable tooltips on hover
+                    }
+                }
             });
 
             visitorslabels.html(`<div class="pi_labesl">

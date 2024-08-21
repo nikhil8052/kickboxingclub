@@ -189,6 +189,11 @@
             $('#last_name').val('');
             $('#email').val('');
 
+            $('#name_error').hide();
+            $('#email_error').hide();
+            $('#password_error').hide();
+            $('#permission_error').hide();
+
             let allPermissionValues = $('#permissions option').map(function() {
                 return $(this).val();
             }).get();
@@ -204,6 +209,11 @@
             $('#first_name').val('');
             $('#last_name').val('');
             $('#email').val('');
+
+            $('#name_error').hide();
+            $('#email_error').hide();
+            $('#password_error').hide();
+            $('#permission_error').hide();
 
             let allPermissionValues = $('#permissions option').map(function() {
                 return $(this).val();

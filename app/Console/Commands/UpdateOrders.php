@@ -79,7 +79,7 @@ class UpdateOrders extends Command
                             $hasMorePages = false;
                         } else {
                             $currentPage++;
-                            sleep(30);
+                            sleep(15);
                         }
                     } else {
                         $this->error('Failed to save orders data.');

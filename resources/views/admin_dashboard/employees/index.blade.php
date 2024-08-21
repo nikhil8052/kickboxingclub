@@ -1,13 +1,23 @@
 @extends('admin_layout.master') 
 @section('content')
 
-<!-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css" />
-
-<script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script> -->
 @section('css')
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+<style>
+    table#users_data_table .regular-pay {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .close{
+        text-decoration: none;
+    }
+</style>
+
 @endsection
+
 
 <div class="nk-content">
     <div class="container-fluid">
@@ -28,24 +38,61 @@
         <div class="nk-content-inner">
             <div class="nk-content-body">
                 <div class="nk-block">
-                    <div class="nk-block">
-                        <div class="card card-bordered card-preview mt-5 p-4">
-                            <table id="users_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">
-                                    <thead>
-                                        <tr class="nk-tb-item nk-tb-head">
-                                            <th class="nk-tb-col"><span class="sub-text">ID</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Employee Name</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Email</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Country</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Location</span></th>
-                                            <!-- <th class="nk-tb-col"><span class="sub-text">Can Chat</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Is Active</span></th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody >
-                                        
-                                    </tbody>
-                                </table>
+                    <div class="card card-bordered card-preview mt-5 p-4">
+                        <table id="users_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">
+                            <thead>
+                                <tr class="nk-tb-item nk-tb-head">
+                                    <th class="nk-tb-col"><span class="sub-text">ID</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Employee Name</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Email</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Country</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Location</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Regular Pay</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Instructor Pay</span></th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="modalForm">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Update Pay Rate</h5>
+                                    <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <em class="icon ni ni-cross"></em>
+                                    </a>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ url('/admin-dashboard/pay-rates/procc') }}" method="post" class="">
+                                        @csrf
+                                        <input type="hidden" id="employee_id" name="employee_id" value="">
+                                        <div class="form-group">
+                                            <label class="form-label" for="regular_pay">Regular Pay</label>
+                                            <div class="form-control-wrap">
+                                                <input type="number" class="form-control" id="regular_pay" name="regular_pay" value="">
+                                            </div>
+                                            @error('regular_pay')
+                                            <span class="text text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="instructor_pay">Instructor Pay</label>
+                                            <div class="form-control-wrap">
+                                                <input type="number" class="form-control" id="instructor_pay" name="instructor_pay" value="">
+                                            </div>
+                                            @error('instructor_pay')
+                                            <span class="text text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-dark">Update</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,6 +136,22 @@
                         return data ? data : 'null'; 
                     }
                 },
+                { data: 'payrate.regular_pay',
+                    render: function(data, type, row) {
+                        return data ? `$${data}` : 'null'; 
+                    },
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        $(td).addClass('regular-pay');
+                    }
+                },
+                { data: 'payrate.instructor_pay',
+                    render: function(data, type, row) {
+                        return data ? `$${data}` : 'null'; 
+                    },
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        $(td).addClass('regular-pay');
+                    }
+                },
                 // { data: 'recent_location_id',
                 //     render: function (data, type, row) {
                 //         return data ? data : 'null';
@@ -112,6 +175,22 @@
                 // },
             ]
         });
+
+        var table = $('#users_data_table').DataTable();
+        $('#users_data_table').on('click','.regular-pay',function(){
+            var row = $(this).closest('tr');
+            var data = table.row(row).data();
+
+            var id = data['employee_id'];
+            var regular_pay = data.payrate ? data.payrate.regular_pay : undefined;
+            var instructor_pay = data.payrate ? data.payrate.instructor_pay : undefined;
+
+            console.log(regular_pay);
+            $('#employee_id').val(id);
+            $('#regular_pay').val(regular_pay);
+            $('#instructor_pay').val(instructor_pay);
+            $('#modalForm').modal('show');
+        })
     });
 
 </script>

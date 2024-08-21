@@ -9,8 +9,11 @@ class Employees extends Model
 {
     use HasFactory;
 
-    public function user()
-    {
+    public function user(){
         return $this->hasOne(AllUsers::class, 'user_id', 'user_id');
+    }
+
+    public function payrate(){
+        return $this->hasOne(EmployeePayRate::class, 'employee_id', 'employee_id');
     }
 }

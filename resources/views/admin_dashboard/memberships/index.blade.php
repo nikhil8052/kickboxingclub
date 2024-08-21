@@ -10,13 +10,13 @@
      <div class="container-fluid">
           <div class="d-flex paper card-preview card-bordered p-4 mb-3 date-filter">
                <div class="col-md-4">
-                    <div class="form-control-wrap">
-                         <label class="form-label" for="date-range-picker">Date</label>
+                    <div class="form-group">
+                         <label class="form-label" for="date-range-picker">Date Filter</label>
                          <input type="text" id="date-range-picker" class="form-control" />
                     </div>
                </div>
                <div class="col-md-3">
-                    <div class="form-control-wrap">
+                    <div class="form-group">
                          <label class="form-label" for="location">Locations</label>
                          <select name="location" id="location" class="form-select">
                          @if(isset($locations) && $locations != null)

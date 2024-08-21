@@ -42,4 +42,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_permissions', 'user_id', 'permission_id');
+    }
+
+    public function permissionIds()
+    {
+        return $this->permissions()->pluck('permissions.id')->toArray();
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin == 1;
+    }
+
+    public function hasPermission($permissionId)
+    {
+        if ($this->isAdmin()) {
+            return true; 
+        }
+
+        return $this->permissions()->where('permissions.id', $permissionId)->exists();
+    }
 }

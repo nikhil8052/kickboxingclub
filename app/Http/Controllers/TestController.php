@@ -63,7 +63,12 @@ class TestController extends Controller
             $orders =  Orders::all();
             foreach($orders as $order) {
                 $date =  $order->date_created;
-                $order->date_created_copy = convertToUSATimezone($date);
+                if($date){
+                    $order->date_created_copy = convertToUSATimezone($date); 
+                   
+                } else {
+                    $order->date_created_copy = null;
+                }
                 $order->save();
             }
 

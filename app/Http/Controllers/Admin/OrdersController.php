@@ -135,7 +135,7 @@ class OrdersController extends Controller
         $locations = Locations::all();
     
         if ($startDate && $endDate) {
-            $query->whereBetween(DB::raw('date_created'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
+            $query->whereBetween(DB::raw('date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
         }
 
         if($location) {

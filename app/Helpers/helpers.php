@@ -86,7 +86,7 @@ use Illuminate\Support\Facades\Http;
         
         $date = Carbon::parse($utcDate);
 
-        $usaDate = $date->setTimezone('America/New_York');
+        $usaDate = $date->setTimezone('America/Los_Angeles');
 
         return $usaDate->toDateTimeString(); 
     }

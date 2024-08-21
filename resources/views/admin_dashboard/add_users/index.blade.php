@@ -12,7 +12,7 @@
                     </div>
                     <div class="row gy-4">
                         <div class="col-sm-12">
-                            <form action="{{ route('user.addProcc') }}" method="POST">
+                            <form id="user-form" action="{{ route('user.addProcc') }}" method="POST">
                                 @csrf
                                 <input type="hidden" id="user_id" name="id">
                                 <div class="d-flex">
@@ -20,6 +20,7 @@
                                         <div class="form-group">
                                             <label for="first_name">First Name</label>
                                             <input type="text" id="first_name" name="first_name" placeholder="John" class="form-control" />
+                                            <span class="text-danger" id="name_error" style="display: none;">Name is required.</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 p-2">
@@ -34,6 +35,7 @@
                                         <div class="form-group">
                                             <label for="email">Email</label>
                                             <input type="text" id="email" name="email" placeholder="John@gmail.com" class="form-control" />
+                                            <span class="text-danger" id="email_error" style="display: none;">Email is required.</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 p-2">
@@ -46,6 +48,7 @@
                                                 </a>
                                                 <input autocomplete="new-password" type="password" class="form-control" placeholder="*****" id="password" name="password">
                                             </div>
+                                            <span class="text-danger" id="password_error" style="display: none;">Password is required.</span>
                                         </div>
                                     </div>
                                 </div> 
@@ -60,10 +63,11 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <span class="text-danger" id="permission_error" style="display: none;">Please assign at least one permission.</span>
                                         </div>
                                     </div>
                                 </div> 
-                                <div class="col-md-3 p-2">
+                                <div  class="col-md-12 p-2 d-flex justify-content-end">
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-dark" id="Save_records">Add User</button>
                                     </div>
@@ -78,7 +82,7 @@
             <div class="nk-block-head">
                 <div class="nk-block-head-content d-flex justify-content-between">
                     <h4 class="nk-block-title">Users</h4>
-                    <button class="btn btn-primary" id="addnew">Add New</button>
+                    <button class="btn btn-dark" id="addnew">Add New</button>
                 </div>
             </div>
             <div class="card card-bordered card-preview">
@@ -97,15 +101,15 @@
                                 </span>
                             </th>
                             <th class="tb-tnx-action">
-                                <span>Action</span>
+                                <span></span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody> <?php $a = 1; ?>
+                    <tbody>
                         @foreach ($users as $user)
                             <tr class="tb-tnx-item">
                                 <td class="tb-tnx-id">
-                                    <a href="#"><span>{{ $a++ ?? '' }}</span></a>
+                                   <span>{{ $loop->iteration?? '' }}</span>
                                 </td>
                                 <td class="tb-tnx-info">
                                     <div class="tb-tnx-desc">
@@ -122,17 +126,17 @@
                                     </div>
                                 </td>
 
-                                <td class="tb-tnx-action">
+                                <td class="tb-tnx-info d-flex p-3">
                                     <!-- <div class="dropdown drop">
                                         <a class="text-soft dropdown-toggle btn btn-icon btn-trigger"
                                             data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
                                         <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
                                             <ul class="link-list-plain"> -->
-                                                <li><a  data-id ="{{ $user->id ?? '' }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}"
+                                               <a  data-id ="{{ $user->id ?? '' }}" data-name="{{ $user->name }}" data-email="{{ $user->email }}"
                                                         data-permissions="{{ json_encode($user->permissionIds()) }}"
-                                                        class="edit-category">Edit</a></li>
-                                                <li><a href="{{ url('admin-dashboard/user-remove/'.$user->id) }}" data-id ="{{ $user->id ?? '' }}"
-                                                        class="remove-category">Remove</a></li>
+                                                        class="edit-category m-2 btn btn-light"><em class="icon ni ni-edit"></em></a>
+                                               <a href="{{ url('admin-dashboard/user-remove/'.$user->id) }}" data-id ="{{ $user->id ?? '' }}"
+                                                        class="remove-category m-2 btn btn-light"><em class="icon ni ni-trash"></em></a>
                                             <!-- </ul>
                                         </div>
                                     </div> -->
@@ -174,12 +178,12 @@
 
             $('#permissions').val(permissions).trigger('change');
 
-            $('#button_value').html('update');
+            $('#Save_records').html('Update User');
             $('#add_new').removeClass('d-none');
             window.scrollTo(0, 0);
                 
         });
-        $("body").delegate(".addnew", "click", function (e) {
+        $("body").delegate("#addnew", "click", function (e) {
             $('#user_id').val('');
             $('#first_name').val('');
             $('#last_name').val('');
@@ -191,7 +195,7 @@
 
             $('#permissions').val(allPermissionValues).trigger('change');
             $(this).addClass('d-none');
-            $('#button_value').html('Add');
+            $('#Save_records').html('Add User');
             $('#parent_category').prop('disabled',false); 
                 
         });
@@ -207,9 +211,54 @@
 
             $('#permissions').val(allPermissionValues).trigger('change');
             $(this).addClass('d-none');
-            $('#button_value').html('Add');
+            $('#Save_records').html('Add User');
             $('#parent_category').prop('disabled',false); 
                 
+        });
+
+        $('#user-form').submit(function(e) {
+            e.preventDefault();
+
+            var action = true;
+
+            var userId = $('#user_id').val();
+            var first_name = $('#first_name').val();
+            var email = $('#email').val();
+            var password = $('#password').val();
+            var permissions = $('#permissions').val();
+
+            if(first_name == ''){
+                $('#name_error').show();
+                action = false;
+            }
+
+            if(permissions.length < 1){
+                $('#permission_error').show();
+                action = false;
+            }
+
+            if(email == ''){
+                $('#email_error').show();
+                action = false;
+            }
+
+            if(userId == '' && password == ''){
+                $('#password_error').show();
+                action = false;
+            }
+        });
+
+        $('#first_name').on('change',function(){
+            $('#name_error').hide();
+        });
+        $('#email').on('change',function(){
+            $('#email_error').hide();
+        });
+        $('#password').on('change',function(){
+            $('#password_error').hide();
+        });
+        $('#permissions').on('change',function(){
+            $('#permission_error').hide();
         });
     });
 </script>

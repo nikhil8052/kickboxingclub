@@ -52,6 +52,7 @@
                                             <th scope="col">Employee</th>
                                             <th scope="col">Total Shifts</th>
                                             <th scope="col">Duration</th>
+                                            <th scope="col">Instructor Pay</th>
                                         </tr>
                                     </thead>
                                     <tbody id="payroll-table-data">
@@ -67,6 +68,14 @@
                                                     $seconds = $totalSeconds % 60;
                                                 @endphp
                                                 {{ sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds) }}
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $instructor_pay = $shift->employee_payrate->instructor_pay;
+                                                    $totalShift = $shift->total_shifts;
+                                                    $instructor_amount = $totalShift * $instructor_pay;
+                                                @endphp
+                                                ${{ $instructor_amount }}
                                             </td>
                                         </tr>
                                         @endforeach
@@ -161,12 +170,15 @@
                 var employeeName = item.employee && item.employee.user ? item.employee.user.full_name : 'Unknown';
                 var totalShifts = item.total_shifts || 0;
                 var totalDuration = secondsToTime(Math.floor(item.total_duration_seconds || 0));
-
+                var instructorPay = item.employee_payrate.instructor_pay || 0;
+                var instructor_amount = totalShifts * instructorPay;
+                
                 var row = `
                     <tr>
                         <td>${employeeName}</td>
                         <td>${totalShifts}</td>
                         <td>${totalDuration}</td>
+                        <td>$${instructor_amount}</td>
                     </tr>
                 `;
                 table.append(row); // Add new row

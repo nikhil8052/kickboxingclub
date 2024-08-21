@@ -1,6 +1,6 @@
 @extends('admin_layout.master') @section('content') @section('css')
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 @endsection
 
 <div class="nk-content">
@@ -45,7 +45,7 @@
                             </div>
                             <div class="card-amount">
                                 <span class="amount" id="completed-amount">${{ $masterArray['totalcompletedSale'] ?? 0 }}</span>
-                                (<span id="completed-count"></span>)
+                                (<span id="completed-count">{{ $masterArray['completedSaleCount'] ?? 0 }}</span>)
                             </div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="card-amount">
                                 <span class="amount" id="total-refunds">${{ $masterArray['totalRefunds'] ?? 0 }}</span>
-                                 (<span id="refund-count"></span>)
+                                 (<span id="refund-count">{{ $masterArray['RefundsCount'] ?? 0 }}</span>)
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                             </div>
                             <div class="card-amount">
                                 <span class="amount" id="cancelled-amount">${{ $masterArray['totalcancelled'] ?? 0 }}</span>
-                                 (<span id="cancelled-count"></span>)
+                                 (<span id="cancelled-count">{{ $masterArray['CancelledCount'] ?? 0 }}</span>)
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                             </div>
                             <div class="card-amount">
                                 <span class="amount" id="paymentFailure-amount">${{ $masterArray['totalPF'] ?? 0 }}</span>
-                                 (<span id="paymentFailure-count"></span>)
+                                 (<span id="paymentFailure-count">{{ $masterArray['paymentFailuerCount'] ?? 0 }}</span>)
                             </div>
                         </div>
                     </div>
@@ -117,44 +117,13 @@
                             </div>
                             <div class="card-amount">
                                 <span class="amount" id="pending-amount">${{ $masterArray['totalPending'] ?? 0 }}</span>
-                                 (<span id="pending-count"></span>)
+                                 (<span id="pending-count">{{ $masterArray['pendingCount'] ?? 0 }}</span>)
                             </div>
                         </div>
                     </div>
                 </div> --}}
             </div>
         </div>
-        {{-- <div class="nk-block top_sec">
-            <div class="row g-gs">
-                <div>
-                    <table class="nowrap nk-tb-list nk-tb-ulist table table-tranx"  bordered>
-                        <thead>
-                          
-                            <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Refunded</span></th>
-                                <td id="refund-count"></td>
-                                <td id="total-refunds"></td>
-                            </tr>
-                            <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Payment Failure</span></th>
-                                <td id="paymentFailure-count"></td>
-                                <td id="paymentFailure-amount"></td>
-                            </tr>
-                            <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Cancelled</span></th>
-                                <td id="cancelled-count"></td>
-                                <td id="cancelled-amount"></td>
-                            </tr>
-                            <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Pending & Deferred</span></th>
-                                <td id="pending-count"></td>
-                                <td id="pending-amount"></td>
-                            </tr> 
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div> --}}
         <br />
         <div class="card">
             <table id="order_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="true" bordered>
@@ -175,17 +144,15 @@
 </div>
 
 @section('js')
-
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 @endsection
 
 <script type="text/javascript">
     $(document).ready(function () {
+       
         var start = moment().startOf("month");
         var end = moment().endOf("month");
 
@@ -212,7 +179,6 @@
             $(this).val(''); 
         });
 
-        // Ensure that daterangepicker is initialized
         $("#date-range-picker").data('daterangepicker').setStartDate(start);
         $("#date-range-picker").data('daterangepicker').setEndDate(end);
 
@@ -239,12 +205,12 @@
                 }
             },
             columns: [
-                { data: "order_id" },
+                { data: "number" },
                 { data: "location" },
                 { data: "currency" },
                 { data: "total" },
                 { data: "status" },
-                { data: "date_placed" }
+                { data: "date_created" }
             ],
             initComplete: function () {
                 $.fn.dataTable.ext.search.push(
@@ -253,7 +219,7 @@
                         if (dateRangePicker) {
                             var min = moment(dateRangePicker.startDate).startOf('day');
                             var max = moment(dateRangePicker.endDate).endOf('day');
-                            var datePlaced = moment(data[5], 'YYYY-MM-DD HH:mm:ss'); // Ensure format matches
+                            var datePlaced = moment(data[5], 'YYYY-MM-DD HH:mm:ss'); 
 
                             if (
                                 (isNaN(min) && isNaN(max)) ||
@@ -261,7 +227,6 @@
                                 (min <= datePlaced && isNaN(max)) ||
                                 (min <= datePlaced && datePlaced <= max)
                             ) {
-                                // Status filtering
                                 var selectedLocation = $('#location_filter').val();
                                 if (selectedLocation === "" || data[1] === selectedLocation) {
                                     return true;
@@ -278,95 +243,7 @@
 
         $("#apply-filters").on('click', function () {
             table.draw(); 
-            updateTotals();
         });  
-
-        function updateTotals() {
-            var data = table.rows({ search: 'applied' }).data().toArray();
-            var totalSales = 0; 
-            var totalRefunds = 0; 
-            var completedSales = 0; 
-            var totalPending = 0; 
-            var totalcancelled = 0; 
-            var totalpaymentFailed = 0; 
-            var totalSalesDiscounts = 0; 
-
-            var totalCounts = 0;
-            var countCompleted = 0;
-            var countRefunded = 0;
-            var countPending = 0;
-            var countCancelled = 0;
-            var countPaymentFailed = 0;
-
-
-            data.forEach(function (item) {
-                var totalAmount = parseFloat(item.total) || 0; 
-                // var totalAmount = parseFloat(item.total) || 0; 
-
-
-                totalSales += totalAmount;
-                totalSalesDiscounts += parseFloat(item.total_discount) || 0;
-                totalCounts++;
-
-                switch (item.status) {
-                    case "Completed":
-                        completedSales += totalAmount;
-                        countCompleted++;
-                        break;
-                    case "Refunded":
-                        totalRefunds += parseFloat(item.total_amount_refunded) || 0;
-                        completedSales += totalAmount;
-                        // totalRefunds += totalAmount;
-                        countRefunded++;
-                        break;
-                    case "Partially Refunded":
-                        totalRefunds += parseFloat(item.total_amount_refunded) || 0;
-                        completedSales += totalAmount;
-                        // totalRefunds += totalAmount;
-                        countRefunded++;
-                        break;
-                    case "Deferred":
-                        totalPending += totalAmount;
-                        countPending++;
-                        break;
-                    case "Pending":
-                        totalPending += totalAmount;
-                        countPending++;
-                        break;
-                    case "Cancelled":
-                        totalcancelled += totalAmount;
-                        countCancelled++;
-                        break;
-                    case "Payment Failure":
-                        totalpaymentFailed += totalAmount;
-                        countPaymentFailed++;
-                        break;
-                }
-            });
-
-            // console.log('pf'+countPaymentFailed);
-            // console.log('cf'+countCancelled);
-            // console.log( 'cp' +countPending);
-
-            // completedSalesonly = totalSales -(totalRefunds +totalPending+totalpaymentFailed+totalcancelled);
-            // $("#total-sales").text('$' + parseFloat(totalSales).toFixed(2).toLocaleString());
-            // $("#total").text(totalCounts);
-            // $("#completed-amount").text('$' + (completedSales.toFixed(2)-totalRefunds.toFixed(2)).toLocaleString());
-            // $("#completed-amount").text('$' + (completedSales- totalRefunds).toLocaleString());
-            $("#completed-count").text(countCompleted);
-            // $("#total-refunds").text('$' + totalRefunds.toLocaleString());
-            $("#refund-count").text(countRefunded);
-            // $("#pending-amount").text('$' + totalPending.toLocaleString());
-            $("#pending-count").text(countPending);
-            // $("#paymentFailure-amount").text('$' +totalpaymentFailed.toLocaleString());
-            $("#paymentFailure-count").text(countPaymentFailed);
-            // $("#cancelled-amount").text('$' + totalcancelled.toLocaleString());
-            $("#cancelled-count").text(countCancelled);
-        }
-
-        table.on('draw', function () {
-            updateTotals();
-        });
     });
 
 </script>
@@ -390,6 +267,7 @@
         });
 
         function OrderFilter(location, startDate, endDate) {
+            $('#overlay').show();
             var data = {
                 start_date: startDate,
                 end_date: endDate,
@@ -401,11 +279,13 @@
                 type: "GET", 
                 data: data, 
                 success: function(response) {
-                    console.log(response); 
+                    // console.log(response); 
                     updateRecord(response.masterArray);
+                    $('#overlay').hide();
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX error:", status, error);
+                    $('#overlay').hide();
                 }
             });
         }
@@ -416,6 +296,13 @@
             $("#pending-amount").text('$' + (data.totalPending));
             $("#paymentFailure-amount").text('$' +(data.totalPF));
             $("#cancelled-amount").text('$' + (data.totalcancelled));
+
+            // Display counts
+            $("#completed-count").text(data.completedSaleCount);
+            $("#refund-count").text(data.RefundsCount);
+            $("#pending-count").text(data.pendingCount);
+            $("#paymentFailure-count").text(data.paymentFailuerCount);
+            $("#cancelled-count").text(data.CancelledCount);
         }
 
     });

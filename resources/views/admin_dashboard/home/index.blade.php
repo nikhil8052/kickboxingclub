@@ -198,52 +198,132 @@
                         </form>
                     </div>
                 </div>
-                <div class="nk-block busines-info-blk">
+                <div class="nk-block busines-info-blk pie-chart-section">
                     <div class="row g-gs bsn_rw">
-                        <div class="col-lg-4 col-md-6  mt-2">
+                        <div class="col-xl-4 col-lg-6 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
-                                    <div class="card-head text-center bsn_hd">
-                                        <h6 class="title">Payments</h6>
+                                    <div class="card-head  bsn_hd">
+                                        <h6 class="title">Payments</h6> 
+                                        <p class="info-icon" ><em class="icon ni ni-info-fill"></em></p>
                                     </div>
-                                    <div class="nk-ck-sm bsn_dv"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                                        <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="paymentChart" ></canvas>
+                                    <div class="pie_innr">
+                                        <div id="payments_labels">
+                                           
+                                        </div>
+                                        <div class="pie_wrapper">
+                                            <div class="nk-ck-sm bsn_dv">
+                                                <div class="chartjs-size-monitor">
+                                                    <div class="chartjs-size-monitor-expand">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="chartjs-size-monitor-shrink">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="paymentChart" ></canvas>
+                                            </div>
+                                       </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6  mt-2">
+                        <div class="col-xl-4 col-lg-6 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
-                                    <div class="card-head text-center bsn_hd">
+                                    <div class="card-head  bsn_hd">
                                         <h6 class="title">Memberships</h6>
+                                        <p class="info-icon" ><em class="icon ni ni-info-fill"></em></p>
                                     </div>
-                                    <div class="nk-ck-sm bsn_dv"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                                        <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="membershipChart" ></canvas>
-                                    </div>
+                                    <div class="pie_innr">
+                                        <div id="memberships_labels">
+                                            
+                                        </div>
+                                       <div class="pie_wrapper">
+                                            <div class="nk-ck-sm bsn_dv">
+                                                <div class="chartjs-size-monitor">
+                                                    <div class="chartjs-size-monitor-expand">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="chartjs-size-monitor-shrink">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="membershipChart" ></canvas>
+                                            </div>
+                                       </div>
+                                   </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6  mt-2">
+                        <div class="col-xl-4 col-lg-6 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
-                                    <div class="card-head text-center bsn_hd">
+                                    <div class="card-head  bsn_hd">
                                         <h6 class="title">Trial Sold</h6>
+                                        <p class="info-icon" ><em class="icon ni ni-info-fill"></em></p>
                                     </div>
-                                    <div class="nk-ck-sm bsn_dv"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                                        <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="trialsoldChart"></canvas>
+                                    <div class="pie_innr">
+                                        <div id="trials_labels">
+                                            
+                                        </div>
+                                        <div class="pie_wrapper">
+                                            <div class="nk-ck-sm bsn_dv">
+                                                <div class="chartjs-size-monitor">
+                                                    <div class="chartjs-size-monitor-expand">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="chartjs-size-monitor-shrink">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="trialsoldChart"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6  mt-2">
+                        <div class="col-xl-4 col-lg-6 col-md-6  mt-2">
                             <div class="card card-bordered card-full main_box-crcl">
                                 <div class="card-inner">
-                                    <div class="card-head text-center bsn_hd">
+                                    <div class="card-head  bsn_hd">
                                         <h6 class="title">Intro visitors</h6>
+                                        <p class="info-icon" ><em class="icon ni ni-info-fill"></em></p>
                                     </div>
-                                    <div class="nk-ck-sm bsn_dv">
-                                        <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="visitorsChart"></canvas>
+                                    <div class="pie_innr">
+                                        <div id="visitors_labels">
+                                            
+                                        </div>
+                                        <div class="pie_wrapper">
+                                            <div class="nk-ck-sm bsn_dv">
+                                                <div class="chartjs-size-monitor">
+                                                    <div class="chartjs-size-monitor-expand">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="chartjs-size-monitor-shrink">
+                                                        <div class="">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <canvas class="pie-chart chartjs-render-monitor" width="259" height="180"  id="visitorsChart"></canvas>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -294,7 +374,6 @@
             });
         }
 
-        // Initial filter to show today's data
         var start = moment().startOf("day");
         var end = moment().endOf("day");
         filterData(start, end);
@@ -402,6 +481,11 @@
             var TrialSoldCtx = document.getElementById('trialsoldChart').getContext('2d');
             var visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
 
+            var paymentslabels = $('#payments_labels'); 
+            var membershipslabels = $('#memberships_labels');
+            var TrialSoldlabels = $('#trials_labels');
+            var visitorslabels = $('#visitors_labels');
+
             if (paymentsChart) {
                 paymentsChart.destroy();
             }
@@ -418,11 +502,6 @@
             paymentsChart = new Chart(paymentsCtx, {
                 type: 'pie',
                 data: {
-                    labels: [
-                        `Failed Payments: ${data.failedPayments}`,
-                        `Completed Payments: ${data.completedPayments}`,
-                        `Pending Payments: ${data.pendingPayments}`
-                    ],
                     datasets: [{
                         data: [
                             data.failedPayments,
@@ -432,120 +511,126 @@
                         backgroundColor: ['#6576FF', '#36A2EB', '#FFCE56']
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'left'
-                        },
-                        datalabels: {
-                            color: '#fff', 
-                            anchor: 'end',
-                            align: 'left', 
-                            offset: 10, 
-                            font: {
-                                weight: 'bold',
-                                size: 14
-                            },
-                            formatter: (value, context) => {
-                                const label = context.chart.data.labels[context.dataIndex];
-                                return `${label}`;
-                            }
-                        }
-                    }
-                },
-                // plugins: [ChartDataLabels]
             });
+
+            paymentslabels.html(`<div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #6576FF;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Failed</span>
+                                        <span class="label-value" >${data.failedPayments}</span>
+                                    </div>
+                                </div>
+                               <div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #36A2EB;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Completed</span>
+                                        <span class="label-value" >${data.completedPayments}</span>
+                                    </div>
+                                </div>
+                                <div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #FFCE56;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Pending</span>
+                                        <span class="label-value" >${data.pendingPayments}</span>
+                                    </div>
+                                </div>`);
+
+
+
+
 
             membershipsChart = new Chart(membershipsCtx, {
                 type: 'pie',
                 data: {
-                    labels: [`Active Memberships: ${data.activeMemberships}`, `Cancelled Memberships: ${data.cancelledMemberships}`],
                     datasets: [{
                         data: [
-                            // data.totalMemberships,
                             data.activeMemberships,
                             data.cancelledMemberships
                         ],
                         backgroundColor: ['#B40200', '#FFDEDE']
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        // datalabels: {
-                        //     color: '#fff',
-                        //     display: true,
-                        // }
-                    }
-                }
             });
+
+            membershipslabels.html(`<div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #B40200;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Active</span>
+                                        <span class="label-value" >${data.activeMemberships}</span>
+                                    </div>
+                                </div>
+                               <div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #FFDEDE;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Cancelled</span>
+                                        <span class="label-value" >${data.cancelledMemberships}</span>
+                                    </div>
+                                </div>
+                               `);
 
             TrialSoldChart = new Chart(TrialSoldCtx, {
                 type: 'pie',
                 data: {
-                    labels: [`Trial Sold: ${data.TrialSoldMembershipsCount}`],
                     datasets: [{
                         data: [
                             data.TrialSoldMembershipsCount,
                         ],
-                        backgroundColor: ['#000000','#E7E7E7']
+                        backgroundColor: ['#000000']
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        // datalabels: {
-                        //     color: '#fff',
-                        //     display: true,
-                        // }
-                    }
-                }
             });
+
+            TrialSoldlabels.html(`<div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #000000;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Trial Sold</span>
+                                        <span class="label-value" >${data.TrialSoldMembershipsCount}</span>
+                                    </div>
+                                </div>
+                               `);
 
             VisitorsChart = new Chart(visitorsCtx, {
                 type: 'pie',
                 data: {
-                    labels: [`intro visitors: ${data.allvisitors}`],
                     datasets: [{
                         data: [
                             data.allvisitors,
                         ],
-                        backgroundColor: ['#B40200', '#36A2EB', '#FFCE56']
+                        backgroundColor: ['#B40200']
                     }]
                 },
-                options: {
-                    responsive: false,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        // datalabels: {
-                        //     color: '#fff',
-                        //     display: true,
-                        //     // formatter: function(value) {
-                        //     //     return value;
-                        //     // }
-                        // }
-                    }
-                }
             });
+
+            visitorslabels.html(`<div class="pi_labesl">
+                                    <div class="pie_indicator">
+                                        <span style="color: #B40200;"><em class="icon ni ni-circle-fill"></em></span>
+                                    </div>
+                                    <div class="pie_values">
+                                        <span class="label-heading" >Intro Visitors</span>
+                                        <span class="label-value" >${data.allvisitors}</span>
+                                    </div>
+                                </div>
+                               `);
         }
 
         $('#date-range-picker,#location').on('change',function(){
             $('#filterForm').submit();
         });
 
-        // Initial load
         loadChartData();
 
-        // Handle form submission
         $('#filterForm').on('submit', function(event) {
             event.preventDefault();
             loadChartData();

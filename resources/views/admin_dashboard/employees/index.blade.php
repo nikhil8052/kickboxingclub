@@ -66,7 +66,7 @@
                                     </a>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ url('/admin-dashboard/pay-rates/procc') }}" method="post" class="">
+                                    <form action="{{ url('/admin-dashboard/pay-rates/procc') }}" id="payRateform" method="post">
                                         @csrf
                                         <input type="hidden" id="employee_id" name="employee_id" value="">
                                         <div class="form-group">
@@ -74,21 +74,17 @@
                                             <div class="form-control-wrap">
                                                 <input type="number" class="form-control" id="regular_pay" name="regular_pay" value="">
                                             </div>
-                                            @error('regular_pay')
-                                            <span class="text text-danger">{{ $message }}</span>
-                                            @enderror
+                                            <span class="text text-danger" id="regular-error" style="display:none;">This field is required</span>
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label" for="instructor_pay">Instructor Pay</label>
                                             <div class="form-control-wrap">
                                                 <input type="number" class="form-control" id="instructor_pay" name="instructor_pay" value="">
                                             </div>
-                                            @error('instructor_pay')
-                                            <span class="text text-danger">{{ $message }}</span>
-                                            @enderror
+                                            <span class="text text-danger" id="instructor-error" style="display:none;">This field is required</span>
                                         </div>
                                         <div class="form-group">
-                                            <button type="submit" class="btn btn-dark">Update</button>
+                                            <button type="button" class="btn btn-dark update_rates_btn">Update</button>
                                         </div>
                                     </form>
                                 </div>
@@ -151,28 +147,7 @@
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).addClass('regular-pay');
                     }
-                },
-                // { data: 'recent_location_id',
-                //     render: function (data, type, row) {
-                //         return data ? data : 'null';
-                //     }
-                // },
-                // { data: 'public_profile_id',
-                //     render: function (data, type, row) {
-                //         return data ? data : 'null';
-                //     }
-                // },
-                // { data: 'can_chat',
-                //     render: function(data, type, row) {
-                //         return data == 1 ? 'Yes' : 'No';
-                //     }
-                // },
-                // { 
-                //     data: 'is_active',
-                //     render: function(data, type, row) {
-                //         return data == 1 ? 'Yes' : 'No';
-                //     }
-                // },
+                }
             ]
         });
 
@@ -185,12 +160,39 @@
             var regular_pay = data.payrate ? data.payrate.regular_pay : undefined;
             var instructor_pay = data.payrate ? data.payrate.instructor_pay : undefined;
 
-            console.log(regular_pay);
             $('#employee_id').val(id);
             $('#regular_pay').val(regular_pay);
             $('#instructor_pay').val(instructor_pay);
+            $('#regular-error').hide();
+            $('#instructor-error').hide();
             $('#modalForm').modal('show');
         })
+    });
+
+
+    $('.update_rates_btn').on('click',(e)=>{
+        e.preventDefault(); 
+        var isValid = true;
+        var regularPay = $('#regular_pay').val();
+        var instructorPay = $('#instructor_pay').val();
+
+        if(regularPay == null || regularPay == ''){
+            $('#regular-error').show();
+            isValid = false;
+        }else{
+            $('#regular-error').hide();
+        }
+
+        if(instructorPay == null || instructorPay == ''){
+            $('#instructor-error').show();
+            isValid = false;
+        }else{
+            $('#instructor-error').hide();
+        }
+
+        if(isValid){
+            $('#payRateform').submit();
+        }
     });
 
 </script>

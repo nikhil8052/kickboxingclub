@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\EmployeeStatController;
 use App\Http\Controllers\Admin\UpdateDatabaseController;
 use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Webhooks\WebhookController;
 use App\Http\Controllers\MarianaController;
 use App\Http\Controllers\Auth\AuthController;
@@ -38,11 +39,16 @@ Route::middleware('admin.redirect')->group(function () {
 Route::get('/webhooks',[WebhookController::class,'handle']);
 
 
-
 Route ::group(['middleware' =>['auth']],function(){
-    Route::get('/admin-dashboard',[OrdersController::class,'Dashboard']);
 
-    Route::get('/sales-data', [OrdersController::class, 'salesData']);
+    Route::get('/admin-dashboard',[DashboardController::class,'Dashboard']);
+    Route::get('/sales-data', [DashboardController::class, 'salesData']);
+
+    Route::get('/admin-dashboard/users',[DashboardController::class,'Users'])->name('admin.dashboard.users');
+    Route::get('/admin-dashboard/get-users',[DashboardController::class,'GetUsers']);
+
+    Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees');
+    Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees']);
 
     Route::get('/admin-dashboard/locations',[AdminDashboardController::class,'locations']);
     Route::get('get/locations',[AdminDashboardController::class,'getLocation']);
@@ -68,11 +74,7 @@ Route ::group(['middleware' =>['auth']],function(){
     Route::get('/admin-dashboard/get-sales',[OrdersController::class,'TotalSales']);
     Route::get('/admin-dashboard/total-sales',[OrdersController::class,'SalesStats'])->name('admin.dashboard.sales');
 
-    Route::get('/admin-dashboard/users',[OrdersController::class,'Users'])->name('admin.dashboard.users');
-    Route::get('/admin-dashboard/get-users',[OrdersController::class,'GetUsers']);
 
-    Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees');
-    Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees']);
 
     Route::get('/admin-dashboard/add-pay-rates',[EmployeeStatController::class,'addPayRates']);
     Route::post('/admin-dashboard/pay-rates/procc',[EmployeeStatController::class,'payRateProcc']);
@@ -107,7 +109,5 @@ Route::get('/test-api/{api}/{id}',[TestController::class,'testapibyid']);
 // Route::get('wordpress/storepayment',[MarianaController::class,'storePaymentMethod']);
 // Route::get('wordpress/paymentintent',[MarianaController::class,'createPaymentIntent']);
 // Route::get('wordpress/confirmpayment',[MarianaController::class,'confirmPayment']);
-
-
 
 

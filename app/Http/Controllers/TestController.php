@@ -23,54 +23,54 @@ class TestController extends Controller
 {
     public function testapi($api)
     {
-        $client = new Client();
-        $url = env('API_URL').$api;
-        $accessToken = env('API_ACCESS_TOKEN');
+        // $client = new Client();
+        // $url = env('API_URL').$api;
+        // $accessToken = env('API_ACCESS_TOKEN');
 
-        // $startDate = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i:s\Z');
-        // $endDate = Carbon::now()->endOfMonth()->format('Y-m-d\TH:i:s\Z');
+        // // $startDate = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i:s\Z');
+        // // $endDate = Carbon::now()->endOfMonth()->format('Y-m-d\TH:i:s\Z');
 
-        $date = Carbon::create(2024, 8, 29, 0, 0, 0, 'UTC')->format('Y-m-d\TH:i:s\Z');
-        $enddate = Carbon::create(2024, 8, 29, 23, 59, 59, 'UTC')->format('Y-m-d\TH:i:s\Z');
+        // $date = Carbon::create(2024, 8, 29, 0, 0, 0, 'UTC')->format('Y-m-d\TH:i:s\Z');
+        // $enddate = Carbon::create(2024, 8, 29, 23, 59, 59, 'UTC')->format('Y-m-d\TH:i:s\Z');
 
-        $response = $client->request('GET', $url, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . env('API_ACCESS_TOKEN'),
-            ],
-            'query' => [
-                // 'min_updated_datetime' => $date,
-                // 'max_updated_datetime' => $enddate,
-                // 'employee_id' => 6238,
-                'page_size' => 100,
-            ],
-        ]);  
+        // $response = $client->request('GET', $url, [
+        //     'headers' => [
+        //         'Authorization' => 'Bearer ' . env('API_ACCESS_TOKEN'),
+        //     ],
+        //     'query' => [
+        //         // 'min_updated_datetime' => $date,
+        //         // 'max_updated_datetime' => $enddate,
+        //         // 'employee_id' => 6238,
+        //         'page_size' => 100,
+        //     ],
+        // ]);  
       
 
-        $statuscode = $response->getStatusCode();
+        // $statuscode = $response->getStatusCode();
 
-        if($statuscode == 200){
-            $body = $response->getBody()->getContents();
-            // return $body;
-            // $data = json_decode($body,true);
-            echo "<pre>";
-            print_r($body);
-            echo "</pre>";
-            die();
-        }
-
-        // try{
-
-        //     $orders =  Orders::all();
-        //     foreach($orders as $order) {
-        //         $date =  $order->date_placed;
-        //         $order->date_placed_copy = convertToUSATimezone($date);
-        //         $order->save();
-        //     }
-
-        //     return 'done';
-        // } catch(Execption $e){
-        //     return $e;
+        // if($statuscode == 200){
+        //     $body = $response->getBody()->getContents();
+        //     // return $body;
+        //     // $data = json_decode($body,true);
+        //     echo "<pre>";
+        //     print_r($body);
+        //     echo "</pre>";
+        //     die();
         // }
+
+        try{
+
+            $orders =  Orders::all();
+            foreach($orders as $order) {
+                $date =  $order->date_created;
+                $order->date_created_copy = convertToUSATimezone($date);
+                $order->save();
+            }
+
+            return 'done';
+        } catch(Execption $e){
+            return $e;
+        }
     }
 
     // public function testapi($api)

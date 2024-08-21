@@ -20,13 +20,13 @@ class UserController extends Controller
 
     public function UserAddProcc(Request $request)
     {
-        $request->validate([
-            'first_name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
         if($request->id){
+            $request->validate([
+                'first_name' => 'required',
+                'email' => 'required|email',
+                // 'password' => 'required',
+            ]);
+
             $user = User::find($request->id);
             if(!$user) {
                 $olduser = User::where('email',$request->email)->first();
@@ -43,21 +43,34 @@ class UserController extends Controller
             $user->save();
 
             if($user && !empty($request->permissions)){
-                foreach($request->permissions as $permission){
-                    $exists = RolePermission::where('user_id', $user->id)
-                    ->where('permission_id', $permission)
-                    ->exists();
-                    
-                    if (!$exists) {
-                        $RP = new RolePermission();
-                        $RP->user_id = $user->id;
-                        $RP->permission_id = $permission;
-                        $RP->save();
-                    }
+                $currentPermissions = RolePermission::where('user_id', $user->id)->pluck('permission_id')->toArray();
+            
+                $permissionsToAdd = array_diff($request->permissions, $currentPermissions);
+                
+                $permissionsToRemove = array_diff($currentPermissions, $request->permissions);
+            
+                foreach($permissionsToAdd as $permission) {
+                    $RP = new RolePermission();
+                    $RP->user_id = $user->id;
+                    $RP->permission_id = $permission;
+                    $RP->save();
+                }
+            
+                if (!empty($permissionsToRemove)) {
+                    RolePermission::where('user_id', $user->id)
+                        ->whereIn('permission_id', $permissionsToRemove)
+                        ->delete();
                 }
             }
             return redirect()->back()->with('success',' User Updated successfully');
         } else {
+
+            $request->validate([
+                'first_name' => 'required',
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
             $olduser = User::where('email',$request->email)->first();
             if(!$olduser){
                 $user = new User();
@@ -69,17 +82,23 @@ class UserController extends Controller
                 $user->save();
     
                 if($user && !empty($request->permissions)){
-                    foreach($request->permissions as $permission){
-                        $exists = RolePermission::where('user_id', $user->id)
-                        ->where('permission_id', $permission)
-                        ->exists();
-                        
-                        if (!$exists) {
-                            $RP = new RolePermission();
-                            $RP->user_id = $user->id;
-                            $RP->permission_id = $permission;
-                            $RP->save();
-                        }
+                    $currentPermissions = RolePermission::where('user_id', $user->id)->pluck('permission_id')->toArray();
+                
+                    $permissionsToAdd = array_diff($request->permissions, $currentPermissions);
+                    
+                    $permissionsToRemove = array_diff($currentPermissions, $request->permissions);
+                
+                    foreach($permissionsToAdd as $permission) {
+                        $RP = new RolePermission();
+                        $RP->user_id = $user->id;
+                        $RP->permission_id = $permission;
+                        $RP->save();
+                    }
+                
+                    if (!empty($permissionsToRemove)) {
+                        RolePermission::where('user_id', $user->id)
+                            ->whereIn('permission_id', $permissionsToRemove)
+                            ->delete();
                     }
                 }
                 return redirect()->back()->with('success','New User Created');

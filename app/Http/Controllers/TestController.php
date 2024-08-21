@@ -17,6 +17,7 @@ use App\Models\Product;
 use App\Models\ChildProduct;
 use App\Models\OrderLine;
 use Carbon\Carbon;
+use Execption;
 
 class TestController extends Controller
 {
@@ -56,6 +57,20 @@ class TestController extends Controller
             echo "</pre>";
             die();
         }
+
+        // try{
+
+        //     $orders =  Orders::all();
+        //     foreach($orders as $order) {
+        //         $date =  $order->date_placed;
+        //         $order->date_placed_copy = convertToUSATimezone($date);
+        //         $order->save();
+        //     }
+
+        //     return 'done';
+        // } catch(Execption $e){
+        //     return $e;
+        // }
     }
 
     // public function testapi($api)

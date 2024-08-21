@@ -9,7 +9,7 @@ class TimeClockShift extends Model
 {
     use HasFactory;
 
-    protected $appends = ['regular_pay_amount','instructor_pay_amount'];
+    protected $appends = ['regular_pay_amount'];
 
     public function location(){
         return $this->hasOne(Locations::class,'location_id','location_id');
@@ -26,12 +26,14 @@ class TimeClockShift extends Model
 
     public function getRegularPayAmountAttribute(){
         $payRate = $this->employee_payrate->regular_pay ?? 0;
-        return $this->duration * $payRate;
+        $totalSeconds = $this->duration;
+        $hours = intdiv($totalSeconds, 3600); 
+        $minutes = intdiv($totalSeconds % 3600, 60); 
+        $seconds = $totalSeconds % 60; 
+        $durationInHours = $hours + ($minutes / 60) + ($seconds / 3600);
+    
+        return $durationInHours * $payRate;
     }
-
-    public function getInstructorPayAmountAttribute(){
-        $payRate = $this->employee_payrate->instructor_pay ?? 0;
-        return $this->duration * $payRate;
-    }
+    
 
 }

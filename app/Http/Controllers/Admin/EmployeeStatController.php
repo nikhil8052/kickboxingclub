@@ -36,11 +36,6 @@ class EmployeeStatController extends Controller
     }
 
     public function payRateProcc(Request $request){
-        $required_fields = $request->validate([
-            'regular_pay' => 'required',
-            'instructor_pay' => 'required'
-        ]);
-
         if($request->employee_id != null){
             $employeePayRate = EmployeePayRate::where('employee_id',$request->employee_id)->first();
             $employeePayRate->regular_pay = $request->regular_pay;
@@ -49,7 +44,7 @@ class EmployeeStatController extends Controller
             $employeePayRate->update();
         }
         
-        return redirect()->back()->with('success','PayRates added successfully');
+        return redirect()->back()->with('success','Pay Rates updated successfully');
     }
 }
 

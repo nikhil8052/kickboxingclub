@@ -210,7 +210,7 @@
                 { data: "currency" },
                 { data: "total" },
                 { data: "status" },
-                { data: "date_created" }
+                { data: "date_created_copy" }
             ],
             initComplete: function () {
                 $.fn.dataTable.ext.search.push(

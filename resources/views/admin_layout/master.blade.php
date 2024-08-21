@@ -132,45 +132,49 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-ribbon"></i></span>
-                                        <span class="nk-menu-text">Memberships</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub">
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/memberships') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships</span></a>
-                                        </li>
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/memberships-transactions') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships Transactions</span></a>
-                                        </li>
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/memberships-instances') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships Instances</span></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-shopping-cart"></i></span>
-                                        <span class="nk-menu-text">Orders</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub">
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/orders') }}" class="nk-menu-link"><span class="nk-menu-text">Orders</span></a>
-                                        </li>
-                                        <!-- <li class="nk-menu-item">
-                                            <a href="{{ url('/admin-dashboard/total-sales') }}" class="nk-menu-link"><span class="nk-menu-text">Total Sales</span></a>
-                                        </li> -->
-                                    </ul>
-                                </li>
+                                @if (Auth::user()->hasPermission('1')) 
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-ribbon"></i></span>
+                                            <span class="nk-menu-text">Memberships</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub">
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/memberships') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships</span></a>
+                                            </li>
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/memberships-transactions') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships Transactions</span></a>
+                                            </li>
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/memberships-instances') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships Instances</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+                                @if(Auth::user()->hasPermission('3'))
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-shopping-cart"></i></span>
+                                            <span class="nk-menu-text">Orders</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub">
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/orders') }}" class="nk-menu-link"><span class="nk-menu-text">Orders</span></a>
+                                            </li>
+                                            <!-- <li class="nk-menu-item">
+                                                <a href="{{ url('/admin-dashboard/total-sales') }}" class="nk-menu-link"><span class="nk-menu-text">Total Sales</span></a>
+                                            </li> -->
+                                        </ul>
+                                    </li>
+                                @endif
                                 <li class="nk-menu-item has-sub main-li">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
-                                        <span class="nk-menu-text">All Users</span>
+                                        <span class="nk-menu-text">All Members</span>
                                     </a>
                                     <ul class="nk-menu-sub ul-sub">
                                         <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/users') }}" class="nk-menu-link"><span class="nk-menu-text">All users</span></a>
+                                            <a href="{{ url('/admin-dashboard/users') }}" class="nk-menu-link"><span class="nk-menu-text">All Members</span></a>
                                         </li>
                                     </ul>
                                 </li>
@@ -183,6 +187,9 @@
                                         <li class="nk-menu-item li-sub">
                                             <a href="{{ url('/admin-dashboard/employees') }}" class="nk-menu-link"><span class="nk-menu-text">All employees</span></a>
                                         </li>
+                                        <!-- <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/add-pay-rates') }}" class="nk-menu-link"><span class="nk-menu-text">Add Pay Rates</span></a>
+                                        </li> -->
                                     </ul>
                                 </li>
                                 <li class="nk-menu-item has-sub main-li">
@@ -196,20 +203,35 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
-                                        <span class="nk-menu-text">Payroll</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub"> 
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/payroll') }}" class="nk-menu-link"><span class="nk-menu-text">List</span></a>
-                                        </li>
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/payroll-stats') }}" class="nk-menu-link"><span class="nk-menu-text">Stats</span></a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                @if(Auth::user()->hasPermission('2'))
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                            <span class="nk-menu-text">Payroll</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub"> 
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/payroll') }}" class="nk-menu-link"><span class="nk-menu-text">List</span></a>
+                                            </li>
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/payroll-stats') }}" class="nk-menu-link"><span class="nk-menu-text">Stats</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+                                @if(Auth::user()->isAdmin())
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                            <span class="nk-menu-text">Users</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub"> 
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/add-user') }}" class="nk-menu-link"><span class="nk-menu-text">Add user</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
                             </ul>
                          </div>
                     </div>
@@ -305,6 +327,7 @@
     <script src="{{ asset('admin-theme/assets/js/bundle.js?ver=3.1.2') }}"></script>
     <script src="{{ asset('admin-theme/assets/js/scripts.js?ver=3.1.2') }}"></script>
     <script src="{{ asset('admin-theme/assets/js/charts/gd-default.js?ver=3.1.2') }}"></script>
+    <script src="{{ asset('admin-theme/assets/js/example-toastr.js?ver=3.1.2') }}"></script>
     <script src="{{ asset('assets/js/script.js') }}"></script>
 
     @yield('js')
@@ -333,6 +356,20 @@
             }
         }
     </script>
-</body>
 
+
+    @if(Session::get('error'))
+    <script>
+        toastr.clear();
+        NioApp.Toast('{{ Session::get("error") }}', 'error', {position: 'top-right'});
+    </script>
+    @endif
+    @if(Session::get('success'))
+    <script>
+        toastr.clear();
+        NioApp.Toast('{{ Session::get("success") }}', 'info', {position: 'top-right'});
+    </script>
+    @endif
+    
+</body>
 </html>

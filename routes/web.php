@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\EmployeeStatController;
 use App\Http\Controllers\Admin\UpdateDatabaseController;
 use App\Http\Controllers\Admin\PayrollController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Webhooks\WebhookController;
 use App\Http\Controllers\MarianaController;
 use App\Http\Controllers\Auth\AuthController;
@@ -30,7 +31,7 @@ Route::get('/', function () {
 Route::get('/logout',[AuthController::class,'adminLogout']);
 
 Route::middleware('admin.redirect')->group(function () {
-    Route::get('/admin-login',[AuthController::class,'login']);
+    Route::get('/admin-login',[AuthController::class,'login'])->name('login');
     Route::post('/loginProcess',[AuthController::class,'adminLogin']);  
 });
 
@@ -38,7 +39,7 @@ Route::get('/webhooks',[WebhookController::class,'handle']);
 
 
 
-Route ::group(['middleware' =>['admin']],function(){
+Route ::group(['middleware' =>['auth']],function(){
     Route::get('/admin-dashboard',[OrdersController::class,'Dashboard']);
 
     Route::get('/sales-data', [OrdersController::class, 'salesData']);
@@ -62,7 +63,7 @@ Route ::group(['middleware' =>['admin']],function(){
 
     Route::get('/csvData',[AdminDashboardController::class,'csvData']);
 
-    Route::get('/admin-dashboard/orders',[OrdersController::class,'Orders'])->name('admin.dashboard.orders');
+    Route::get('/admin-dashboard/orders',[OrdersController::class,'Orders'])->name('admin.dashboard.orders')->middleware('permission:3');
     Route::get('/admin-dashboard/get-orders',[OrdersController::class,'GetOrders']);
     Route::get('/admin-dashboard/get-sales',[OrdersController::class,'TotalSales']);
     Route::get('/admin-dashboard/total-sales',[OrdersController::class,'SalesStats'])->name('admin.dashboard.sales');
@@ -73,6 +74,9 @@ Route ::group(['middleware' =>['admin']],function(){
     Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees');
     Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees']);
 
+    Route::get('/admin-dashboard/add-pay-rates',[EmployeeStatController::class,'addPayRates']);
+    Route::post('/admin-dashboard/pay-rates/procc',[EmployeeStatController::class,'payRateProcc']);
+
     // Route::get('/admin-dashboard/memberships-instances',[OrdersController::class,'Instances'])->name('admin.dashboard.Instances');
     // Route::get('/admin-dashboard/get-instances',[OrdersController::class,'GetInstances']);
 
@@ -81,9 +85,13 @@ Route ::group(['middleware' =>['admin']],function(){
 
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 
-    Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll']);
-    Route::get('admin-dashboard/payroll-stats',[PayrollController::class,'PayrollStates']);
+    Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll'])->middleware('permission:2');
+    Route::get('admin-dashboard/payroll-stats',[PayrollController::class,'PayrollStates'])->middleware('permission:2');
     Route::get('admin-dashboard/get-payroll',[PayrollController::class,'GetPayroll']);
+
+    Route::get('admin-dashboard/add-user',[UserController::class,'AddUser'])->name('add.user');
+    Route::post('admin-dashboard/user-addProcc',[UserController::class,'UserAddProcc'])->name('user.addProcc');
+    Route::get('admin-dashboard/user-remove/{id}',[UserController::class,'UserRemove'])->name('user.remove');
 
 
 });

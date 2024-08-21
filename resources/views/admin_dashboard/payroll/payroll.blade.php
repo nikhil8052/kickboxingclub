@@ -54,6 +54,8 @@
                                             <td class="nk-tb-col">End date</td>
                                             <td class="nk-tb-col">End time</td>
                                             <td class="nk-tb-col">Duration</td>
+                                            <td class="nk-tb-col">Regular PayRate</td>
+                                            <!-- <td class="nk-tb-col">Instructor PayRate</td> -->
                                         </tr>
                                     </thead>
                                     <tbody id="payroll-table-data">
@@ -141,6 +143,9 @@
                     var startDateTime = formatDateTime(item.start_datetime);
                     var endDateTime = formatDateTime(item.end_datetime);
                     var totalDuration = secondsToTime(Math.floor(item.duration || 0));
+                    var regularPay = item.regular_pay_amount.toFixed(2);
+                    // var instructorPay = item.instructor_pay_amount;
+                    // console.log(item.regular_pay_amount);
 
                     var row = `
                         <tr>
@@ -152,6 +157,7 @@
                             <td>${endDateTime.date}</td>
                             <td>${endDateTime.time}</td>
                             <td>${totalDuration}</td>
+                            <th>$${regularPay}</th>
                         </tr>
                     `;
                     table.append(row); 

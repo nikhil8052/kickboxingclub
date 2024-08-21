@@ -21,11 +21,11 @@ class AuthController extends Controller
         ]);
 
         if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
-            if(Auth::user()->is_admin == 1){
+            // if(Auth::user()->is_admin == 1){
                 return redirect('/admin-dashboard')->with(['success'=>'Welcome to Admin Dashboard']);
-            }else{
-                return redirect('/logout');
-            }  
+            // }else{
+            //     return redirect('/logout');
+            // }  
         }else{
             return redirect()->back()->with(['error'=>"Login failed !!"]);
         }

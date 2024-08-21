@@ -39,8 +39,6 @@ class OrdersController extends Controller
 
         $totaloverAllsales = formatCurrency($GetORder - $GetORderunitamount);
 
-
-       
         $orderswL = Orders::with('orderlines')->get();
         $totalsale =0;
         $totalmembSale = 0 ;
@@ -72,41 +70,6 @@ class OrdersController extends Controller
                 }
             }
         }
-       
-        // foreach($orderswL as $order){
-        //     if($order->orderline->transaction_type  == 'MembershipTransaction' && $order->orderline->status == 'Completed' ){
-        //         $totalmembSale += $order->orderline->line_total;
-        //     }
-
-        //     if($order->orderline->transaction_type  == 'MembershipTransaction' && $order->orderline->status == 'Partially Refunded' ){
-        //         $orderdata = Orders::Where('order_id',$order->orderline->order_id)->first();
-        //         $totalRefundedAmount += $orderdata->total_amount_refunded;
-        //         $totalmembSale += $order->orderline->line_total;
-        //     }
-
-        // }
-
-        // foreach($orderswL as $order){
-          
-        //     if($order->orderline->status == 'Completed' ){
-        //         $totalsale += $order->orderline->line_total;
-        //     }
-        // }
-
-
-        // foreach($orderswL as $order){
-        //     if( $order->orderline->transaction_type  == 'CreditTransaction' && $order->orderline->status == 'Completed' ){
-        //         $totalcreditsale += $order->orderline->line_total;
-        //     }
-        //     if($order->orderline->transaction_type  == 'CreditTransaction' && $order->orderline->status == 'Partially Refunded' ){
-        //         $orderdataC = Orders::Where('order_id',$order->orderline->order_id)->first();
-        //         $totalRefundedAmountC += $orderdataC->total_amount_refunded;
-        //         $totalcreditsale += $order->orderline->line_total;
-        //     }
-        // }
-       
-        // $order_line = OrderLine::where('status', 'Completed')->sum('line_total');
-        // dd($order_line);
       
         $totalsales = formatCurrency($totalsale);
         $totalcreditSales = formatCurrency($totalcreditsale - $totalRefundedAmountC);
@@ -139,12 +102,6 @@ class OrdersController extends Controller
         $TrialSoldMemberships = MembershipInstances::query();
         $visitorsdata = AllUsers::query();
 
-        $totalMembershipSalesR = MembershipInstances::whereIn('status', ['active', 'cancelled', 'terminated', 'done', 'frozen'])
-            ->selectRaw('SUM(renewal_rate * renewal_count) as total_sales')
-            ->first();
-        // $totalMembershipSales = formatCurrency($totalMembershipSalesR['total_sales']);
-
-        // dd($totalMembershipSales);
         if ($startDate && $endDate) {
             $queryOrders->whereBetween(DB::raw('STR_TO_DATE(date_placed, "%Y-%m-%d")'), [$startDate, $endDate]);
             $queryMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
@@ -184,21 +141,12 @@ class OrdersController extends Controller
 
         $activeMemberships = $queryMemberships->clone()->where('status', 'active')
             ->count();
-        // $activeMemberships = $queryMemberships->clone()->count();
 
         $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['cancelled', 'terminated','payment_failure','ding_failure'])
             ->count();
 
-        // $activeMemberships = $activeMemberships - $cancelledMemberships;
-        
         $TrialSoldMembershipsCount = $TrialSoldMemberships->where(DB::raw('STR_TO_DATE(start_date, "%Y-%m-%d")'), '>', DB::raw('STR_TO_DATE(purchase_date, "%Y-%m-%d")'))->where('status',['active','pending_start_date','pending_customer_activation'])->count();
-        // $allvisitors = 0;
-        // foreach($visitorsdata as $visit){
-        //     $membership = MembershipInstances::where('user_id',$visit->user_id)->first();
-        //     if(!$membership) {
-        //         $allvisitors +=1;
-        //     }
-        // }
+        
         $allvisitors = $visitorsdata->count();
         if ($request->ajax()) {
             return response()->json([
@@ -363,7 +311,7 @@ class OrdersController extends Controller
         }
 
         if($location) {
-            $query->whereBetween('location',$location);
+            $query->where('location',$location);
         }
 
         $totalcompletedSale = 0 ;

@@ -14,20 +14,23 @@ use App\Models\MembershipInstances;
 use App\Models\TimeClockShift;
 use App\Models\Credit;
 use App\Models\Locations;
+use App\Models\EmployeePayRate;
 
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
         // $client = new Client();
-        // $url="https://kbxf.marianatek.com/api/membership_transactions";
+        // // $url="https://kbxf.marianatek.com/api/membership_transactions";
         // // $url = "https://kbxf.marianatek.com/api/memberships";
         // // $url = "https://kbxf.marianatek.com/api/credits";
         // // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
+        // $url = "https://kbxf.marianatek.com/api/employees";
+
         // $bearerToken = env('API_ACCESS_TOKEN');
 
-        // $currentPage = 29;
-        // $pageSize = 959;
+        // $currentPage = 1;
+        // $pageSize = 81;
         // $hasMorePages = true;
 
         // while ($hasMorePages) {
@@ -53,7 +56,7 @@ class MembershipController extends Controller
         //         // $saveCredits = $this->saveCredits($data['data']);
         //         // dd($data['data']);
 
-        //         $saveTransaction = $this->saveMembershipsTransaction($data['data']);
+        //         // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
 
         //         if($saveTransaction) {
         //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
@@ -74,6 +77,18 @@ class MembershipController extends Controller
         // } 
 
         // return response()->json(['Memberships saved into database']);
+    }
+
+    public function saveEmployeeID($employees){
+        try{
+            foreach($employees as $emp){
+                $employee_pay_rate = new EmployeePayRate;
+                $employee_pay_rate->employee_id = $emp['id'];
+                $employee_pay_rate->save();
+            }
+        }catch(Exception $e){
+            return response()->json([$e->getMessage()]);
+        }
     }
 
     public function saveMembershipsTransaction($membership_transaction){

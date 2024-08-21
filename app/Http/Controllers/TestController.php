@@ -26,19 +26,21 @@ class TestController extends Controller
         $url = env('API_URL').$api;
         $accessToken = env('API_ACCESS_TOKEN');
 
-        $startDate = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i:s\Z');
-        $endDate = Carbon::now()->endOfMonth()->format('Y-m-d\TH:i:s\Z');
+        // $startDate = Carbon::now()->startOfMonth()->format('Y-m-d\TH:i:s\Z');
+        // $endDate = Carbon::now()->endOfMonth()->format('Y-m-d\TH:i:s\Z');
 
-        // $date = Carbon::create(2024, 7, 29, 7, 0, 0, 'UTC')->format('Y-m-d\TH:i:s\Z');
+        $date = Carbon::create(2024, 8, 29, 0, 0, 0, 'UTC')->format('Y-m-d\TH:i:s\Z');
+        $enddate = Carbon::create(2024, 8, 29, 23, 59, 59, 'UTC')->format('Y-m-d\TH:i:s\Z');
 
         $response = $client->request('GET', $url, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('API_ACCESS_TOKEN'),
             ],
             'query' => [
-                // 'product_classes' => 929,
-                'employee_id' => 6238,
-                'page_size' => 20,
+                // 'min_updated_datetime' => $date,
+                // 'max_updated_datetime' => $enddate,
+                // 'employee_id' => 6238,
+                'page_size' => 100,
             ],
         ]);  
       
@@ -47,11 +49,12 @@ class TestController extends Controller
 
         if($statuscode == 200){
             $body = $response->getBody()->getContents();
-            return $body;
+            // return $body;
             // $data = json_decode($body,true);
-            // echo "<pre>";
-            // print_r($data);
-            // die();
+            echo "<pre>";
+            print_r($body);
+            echo "</pre>";
+            die();
         }
     }
 

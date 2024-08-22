@@ -288,37 +288,41 @@ class MembershipController extends Controller
 
     public function Instances(){
         $locations = Locations::all();
-        $allinstances = MembershipInstances::where('type','membership_instances')->with('user')->get();
+        $allinstances = MembershipInstances::where('type','membership_instances')->with('user.location')->get();
 
         return view('admin_dashboard.memberships_instances.index',compact('locations','allinstances'));
     }
 
-    public function GetInstances(Request $request){
+    public function GetInstances(Request $request) {
         $query = MembershipInstances::query();
-        $query = $query->where('type','membership_instances');
-
+        $query = $query->where('type', 'membership_instances');
+    
         $startDate = $request->start_date;
         $endDate = $request->end_date;
         $location = $request->location_id;
-
-        if($startDate && $endDate){
-            $start= Carbon::parse($startDate);
+    
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
-
-            $query->whereBetween('purchase_date',[$start,$end]);
+    
+            $query->whereBetween('purchase_date', [$start, $end]);
         }
-
-        if($location != null){
-            $query->where('purchase_location_id', $location);
+    
+        if ($location != null) {
+            // $query->where('purchase_location_id', $location);
+            $query->whereHas('user.location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
         }
-
-        $query->with('user');
-
+    
+        $query->with('user.location');
+    
         $membershipInstance = $query->get();
-
+    
         return response()->json([
             'data' => $membershipInstance
         ]);
     }
+    
 
 }

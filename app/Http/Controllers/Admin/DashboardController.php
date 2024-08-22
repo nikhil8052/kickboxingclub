@@ -17,22 +17,35 @@ class DashboardController extends Controller
 {
     public function Dashboard(Request $request)
     {
-        $TotalsalesCompleted = Orders::where('status', 'completed')->orWhere('status','Partially Refunded')->sum('total');
+        $TotalsalesCompleted = Orders::where('status', 'completed')->orWhere('status','Partially Refunded')->get();
         $TotalsalesPR = Orders::Where('status','Partially Refunded')->sum('total_amount_refunded');
         // $totaloverAllsales = formatCurrency($TotalsalesCompleted -  $TotalsalesPR );
         // dd($Totalsalessum);
 
-        $GetORder = OrderLine::where('status', 'completed')->orWhere('status','Partially Refunded')->sum('line_total');
-        $GetORderunit = OrderLine::Where('status','Partially Refunded')->get();
+
+       
+
+        // $GetORder = OrderLine::where('status', 'completed')->orWhere('status','Partially Refunded')->sum('line_total');
+        // $GetORderunit = OrderLine::Where('status','Partially Refunded')->get();
+        // $GetORderunitamount = 0;
+        // foreach($GetORderunit as $unit) {
+        //     $TotalsalesPR = Orders::Where('order_id',$unit->order_id)->first();
+        //     if($TotalsalesPR) {
+        //         $GetORderunitamount += $TotalsalesPR->total_amount_refunded;
+        //     }
+        // }
+        $totalcompletedSale = 0;
         $GetORderunitamount = 0;
-        foreach($GetORderunit as $unit) {
-            $TotalsalesPR = Orders::Where('order_id',$unit->order_id)->first();
-            if($TotalsalesPR) {
-                $GetORderunitamount += $TotalsalesPR->total_amount_refunded;
+        foreach($TotalsalesCompleted as $order) {
+            if( $order->status == 'Completed' ){
+                $totalcompletedSale += $order->total;
+            }
+            if( $order->status == 'Partially Refunded' ){
+                $totalcompletedSale += $order->total;
+                $GetORderunitamount += $order->total_amount_refunded;
             }
         }
-
-        $totaloverAllsales = formatCurrency($GetORder - $GetORderunitamount);
+        $totaloverAllsales = formatCurrency($totalcompletedSale - $GetORderunitamount);
 
         $orderswL = Orders::with('orderlines')->get();
 
@@ -44,28 +57,31 @@ class DashboardController extends Controller
 
         foreach ($orderswL as $order) {
         
-            foreach ($order->orderlines as $orderline) {
-                if($orderline->transaction_type  == 'MembershipTransaction' && $orderline->status == 'Completed' ){
-                    $totalmembSale += $orderline->line_total;
-                }
-    
-                if($orderline->transaction_type  == 'MembershipTransaction' && $orderline->status == 'Partially Refunded' ){
-                    $orderdata = Orders::Where('order_id',$orderline->order_id)->first();
-                    $totalRefundedAmount += $orderdata->total_amount_refunded;
-                    $totalmembSale += $orderline->line_total;
-                }
+            if($order->status == 'Completed' || $order->status == 'Partially Refunded') {
+                foreach ($order->orderlines as $orderline) {
+                    if($orderline->transaction_type  == 'MembershipTransaction' && $orderline->status == 'Completed' ){
+                        $totalmembSale += $orderline->line_total;
+                    }
         
-                if( $orderline->transaction_type  == 'CreditTransaction' && $orderline->status == 'Completed' ){
-                    $totalcreditsale += $orderline->line_total;
-                }
-                if($orderline->transaction_type  == 'CreditTransaction' && $orderline->status == 'Partially Refunded' ){
-                    $orderdataC = Orders::Where('order_id',$orderline->order_id)->first();
-                    $totalRefundedAmountC += $orderdataC->total_amount_refunded;
-                    $totalcreditsale += $orderline->line_total;
+                    if($orderline->transaction_type  == 'MembershipTransaction' && $orderline->status == 'Partially Refunded' ){
+                        $orderdata = Orders::Where('order_id',$orderline->order_id)->first();
+                        $totalRefundedAmount += $orderdata->total_amount_refunded;
+                        $totalmembSale += $orderline->line_total;
+                    }
+                    if( $orderline->transaction_type  == 'CreditTransaction' && $orderline->status == 'Completed' ){
+                        $totalcreditsale += $orderline->line_total;
+                    }
+                    if($orderline->transaction_type  == 'CreditTransaction' && $orderline->status == 'Partially Refunded' ){
+                        $orderdataC = Orders::Where('order_id',$orderline->order_id)->first();
+                        $totalRefundedAmountC += $orderdataC->total_amount_refunded;
+                        $totalcreditsale += $orderline->line_total;
+                    }
                 }
             }
         }
       
+        dd($totalRefundedAmount,$totalmembSale);   
+
         $totalsales = formatCurrency($totalsale);
         $totalcreditSales = formatCurrency($totalcreditsale - $totalRefundedAmountC);
         $totalMembershipSales = formatCurrency($totalmembSale - $totalRefundedAmount);

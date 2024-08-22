@@ -79,8 +79,6 @@ class DashboardController extends Controller
                 }
             }
         }
-      
-        dd($totalRefundedAmount,$totalmembSale);   
 
         $totalsales = formatCurrency($totalsale);
         $totalcreditSales = formatCurrency($totalcreditsale - $totalRefundedAmountC);

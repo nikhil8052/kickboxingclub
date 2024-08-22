@@ -167,46 +167,52 @@
                                         </ul>
                                     </li>
                                 @endif
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
-                                        <span class="nk-menu-text">All Members</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub">
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/users') }}" class="nk-menu-link"><span class="nk-menu-text">All Members</span></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-briefcase"></i></span>
-                                        <span class="nk-menu-text">Employees</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub"> 
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/employees') }}" class="nk-menu-link"><span class="nk-menu-text">All employees</span></a>
-                                        </li>
-                                        <!-- <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/add-pay-rates') }}" class="nk-menu-link"><span class="nk-menu-text">Add Pay Rates</span></a>
-                                        </li> -->
-                                    </ul>
-                                </li>
-                                <li class="nk-menu-item has-sub main-li">
-                                    <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
-                                        <span class="nk-menu-text">Billing</span>
-                                    </a>
-                                    <ul class="nk-menu-sub ul-sub"> 
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/billing-stats') }}" class="nk-menu-link"><span class="nk-menu-text">Billing Stats</span></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                @if(Auth::user()->hasPermission('2'))
+                                @if (Auth::user()->hasPermission('4')) 
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                            <span class="nk-menu-text">All Members</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub">
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/users') }}" class="nk-menu-link"><span class="nk-menu-text">All Members</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermission('6')) 
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-briefcase"></i></span>
+                                            <span class="nk-menu-text">Employees</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub"> 
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/employees') }}" class="nk-menu-link"><span class="nk-menu-text">All employees</span></a>
+                                            </li>
+                                            <!-- <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/add-pay-rates') }}" class="nk-menu-link"><span class="nk-menu-text">Add Pay Rates</span></a>
+                                            </li> -->
+                                        </ul>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->hasPermission('5')) 
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
                                             <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                            <span class="nk-menu-text">Billing</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub"> 
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/billing-stats') }}" class="nk-menu-link"><span class="nk-menu-text">Billing Stats</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+                                @if(Auth::user()->hasPermission('2'))
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
                                             <span class="nk-menu-text">Payroll</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 
@@ -222,7 +228,7 @@
                                 @if(Auth::user()->isAdmin())
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
-                                            <span class="nk-menu-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
                                             <span class="nk-menu-text">Users</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 

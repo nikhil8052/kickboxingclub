@@ -28,7 +28,7 @@
                                             <h6 class="subtitle">Total Sales </h6>
                                         </div>
                                         <div class="card-tools">
-                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Sales MTD" data-bs-original-title="Total Sales MTD"></em>
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Sales " data-bs-original-title="Total Sales "></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
@@ -52,7 +52,7 @@
                                             <h6 class="subtitle">Total Credit Sales</h6>
                                         </div>
                                         <div class="card-tools">
-                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Credit Sales" data-bs-original-title="Total Credit Sales"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
@@ -105,7 +105,7 @@
                                             <h6 class="subtitle">Memberships Sales</h6>
                                         </div>
                                         <div class="card-tools">
-                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Balance in Account" data-bs-original-title="Total Balance in Account"></em>
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Membership Sales" data-bs-original-title="Total Membership Sales"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
@@ -506,14 +506,14 @@
                         data: [
                             data.failedPayments,
                             data.completedPayments,
-                            data.pendingPayments
+                            // data.pendingPayments 
                         ],
-                        backgroundColor: ['#6576FF', '#36A2EB', '#FFCE56']
+                        backgroundColor: ['#6576FF', '#36A2EB']
                     }]
                 },
                 options: {
                     tooltips: {
-                        enabled: false // Disable tooltips on hover
+                        enabled: false 
                     }
                 }
             });
@@ -536,15 +536,7 @@
                                         <span class="label-value" >${data.completedPayments}</span>
                                     </div>
                                 </div>
-                                <div class="pi_labesl">
-                                    <div class="pie_indicator">
-                                        <span style="color: #FFCE56;"><em class="icon ni ni-circle-fill"></em></span>
-                                    </div>
-                                    <div class="pie_values">
-                                        <span class="label-heading" >Pending</span>
-                                        <span class="label-value" >${data.pendingPayments}</span>
-                                    </div>
-                                </div>`);
+                                `);
 
 
 

@@ -179,7 +179,7 @@
             $('#permissions').val(permissions).trigger('change');
 
             $('#Save_records').html('Update User');
-            $('#add_new').removeClass('d-none');
+            // $('#add_new').removeClass('d-none');
             window.scrollTo(0, 0);
                 
         });
@@ -199,7 +199,7 @@
             }).get();
 
             $('#permissions').val(allPermissionValues).trigger('change');
-            $(this).addClass('d-none');
+            // $(this).addClass('d-none');
             $('#Save_records').html('Add User');
             $('#parent_category').prop('disabled',false); 
                 
@@ -220,9 +220,12 @@
             }).get();
 
             $('#permissions').val(allPermissionValues).trigger('change');
-            $(this).addClass('d-none');
+            // $(this).addClass('d-none');
             $('#Save_records').html('Add User');
             $('#parent_category').prop('disabled',false); 
+
+            // $('#addnewcard').addClass('d-none');
+            // $('#addnew').show();
                 
         });
 
@@ -255,6 +258,10 @@
             if(userId == '' && password == ''){
                 $('#password_error').show();
                 action = false;
+            }
+
+            if(action === true) {
+                this.submit();
             }
         });
 

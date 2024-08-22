@@ -39,40 +39,42 @@ Route::middleware('admin.redirect')->group(function () {
 Route::get('/webhooks',[WebhookController::class,'handle']);
 
 
-Route ::group(['middleware' =>['auth']],function(){
+Route::group(['middleware' =>['auth']],function(){
 
     Route::get('/admin-dashboard',[DashboardController::class,'Dashboard']);
     Route::get('/sales-data', [DashboardController::class, 'salesData']);
 
-    Route::get('/admin-dashboard/users',[DashboardController::class,'Users'])->name('admin.dashboard.users');
-    Route::get('/admin-dashboard/get-users',[DashboardController::class,'GetUsers']);
+    Route::get('/admin-dashboard/users',[DashboardController::class,'Users'])->name('admin.dashboard.users')->middleware('permission:4');
+    Route::get('/admin-dashboard/get-users',[DashboardController::class,'GetUsers'])->middleware('permission:4');
 
-    Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees');
-    Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees']);
+    Route::get('/admin-dashboard/employees',[EmployeeStatController::class,'Employees'])->name('admin.dashboard.employees')->middleware('permission:6');
+    Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees'])->middleware('permission:6');
 
     Route::get('/admin-dashboard/locations',[AdminDashboardController::class,'locations']);
     Route::get('get/locations',[AdminDashboardController::class,'getLocation']);
-    Route::get('/admin-dashboard/memberships',[AdminDashboardController::class,'memberships']);
-    Route::post('/admin-dashboard/memberships/locations',[AdminDashboardController::class,'getMembershipByLocation']);
-    Route::get('/admin-dashboard/memberships/status',[AdminDashboardController::class,'getUserByMemberships']);
-    Route::post('/admin-dashboard/memberships/date',[AdminDashboardController::class,'getMembershipByDate']);
-    Route::post('/admin-dashboard/memberships/users',[AdminDashboardController::class,'userFilter']);
 
-    Route::get('get/memberships',[AdminDashboardController::class,'getMemberships']);
-    Route::get('dump/memberships',[MembershipController::class,'dumpToDatabase']);
 
-    Route::get('/admin-dashboard/memberships-transactions',[MembershipController::class,'MembershipsTransaction']);
-    Route::get('/admin-dashboard/get/memberships-transactions',[MembershipController::class,'getMembershipsTransaction']);
+    Route::get('/admin-dashboard/memberships',[AdminDashboardController::class,'memberships'])->middleware('permission:1');
+    Route::post('/admin-dashboard/memberships/locations',[AdminDashboardController::class,'getMembershipByLocation'])->middleware('permission:1');
+    Route::get('/admin-dashboard/memberships/status',[AdminDashboardController::class,'getUserByMemberships'])->middleware('permission:1');
+    Route::post('/admin-dashboard/memberships/date',[AdminDashboardController::class,'getMembershipByDate'])->middleware('permission:1');
+    Route::post('/admin-dashboard/memberships/users',[AdminDashboardController::class,'userFilter'])->middleware('permission:1');
+
+    Route::get('get/memberships',[AdminDashboardController::class,'getMemberships'])->middleware('permission:1');
+    Route::get('dump/memberships',[MembershipController::class,'dumpToDatabase'])->middleware('permission:1');
+
+    Route::get('/admin-dashboard/memberships-transactions',[MembershipController::class,'MembershipsTransaction'])->middleware('permission:1');
+    Route::get('/admin-dashboard/get/memberships-transactions',[MembershipController::class,'getMembershipsTransaction'])->middleware('permission:1');
     
-    Route::get('/admin-dashboard/billing-stats',[MembershipController::class,'BillingStats']);
-    Route::get('/admin-dashboard/get/billing-stats',[MembershipController::class,'getBillingStats']);
+    Route::get('/admin-dashboard/billing-stats',[MembershipController::class,'BillingStats'])->middleware('permission:5');
+    Route::get('/admin-dashboard/get/billing-stats',[MembershipController::class,'getBillingStats'])->middleware('permission:5');
 
     Route::get('/csvData',[AdminDashboardController::class,'csvData']);
 
     Route::get('/admin-dashboard/orders',[OrdersController::class,'Orders'])->name('admin.dashboard.orders')->middleware('permission:3');
-    Route::get('/admin-dashboard/get-orders',[OrdersController::class,'GetOrders']);
-    Route::get('/admin-dashboard/get-sales',[OrdersController::class,'TotalSales']);
-    Route::get('/admin-dashboard/total-sales',[OrdersController::class,'SalesStats'])->name('admin.dashboard.sales');
+    Route::get('/admin-dashboard/get-orders',[OrdersController::class,'GetOrders'])->middleware('permission:3');
+    Route::get('/admin-dashboard/get-sales',[OrdersController::class,'TotalSales'])->middleware('permission:3');
+    Route::get('/admin-dashboard/total-sales',[OrdersController::class,'SalesStats'])->name('admin.dashboard.sales')->middleware('permission:3');
 
 
 
@@ -82,20 +84,18 @@ Route ::group(['middleware' =>['auth']],function(){
     // Route::get('/admin-dashboard/memberships-instances',[OrdersController::class,'Instances'])->name('admin.dashboard.Instances');
     // Route::get('/admin-dashboard/get-instances',[OrdersController::class,'GetInstances']);
 
-    Route::get('/admin-dashboard/memberships-instances',[MembershipController::class,'Instances'])->name('admin.dashboard.Instances');
-    Route::get('/admin-dashboard/get-instances',[MembershipController::class,'GetInstances']);
+    Route::get('/admin-dashboard/memberships-instances',[MembershipController::class,'Instances'])->name('admin.dashboard.Instances')->middleware('permission:1');
+    Route::get('/admin-dashboard/get-instances',[MembershipController::class,'GetInstances'])->middleware('permission:1');
 
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 
     Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll'])->middleware('permission:2');
     Route::get('admin-dashboard/payroll-stats',[PayrollController::class,'PayrollStates'])->middleware('permission:2');
-    Route::get('admin-dashboard/get-payroll',[PayrollController::class,'GetPayroll']);
+    Route::get('admin-dashboard/get-payroll',[PayrollController::class,'GetPayroll'])->middleware('permission:2');
 
-    Route::get('admin-dashboard/add-user',[UserController::class,'AddUser'])->name('add.user');
-    Route::post('admin-dashboard/user-addProcc',[UserController::class,'UserAddProcc'])->name('user.addProcc');
-    Route::get('admin-dashboard/user-remove/{id}',[UserController::class,'UserRemove'])->name('user.remove');
-
-
+    Route::get('admin-dashboard/add-user',[UserController::class,'AddUser'])->name('add.user')->middleware('admin');
+    Route::post('admin-dashboard/user-addProcc',[UserController::class,'UserAddProcc'])->name('user.addProcc')->middleware('admin');
+    Route::get('admin-dashboard/user-remove/{id}',[UserController::class,'UserRemove'])->name('user.remove')->middleware('admin');
 });
 
 Route::get('/test-api/{api}',[TestController::class,'testapi'])->name('test.api');

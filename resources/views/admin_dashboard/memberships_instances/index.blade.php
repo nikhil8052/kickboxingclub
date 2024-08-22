@@ -46,8 +46,8 @@
                                         <tr class="nk-tb-item nk-tb-head">
                                             <!-- <th class="nk-tb-col"><span class="sub-text">Membership Id</span></th> -->
                                             <th class="nk-tb-col"><span class="sub-text">Membership Name</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">Location ID</span></th>
-                                            <th class="nk-tb-col"><span class="sub-text">User ID</span></th>
+                                            <th class="nk-tb-col"><span class="sub-text">Location</span></th>
+                                            <th class="nk-tb-col"><span class="sub-text">User</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Start date</span></th>
                                              <th class="nk-tb-col"><span class="sub-text">End date</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Status</span></th>
@@ -183,8 +183,8 @@
 
             $.each(data, function(index, item) {
                 var membershipName = item.membership_name;
-                var location_id = item.purchase_location_id;
-                var userId = item.user_id;
+                var location = item.user && item.user.location ? item.user.location.name : 'unknown';
+                var user = item.user ? item.user.full_name : 'unknown';
                 var startDate = item.start_date;
                 var endDate = item.end_date;
                 var status = item.status;
@@ -192,8 +192,8 @@
 
                 rows.push([
                     membershipName,
-                    location_id,
-                    userId,
+                    location,
+                    user,
                     startDate,
                     endDate,
                     status,

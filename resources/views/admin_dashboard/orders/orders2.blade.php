@@ -137,7 +137,9 @@
                         <th class="nk-tb-col"><span class="sub-text">Order Date</span></th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="orders_data">
+
+                </tbody>
             </table>
         </div>
     </div>
@@ -150,110 +152,40 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 @endsection
 
+
 <script type="text/javascript">
     $(document).ready(function () {
-       
         var start = moment().startOf("month");
         var end = moment().endOf("month");
-
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
-                autoUpdateInput: false, 
+                startDate: start,
+                endDate: end,
                 ranges: {
-                    Today: [moment(), moment()],
-                    Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                    "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                    "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                    "This Month": [moment().startOf("month"), moment().endOf("month")],
-                    "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-                }
-            }
+                        Today: [moment(), moment()],
+                        Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                        "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                        "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                        "This Month": [moment().startOf("month"), moment().endOf("month")],
+                        "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                },
+            },
         );
 
-        $("#date-range-picker").on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-        });
-
-        $("#date-range-picker").on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val(''); 
-        });
-
-        $("#date-range-picker").data('daterangepicker').setStartDate(start);
-        $("#date-range-picker").data('daterangepicker').setEndDate(end);
-
-
-        var table = $("#order_data_table").DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 50,
-            lengthMenu: [50, 100, 150],
-            ajax: {
-                url: "{{ url('/admin-dashboard/get-orders') }}",
-                type: "GET",
-                dataSrc: "",
-                data: function(d) {
-                    var dateRangePicker = $('#date-range-picker').data('daterangepicker');
-                    if (dateRangePicker) {
-                        var start = dateRangePicker.startDate ? dateRangePicker.startDate.format('YYYY-MM-DD') : '';
-                        var end = dateRangePicker.endDate ? dateRangePicker.endDate.format('YYYY-MM-DD') : '';
-                        var selectedStatus = $('#status_filter').val();
-                        d.startDate = start;
-                        d.endDate = end;
-                        d.status = selectedStatus;
-                    }
-                }
-            },
-            columns: [
-                { data: "number" },
-                { data: "location" },
-                { data: "currency" },
-                { data: "total" },
-                { data: "status" },
-                { data: "date_created_copy" }
-            ],
-            initComplete: function () {
-                $.fn.dataTable.ext.search.push(
-                    function (settings, data, dataIndex) {
-                        var dateRangePicker = $('#date-range-picker').data('daterangepicker');
-                        if (dateRangePicker) {
-                            var min = moment(dateRangePicker.startDate).startOf('day');
-                            var max = moment(dateRangePicker.endDate).endOf('day');
-                            var datePlaced = moment(data[5], 'YYYY-MM-DD HH:mm:ss'); 
-
-                            if (
-                                (isNaN(min) && isNaN(max)) ||
-                                (isNaN(min) && datePlaced <= max) ||
-                                (min <= datePlaced && isNaN(max)) ||
-                                (min <= datePlaced && datePlaced <= max)
-                            ) {
-                                var selectedLocation = $('#location_filter').val();
-                                if (selectedLocation === "" || data[1] === selectedLocation) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    }
-                );
-            }
-        });
-
-        $("#apply-filters").trigger('click');
-
-        $("#apply-filters").on('click', function () {
-            table.draw(); 
-        });  
+        // OrderFilter(location=null, start, end);
     });
-
 </script>
 
-<script>
-    $(document).ready(function(){
+<script >
+    $(document).ready(function () {
 
         var location = '';
         var startDate = '';
         var endDate = '';
+
+        OrderFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
+
 
         $("#apply-filters").on('click', function () {
             var dateRange = $('#date-range-picker').val();
@@ -279,7 +211,6 @@
                 type: "GET", 
                 data: data, 
                 success: function(response) {
-                    // console.log(response); 
                     updateRecord(response.masterArray);
                     $('#overlay').hide();
                 },
@@ -297,15 +228,47 @@
             $("#paymentFailure-amount").text('$' +(data.totalPF));
             $("#cancelled-amount").text('$' + (data.totalcancelled));
 
-            // Display counts
             $("#completed-count").text(data.completedSaleCount);
             $("#refund-count").text(data.RefundsCount);
             $("#pending-count").text(data.pendingCount);
             $("#paymentFailure-count").text(data.paymentFailuerCount);
             $("#cancelled-count").text(data.CancelledCount);
-        }
 
+            var table = $('#order_data_table').DataTable();
+            table.clear(); 
+            var rows = [];
+
+            $.each(data.orders, function(index, item) {
+                var number = item.number;
+                var location = item.location;
+                var currency = item.currency;
+                if(item.status == 'Refunded' || item.status == 'Partially Refunded') {
+                    var Amount = item.total_amount_refunded;
+                    var status = item.status;
+                    var orderDate = item.refund_date_created_copy;
+                } else {
+                    var Amount = item.total;
+                    var status = item.status;
+                    var orderDate = item.date_created_copy;
+                }
+                
+
+                rows.push([
+                    number,
+                    location,
+                    currency,
+                    Amount,
+                    status,
+                    orderDate
+                ]);
+            });
+
+            table.rows.add(rows); 
+            table.draw();
+
+        }
     });
+
 </script>
 
 @endsection

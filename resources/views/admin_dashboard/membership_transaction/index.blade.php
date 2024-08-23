@@ -149,6 +149,7 @@ $(document).ready(function () {
     });
 
     function transactionFilter(location, startDate, endDate) {
+        // $('#overlay').show();
         var data = {
             start_date: startDate,
             end_date: endDate,
@@ -161,9 +162,11 @@ $(document).ready(function () {
             data: data, 
             success: function(response) {
                 updateTransactionTable(response.data);
+                // $('#overlay').hide();
             },
             error: function(xhr, status, error) {
                 console.error("AJAX error:", status, error);
+                // $('#overlay').hide();
             }
         });
     }

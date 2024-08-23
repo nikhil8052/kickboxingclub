@@ -22,13 +22,43 @@ class EmployeeStatController extends Controller
 
     public function Employees()
     {
-        return view('admin_dashboard.employees.index');
+        $locations = Locations::all();
+        return view('admin_dashboard.employees.index',compact('locations'));
     }
 
-    public function getEmployees(Request $request){
-        $allemployees = Employees::with(['user.location','payrate'])->get();
-        return response()->json($allemployees);
+    public function getEmployees(Request $request) {
+        $query = Employees::query();
+    
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
+    
+        if($startDate && $endDate){
+            $start = Carbon::parse($startDate);
+            $end = Carbon::parse($endDate) ;
+    
+            $query->whereHas('user', function($q) use ($start, $end) {
+                $q->whereBetween('date_joined', [$start, $end]);
+            });
+        }
+    
+        if(!empty($location)){
+            $query->whereHas('user.location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
+        }
+    
+        $query->with(['user.location', 'payrate']);
+    
+        $employees = $query->paginate($request->length, ['*'], 'page', $request->start / $request->length + 1);
+    
+        return response()->json([
+            'data' => $employees->items(),
+            'recordsTotal' => $employees->total(),
+            'recordsFiltered' => $employees->total(),
+        ]);
     }
+    
 
 
     public function addPayRates(){

@@ -28,7 +28,7 @@
                                 <h4>Marianatek</h4>
                             </a>
                         </div>
-                        <div class="card card-bordered">
+                        <div class="card card-bordered" >
                             <div class="card-inner card-inner-lg">
                                 <div class="nk-block-head" id="sign">
                                     <div class="nk-block-head-content">
@@ -65,7 +65,7 @@
                                              @endif
                                         </div><!-- .form-group -->
                                         <div class="form-group">
-                                            <button class="btn btn-lg btn-primary btn-block">Sign in</button>
+                                            <button class="btn btn-lg btn-dark btn-block">Sign in</button>
                                         </div>
                                     </form>
                                 </div>

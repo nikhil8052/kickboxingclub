@@ -15,6 +15,7 @@ use App\Models\TimeClockShift;
 use App\Models\Credit;
 use App\Models\Locations;
 use App\Models\EmployeePayRate;
+use App\Models\AllUsers;
 
 class MembershipController extends Controller
 {
@@ -25,12 +26,14 @@ class MembershipController extends Controller
         // // $url = "https://kbxf.marianatek.com/api/memberships";
         // // $url = "https://kbxf.marianatek.com/api/credits";
         // // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
-        // $url = "https://kbxf.marianatek.com/api/employees";
 
+        // // $url = "https://kbxf.marianatek.com/api/employees";
+
+        // $url = "https://kbxf.marianatek.com/api/users";
         // $bearerToken = env('API_ACCESS_TOKEN');
 
         // $currentPage = 1;
-        // $pageSize = 81;
+        // $pageSize = 500;
         // $hasMorePages = true;
 
         // while ($hasMorePages) {
@@ -58,7 +61,8 @@ class MembershipController extends Controller
 
         //         // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
 
-        //         if($saveTransaction) {
+        //         $saveUsers = $this->saveUsersdata($data['data']);
+        //         if($saveUsers) {
         //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
         //             if ($currentPage >= $totalPages) {
         //                 $hasMorePages = false;
@@ -77,6 +81,78 @@ class MembershipController extends Controller
         // } 
 
         // return response()->json(['Memberships saved into database']);
+    }
+
+    public function saveUsersdata($users)
+    {
+        try {
+            foreach($users as $user){
+
+                $attributes = $user['attributes'];
+                $dateJoined = $attributes['date_joined'] ?? null;
+                $join_date = Carbon::parse($dateJoined)->format('Y-m-d');
+
+                $or = new AllUsers();
+                $or->type = $user['type'];
+                $or->user_id = $user['id'];
+                $or->email = $attributes['email'] ?? null;
+                $or->first_name = $attributes['first_name'] ?? null;
+                $or->last_name = $attributes['last_name'] ?? null;
+                $or->birth_date = $attributes['birth_date'] ?? null;
+                $or->phone_number = $attributes['phone_number'] ?? null;
+                $or->address_line1 = $attributes['address_line1'] ?? null;
+                $or->address_line2 = $attributes['address_line2'] ?? null;
+                $or->address_line3 = $attributes['address_line3'] ?? null;
+                $or->city = $attributes['city'] ?? null;
+                $or->state_province = $attributes['state_province'] ?? null;
+                $or->postal_code = $attributes['postal_code'] ?? null;
+                $or->address_sorting_code = $attributes['address_sorting_code'] ?? null;
+                $or->country = $attributes['country'] ?? null;
+                $or->full_name = $attributes['full_name'] ?? null;
+                $or->gender = $attributes['gender'] ?? null;
+                $or->emergency_contact_name = $attributes['emergency_contact_name'] ?? null;
+                $or->emergency_contact_relationship = $attributes['emergency_contact_relationship'] ?? null;
+                $or->emergency_contact_phone = $attributes['emergency_contact_phone'] ?? null;
+                $or->emergency_contact_email = $attributes['emergency_contact_email'] ?? null;
+                $or->signed_waiver = $attributes['signed_waiver'] ?? null;
+                $or->waiver_signed_datetime = $attributes['waiver_signed_datetime'] ?? null;
+                $or->date_joined = $join_date;
+                $or->marketing_opt_in = $attributes['marketing_opt_in'] ?? null;
+                $or->is_opted_in_to_sms = $attributes['is_opted_in_to_sms'] ?? null;
+                $or->has_vip_tag_cache = $attributes['has_vip_tag_cache'] ?? null;
+                $or->apply_account_balance_to_fees = $attributes['apply_account_balance_to_fees'] ?? null;
+                $or->is_minimal = $attributes['is_minimal'] ?? null;
+                $or->permissions = json_encode($attributes['permissions'] ?? []);
+                $or->account_balance = $attributes['account_balance'] ?? null;
+                $or->account_balances = json_encode($attributes['account_balances'] ?? []);
+                $or->third_party_sync = $attributes['third_party_sync'] ?? null;
+                $or->completed_class_count = $attributes['completed_class_count'] ?? null;
+                $or->company_name = $attributes['company_name'] ?? null;
+                $or->archived_at = $attributes['archived_at'] ?? null;
+                $or->is_external_user = $attributes['is_external_user'] ?? null;
+                $or->merged_into_id = $attributes['merged_into_id'] ?? null;
+                $or->waivers = json_encode($attributes['waivers'] ?? []);
+                $or->has_unsigned_waivers = $attributes['has_unsigned_waivers'] ?? null;
+                $or->marketing_logs = json_encode($attributes['marketing_logs'] ?? []);
+                $or->formatted_address = json_encode($attributes['formatted_address'] ?? []);
+                $or->required_legal_documents = json_encode($attributes['required_legal_documents'] ?? []);
+                $or->pronouns = $attributes['pronouns'] ?? null;
+                $or->search_priority_category = $attributes['search_priority_category'] ?? null;
+                $or->relationships = json_encode($user['relationships'] ?? []);
+                $or->last_region = json_encode($user['relationships']['last_region']['data'] ?? []);
+                $or->home_location_type = $user['relationships']['home_location']['data']['type'] ?? null;
+                $or->home_location_id = $user['relationships']['home_location']['data']['id'] ?? null;
+                $or->tags = json_encode($user['relationships']['tags']['data'] ?? []);
+                $or->profile_image = json_encode($user['relationships']['profile_image']['data'] ?? []);
+
+                $or->save();
+            }
+            return true;
+        } catch(Exception $e) {
+            dd($e);
+            return false;
+        }
+       
     }
 
     public function saveEmployeeID($employees){
@@ -215,40 +291,39 @@ class MembershipController extends Controller
                                 ->select('membership_name',DB::raw('count(*) as total_count'))
                                 ->groupBy('membership_name')
                                 ->get();
+                        
         return view('admin_dashboard.membership_transaction.index',compact('locations','membershipTransaction'));
     }
 
-    public function getMembershipsTransaction(Request $request){
+    public function getMembershipsTransaction(Request $request) {
         $query = MembershipTransaction::query();
-        $query = $query->where('type','membership_transactions');
-
+    
         $startDate = $request->start_date;
         $endDate = $request->end_date;
         $location = $request->location_id;
-
-        if($startDate && $endDate){
-            $start= Carbon::parse($startDate);
+    
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
-
-            $query->whereBetween('transaction_date',[$start,$end]);
+            $query->whereBetween('transaction_date', [$start, $end]);
         }
-
-        if($location != null){
+    
+        if ($location != null) {
             $query->whereHas('membership_instance', function ($query) use ($location) {
                 $query->where('purchase_location_id', $location);
             });
         }
-
-        $query->select('membership_name',DB::raw('count(*) as total_count'))
+    
+        $query->select('membership_name', DB::raw('count(membership_name) as total_count'))
             ->groupBy('membership_name');
-
+    
         $membershipTransaction = $query->get();
-
+    
         return response()->json([
             'data' => $membershipTransaction
         ]);
-    
     }
+    
 
     public function BillingStats(){ 
         $month = Carbon::now()->month;
@@ -309,7 +384,6 @@ class MembershipController extends Controller
         }
     
         if ($location != null) {
-            // $query->where('purchase_location_id', $location);
             $query->whereHas('user.location', function ($q) use ($location) {
                 $q->where('location_id', $location);
             });

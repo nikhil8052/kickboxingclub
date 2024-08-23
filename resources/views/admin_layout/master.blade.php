@@ -13,7 +13,7 @@
     <!-- Page Title  -->
     <title>Marianatek | Admin Dashboard</title>
     <!-- StyleSheets  -->
-    <link rel="stylesheet" href="{{ asset('admin-theme/assets/css/dashlite.css?ver=3.1.2') }}">
+    <link rel="stylesheet" href="{{ asset('admin-theme/assets/css/dashlite.css?ver=3.1.2?dfgfg') }}">
     <link id="skin-default" rel="stylesheet" href="{{ asset('admin-theme/assets/css/theme.css?ver=3.1.2') }}">
 
     <!-- jQuery -->

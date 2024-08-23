@@ -232,12 +232,38 @@ class DashboardController extends Controller
 
     public function Users()
     {
-        return view('admin_dashboard.users.index');
+        $locations = Locations::all();
+        return view('admin_dashboard.users.index',compact('locations'));
     }
 
     public function GetUsers(Request $request)
     {
-        $allusers = AllUsers::where('type','users')->get();
-        return response()->json($allusers);
+        $query = AllUsers::query();
+        $query = $query->where('type', 'users');
+    
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
+    
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+    
+            $query->whereBetween('date_joined', [$start, $end]);
+        }
+    
+        if ($location != null) {
+            $query->whereHas('location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
+        }
+    
+        $query->with('location');
+    
+        $allusers = $query->get();
+    
+        return response()->json([
+            'data' => $allusers
+        ]);
     }
 }

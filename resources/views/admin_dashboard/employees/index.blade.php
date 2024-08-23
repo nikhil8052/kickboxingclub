@@ -30,7 +30,20 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <button class="btn btn-dark">Search</button>
+                    <label class="form-label" for="location">Locations</label>
+                    <select name="location" id="location" class="form-select" name="location">
+                    @if(isset($locations) && $locations != null)
+                        <option value="">All</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
+                        @endforeach
+                    @endif
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
         </div>
@@ -107,7 +120,7 @@
 
 @endsection
 
-
+<!-- 
 <script type="text/javascript">
     $(document).ready(function() {
         $('#users_data_table').DataTable({
@@ -116,7 +129,18 @@
             ajax: {
                 url: "{{ url('/admin-dashboard/get-employees') }}", 
                 type: 'GET',
-                dataSrc: '' 
+                data: function (d) {
+                    var dateRange = $('#date-range-picker').val();
+                    if (dateRange) {
+                        var dates = dateRange.split(" - ");
+                        d.start_date = dates[0]; 
+                        d.end_date = dates[1];  
+                    }
+                    d.location_id = $('#location').val(); 
+                },
+                dataSrc: function(json){
+                    return json.data; 
+                } 
             },
             columns: [
                 { data: 'employee_id' },
@@ -148,10 +172,15 @@
                         $(td).addClass('regular-pay');
                     }
                 }
-            ]
+            ],
+            stateSave: true
         });
 
         var table = $('#users_data_table').DataTable();
+        $('#filter').on('click', function() {
+            table.ajax.reload();
+        });
+        
         $('#users_data_table').on('click','.regular-pay',function(){
             var row = $(this).closest('tr');
             var data = table.row(row).data();
@@ -195,13 +224,128 @@
         }
     });
 
+</script> -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var startOfMonth = moment().subtract(1, "month").startOf("month").format('YYYY-MM-DD');
+        var endOfMonth = moment().subtract(1, "month").endOf("month").format('YYYY-MM-DD');
+
+        $('#date-range-picker').val(startOfMonth + ' - ' + endOfMonth);
+
+        var table = $('#users_data_table').DataTable({
+            processing: true,
+            serverSide: true, 
+            ajax: {
+                url: "{{ url('/admin-dashboard/get-employees') }}", 
+                type: 'GET',
+                data: function (d) {
+                    var dateRange = $('#date-range-picker').val();
+                    if (dateRange) {
+                        var dates = dateRange.split(" - ");
+                        d.start_date = dates[0]; 
+                        d.end_date = dates[1];  
+                    } else {
+                        d.start_date = startOfMonth;
+                        d.end_date = endOfMonth;
+                    }
+                    d.location_id = $('#location').val(); 
+                },
+                dataSrc: function(json) {
+                    return json.data; 
+                }
+            },
+            columns: [
+                { data: 'employee_id' },
+                { data: 'user.full_name'},
+                { data: 'user.email'},
+                { data: 'user.country', 
+                    render: function(data, type, row) {
+                        return data ? data : 'unknown';
+                    }
+                },
+                { data: 'user.location.name', 
+                    render: function(data, type, row) {
+                        return data ? data : 'unknown';
+                    }
+                },
+                { data: 'payrate.regular_pay',
+                    render: function(data, type, row) {
+                        return data ? `$${data}` : 'null';
+                    },
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        $(td).addClass('regular-pay');
+                    }
+                },
+                { data: 'payrate.instructor_pay',
+                    render: function(data, type, row) {
+                        return data ? `$${data}` : 'null';
+                    },
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        $(td).addClass('regular-pay');
+                    }
+                }
+            ],
+            stateSave: true
+        });
+
+        $('#filter').on('click', function() {
+            table.ajax.reload();
+        });
+
+        $('#users_data_table').on('click', '.regular-pay', function() {
+            var row = $(this).closest('tr');
+            var data = table.row(row).data();
+
+            var id = data['employee_id'];
+            var regular_pay = data.payrate ? data.payrate.regular_pay : undefined;
+            var instructor_pay = data.payrate ? data.payrate.instructor_pay : undefined;
+
+            $('#employee_id').val(id);
+            $('#regular_pay').val(regular_pay);
+            $('#instructor_pay').val(instructor_pay);
+            $('#regular-error').hide();
+            $('#instructor-error').hide();
+            $('#modalForm').modal('show');
+        });
+
+        $('.update_rates_btn').on('click', function(e) {
+            e.preventDefault(); 
+            var isValid = true;
+            var regularPay = $('#regular_pay').val();
+            var instructorPay = $('#instructor_pay').val();
+
+            if (regularPay == null || regularPay == '') {
+                $('#regular-error').show();
+                isValid = false;
+            } else {
+                $('#regular-error').hide();
+            }
+
+            if (instructorPay == null || instructorPay == '') {
+                $('#instructor-error').show();
+                isValid = false;
+            } else {
+                $('#instructor-error').hide();
+            }
+
+            if (isValid) {
+                $('#payRateform').submit();
+            }
+        });
+    });
 </script>
+
 
 <script type="text/javascript">
     $(document).ready(function () {
+        var start = moment().subtract(1, "month").startOf("month");
+        var end = moment().subtract(1, "month").endOf("month");
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
+                startDate: start,
+                endDate: end,
                 ranges: {
                     Today: [moment(), moment()],
                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],

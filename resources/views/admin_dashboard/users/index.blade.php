@@ -9,7 +9,7 @@
 
 <div class="nk-content">
     <div class="container-fluid">
-        <div class="d-flex paper card-preview card-bordered p-4 mb-3">
+        <div class="d-flex paper card-preview card-bordered p-4 mb-3 date-filter">
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="date-range-picker">Date Filter</label>
@@ -18,7 +18,20 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <button class="btn btn-dark">Search</button>
+                    <label class="form-label" for="location">Locations</label>
+                    <select name="location" id="location" class="form-select" name="location">
+                    @if(isset($locations) && $locations != null)
+                        <option value="">All</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
+                        @endforeach
+                    @endif
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
         </div>
@@ -37,11 +50,12 @@
                                             <th class="nk-tb-col"><span class="sub-text">Email</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Account Balance</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Joining Date</span></th>
+                                            <th class="nk-tb-col"><span class="sub-text">Location</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Signed Waiver</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Waiver Signed Date</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody>
                                         
                                     </tbody>
                                 </table>
@@ -64,7 +78,7 @@
 
 @endsection
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     $(document).ready(function() {
         $('#users_data_table').DataTable({
             processing: true,
@@ -81,6 +95,12 @@
                 { data: 'account_balance' },
                 { data: 'date_joined' },
                 { 
+                    data: 'location.name',
+                    render: function(data, type, row){
+                        return data == 1 ;
+                    }
+                },
+                { 
                     data: 'signed_waiver',
                     render: function(data, type, row) {
                         return data == 1 ? 'Yes' : 'No';
@@ -91,13 +111,17 @@
             ]
         });
     });
-</script>
+</script> -->
 
 <script type="text/javascript">
     $(document).ready(function () {
+        var start = moment().startOf("month");
+        var end = moment().endOf("month");
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
+                startDate: start,
+                endDate: end,
                 ranges: {
                     Today: [moment(), moment()],
                     Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
@@ -128,6 +152,76 @@
         var end = moment().endOf("day");
         filterData(start, end);
     });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#users_data_table').DataTable();
+        $('#filter').on('click', function(){
+            var dateRange = $('#date-range-picker').val();
+            var dates = dateRange.split(" - ");
+            startDate = dates[0];
+            endDate = dates[1];
+
+            var location = $('#location').val();
+
+            usersFilter(location, startDate, endDate);
+        });
+
+        function usersFilter(location, startDate, endDate) {
+            var data = {
+                start_date: startDate,
+                end_date: endDate,
+                location_id: location,
+            };
+
+            $.ajax({
+                url: "{{ url('/admin-dashboard/get-users') }}", 
+                type: "GET", 
+                data: data, 
+                success: function(response) {
+                    updateUsersTable(response.data);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        }
+
+        function updateUsersTable(data) {
+            var table = $('#users_data_table').DataTable();
+            table.clear(); 
+            var rows = [];
+
+            $.each(data, function(index, item) {
+                var userID = item.user_id ;
+                var fullName = item.full_name;
+                var email = item.email;
+                var accountBalance = item.account_balance;
+                var joiningDate = item.date_joined;
+                var location = item.location ? item.location.name : 'unknown';
+                var signedWaver = item.signed_waiver ? 'Yes' : 'No';
+                var waverSignedDatetime = item.waiver_signed_datetime;
+
+                rows.push([
+                    userID,
+                    fullName,
+                    email,
+                    accountBalance,
+                    joiningDate,
+                    location,
+                    signedWaver,
+                    waverSignedDatetime
+                ]);
+            });
+            table.rows.add(rows); 
+            table.draw();
+        }
+
+        usersFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
+
+    });
+
 </script>
 
 

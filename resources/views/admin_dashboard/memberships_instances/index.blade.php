@@ -206,27 +206,6 @@
             table.draw();
         }
 
-        function formatDateTime(dateTimeString) {
-            if (!dateTimeString) return { date: null, time: null };
-            let date = new Date(dateTimeString);
-            return {
-                date: date.toISOString().split('T')[0],  
-                time: date.toTimeString().split(' ')[0]  
-            };
-        }
-
-        function secondsToTime(seconds) {
-            var hours = Math.floor(seconds / 3600);
-            var minutes = Math.floor((seconds % 3600) / 60);
-            var secs = seconds % 60;
-
-            return [
-                hours.toString().padStart(2, '0'),
-                minutes.toString().padStart(2, '0'),
-                secs.toString().padStart(2, '0')
-            ].join(':');
-        }
-
         instanceFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
     });
 </script>

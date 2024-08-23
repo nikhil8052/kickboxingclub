@@ -31056,7 +31056,8 @@ li {
   position: relative;
 }
 .link-list a:hover {
-  color: #6576ff;
+  /* color: #6576ff; */
+  color: #B40200;
 }
 .link-list a .icon {
   font-size: 1.125rem;
@@ -31845,7 +31846,7 @@ h6 .badge, .h6 .badge {
   justify-content: center;
   align-items: center;
   color: #fff;
-  background: #798bff;
+  background: #B40200;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -41772,6 +41773,7 @@ table#instance_data_table {
     line-height: 27.28px;
     text-align: left;
     padding: 15px 25px;
+    color: #000;
     
 }
 .nk-block-between .nk-block-head-content .mbsc-form-group {

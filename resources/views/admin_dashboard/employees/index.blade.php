@@ -120,8 +120,8 @@
 
 @endsection
 
-<!-- 
-<script type="text/javascript">
+
+<!-- <script type="text/javascript">
     $(document).ready(function() {
         $('#users_data_table').DataTable({
             processing: true,
@@ -173,7 +173,7 @@
                     }
                 }
             ],
-            stateSave: true
+            // stateSave: true
         });
 
         var table = $('#users_data_table').DataTable();
@@ -228,7 +228,8 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        var startOfMonth = moment().subtract(1, "month").startOf("month").format('YYYY-MM-DD');
+        // var startOfMonth = moment().subtract(1, "month").startOf("month").format('YYYY-MM-DD');
+        var startOfMonth = moment().year(2020).month(0).date(1).format('YYYY-MM-DD');
         var endOfMonth = moment().subtract(1, "month").endOf("month").format('YYYY-MM-DD');
 
         $('#date-range-picker').val(startOfMonth + ' - ' + endOfMonth);
@@ -339,7 +340,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var start = moment().subtract(1, "month").startOf("month");
+        var start = moment("2020-01-01").startOf("month");
         var end = moment().subtract(1, "month").endOf("month");
         $("#date-range-picker").daterangepicker(
             {

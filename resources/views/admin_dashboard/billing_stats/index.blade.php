@@ -59,23 +59,20 @@
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
                                                        <?php 
-                                                            $membership_instances = App\Models\MembershipInstances::where('purchase_date',$current_date)->with('locations')->get();
+                                                            $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
+                                                            // $membership_instances = App\Models\MembershipInstances::where('purchase_date',$current_date)->with('locations')->get();
                                                        ?>
                                                        
                              
-                                                       @foreach($membership_instances as $instance)
-                                                            <?php $membership_instances_id = $instance->membership_id; ?>
-                                                            @if($instance->locations->name === 'Torrance')
-                                                                 <?php $torrance_billing += $instance->renewal_rate; ?>
-                                                            
-                                                                           
-                                                            @elseif($instance->locations->name === 'Lakewood')
-                                                                 <?php $lakewood_billing += $instance->renewal_rate; ?>
-                                                           
-
-                                                            @elseif($instance->locations->name === 'Orange')
-                                                                 <?php $orange_billing += $instance->renewal_rate; ?>
-                                                            
+                                                       @foreach($membership_billing as $billing)
+                                                            @if($billing->locations != null)
+                                                                 @if($billing->locations->name === 'Torrance')
+                                                                      <?php $torrance_billing += $billing->renewal_rate; ?>
+                                                                 @elseif($billing->locations->name === 'Lakewood')
+                                                                      <?php $lakewood_billing += $billing->renewal_rate; ?>
+                                                                 @elseif($billing->locations->name === 'Orange')
+                                                                      <?php $orange_billing += $billing->renewal_rate; ?>
+                                                                 @endif
                                                             @endif
                                                        @endforeach
 

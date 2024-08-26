@@ -27,6 +27,9 @@ class EmployeeStatController extends Controller
     }
 
     public function getEmployees(Request $request) {
+        // $allemployees = Employees::where('type','employees')->with(['user.location','payrate'])->get();
+
+        // return response()->json(['data' => $allemployees]);
         $query = Employees::query();
     
         $startDate = $request->start_date;

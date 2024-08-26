@@ -178,7 +178,7 @@ class UpdateMembershipInstance extends Command
             return true;
         } catch(Exception $e) {
              $this->error('Error saving memberships data: ' . $e->getMessage());
-             savelog("Error saving memberships data:","UpdateMemberships", $e->getMessage());
+            //  savelog("Error saving memberships data:","UpdateMemberships", $e->getMessage());
              return false;
         }
        

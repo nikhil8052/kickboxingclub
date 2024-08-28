@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('start_datetime')->nullable();
             $table->string('end_datetime')->nullable();
             $table->string('renewal_rate')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

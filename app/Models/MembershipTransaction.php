@@ -18,8 +18,8 @@ class MembershipTransaction extends Model
         return $this->hasOne(Locations::class,'location_id','purchase_location_id');
     }
 
-    public function transaction(){
-        return $this->hasOne(MembershipTransaction::class,'membership_instances_id','membership_id');
+    public function membership_instance(){
+        return $this->hasOne(MembershipInstances::class,'membership_id','membership_instances_id');
     }
 
     public function getPurchaseDateAttribute($value){

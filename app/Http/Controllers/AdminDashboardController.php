@@ -57,20 +57,6 @@ class AdminDashboardController extends Controller
             $cancel_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
 
         }
-        // $starter = MembershipInstances::where([['membership_name','LIKE','%Starter%'],['status','active']])->get();
-        // $club = MembershipInstances::where([['membership_name','LIKE','%Club%'],['status','active']])->get();
-        // $gold = MembershipInstances::where([['membership_name','LIKE','%Gold%'],['status','active']])->get();
-        // $vip = MembershipInstances::where([['membership_name','LIKE','%Vip%'],['status','active']])->get();
-
-        // $pending_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->get();
-        // $pending_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->get();
-        // $pending_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->get();
-        // $pending_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->get();
-
-        // $cancel_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->get();
-        // $cancel_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->get();
-        // $cancel_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->get();
-        // $cancel_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->get();
         
         $total = count($starter)+count($club)+count($gold)+count($vip);
         $pending_total = count($pending_starter)+count($pending_club)+count($pending_gold)+count($pending_vip);

@@ -49,7 +49,7 @@ class UpdateBillingCycle extends Command
         $url = env('API_URL') . 'membership_instances';
         $accessToken = env('API_ACCESS_TOKEN');
 
-        $currentPage = 2;
+        $currentPage = 1;
         $pageSize = 500;
         $hasMorePages = true;
 
@@ -105,6 +105,7 @@ class UpdateBillingCycle extends Command
                     $renewal_rate = $billing['attributes']['renewal_rate'];
                     $billing_cycles = $billing['attributes']['billing_cycles'];
                     $location_id = $billing['relationships']['purchase_location']['data']['id'] ?? null;
+                    $status = $billing['attributes']['status'];
 
                     foreach($billing_cycles as $bill){
                         $billingCycle = new BillingCycle;
@@ -136,6 +137,7 @@ class UpdateBillingCycle extends Command
                     
                         $billingCycle->renewal_rate = $renewal_rate;
                         $billingCycle->location_id = $location_id;
+                        $billingCycle->status = $status;
                         $billingCycle->save();
                     }
                 }
@@ -143,7 +145,7 @@ class UpdateBillingCycle extends Command
             return true;
         }catch(Exception $e){
             $this->error('Error saving billing data: ' . $e->getMessage());
-            // savelog("Error saving billing data:","UpdateBillingCycle", $e->getMessage());
+            savelog("Error saving billing data:","UpdateBillingCycle", $e->getMessage());
             return false;
         }
     }

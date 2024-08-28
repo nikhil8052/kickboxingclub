@@ -23,7 +23,7 @@ class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
-        $client = new Client();
+        // $client = new Client();
         // $url="https://kbxf.marianatek.com/api/membership_transactions";
         // $url = "https://kbxf.marianatek.com/api/memberships";
         // $url = "https://kbxf.marianatek.com/api/credits";
@@ -179,6 +179,7 @@ class MembershipController extends Controller
                 $renewal_rate = $billing['attributes']['renewal_rate'];
                 $billing_cycles = $billing['attributes']['billing_cycles'];
                 $location_id = $billing['relationships']['purchase_location']['data']['id'] ?? null;
+                $status = $billing['attributes']['status'];
 
                 foreach($billing_cycles as $bill){
                     $billingCycle = new BillingCycle;
@@ -210,6 +211,7 @@ class MembershipController extends Controller
                    
                     $billingCycle->renewal_rate = $renewal_rate;
                     $billingCycle->location_id = $location_id;
+                    $billingCycle->status = $status;
                     $billingCycle->save();
                 }
             }
@@ -443,13 +445,13 @@ class MembershipController extends Controller
             $end = Carbon::parse($endDate);
             $query->whereBetween('transaction_date', [$start, $end]);
         }
-    
-        if ($location != null) {
+
+        if ($location) {
             $query->whereHas('membership_instance', function ($query) use ($location) {
                 $query->where('purchase_location_id', $location);
             });
         }
-    
+
         $query->select('membership_name', DB::raw('count(membership_name) as total_count'))
             ->groupBy('membership_name');
     
@@ -462,9 +464,6 @@ class MembershipController extends Controller
     
 
     public function BillingStats(){ 
-        // $billing = BillingCycle::with('membershipInstance.locations')->first();
-        // dd($billing);
-
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 

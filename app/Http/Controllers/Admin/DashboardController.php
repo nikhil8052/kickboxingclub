@@ -17,39 +17,80 @@ class DashboardController extends Controller
 {
     public function Dashboard(Request $request)
     {
-        $TotalsalesCompleted = Orders::where('status', 'completed')->orWhere('status','Partially Refunded')->get();
-        $TotalsalesPR = Orders::Where('status','Partially Refunded')->sum('total_amount_refunded');
-        // $totaloverAllsales = formatCurrency($TotalsalesCompleted -  $TotalsalesPR );
-        // dd($Totalsalessum);
+        $locations = Locations::all();
+        $locationId = $request->input('location');
+        $location = Locations::find($locationId);
 
+        $date = $request->input('dates');
+        if ($date) {
+            $dates = explode(' - ', $date);
+            $startDateString = $dates[0];
+            $endDateString = $dates[1];
 
-       
+            $startDate = Carbon::parse($startDateString);
+            $endDate = Carbon::parse($endDateString);
+        } else {
+            $startDate = null;
+            $endDate = null;
+        }
 
-        // $GetORder = OrderLine::where('status', 'completed')->orWhere('status','Partially Refunded')->sum('line_total');
-        // $GetORderunit = OrderLine::Where('status','Partially Refunded')->get();
-        // $GetORderunitamount = 0;
-        // foreach($GetORderunit as $unit) {
-        //     $TotalsalesPR = Orders::Where('order_id',$unit->order_id)->first();
-        //     if($TotalsalesPR) {
-        //         $GetORderunitamount += $TotalsalesPR->total_amount_refunded;
-        //     }
-        // }
-        $totalcompletedSale = 0;
-        $GetORderunitamount = 0;
-        foreach($TotalsalesCompleted as $order) {
-            if( $order->status == 'Completed' ){
+        $TotalsalesCompleted = Orders::query();
+        $TotalsalesRefunded = Orders::query();
+        $orderlineQuery= Orders::query();
+
+        $queryOrders = Orders::query();
+        $queryMemberships = MembershipInstances::query();
+        $queryCancelMemberships = MembershipInstances::query();
+        $TrialSoldMemberships = MembershipInstances::query();
+        $visitorsdata = AllUsers::query();
+        
+        if ($startDate && $endDate) {
+            $TotalsalesCompleted->whereBetween(DB::raw('date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
+            $TotalsalesRefunded->whereBetween(DB::raw('refund_date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
+            $orderlineQuery->whereBetween(DB::raw('date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
+
+            $queryOrders->whereBetween(DB::raw('date_created_copy'), [$startDate, $endDate]);
+            $queryMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
+            $queryCancelMemberships->whereBetween('end_date', [$startDate, $endDate]);
+            $TrialSoldMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
+            $visitorsdata->whereBetween(DB::raw('STR_TO_DATE(date_joined, "%Y-%m-%d")'), [$startDate, $endDate]);
+        }
+
+        if($location) {
+            $TotalsalesCompleted->where('location',$location->name);
+            $TotalsalesRefunded->where('location',$location->name);
+            $orderlineQuery->where('location',$location->name);
+
+            $queryOrders->where('location', $location->name);
+            $queryMemberships->where('purchase_location_id', $location->location_id);
+            $queryCancelMemberships->where('purchase_location_id', $location->location_id);
+            $TrialSoldMemberships->where('purchase_location_id', $location->location_id);
+            $visitorsdata->where('home_location_id', $location->location_id);
+        }
+
+        $totalcompletedSaler = $TotalsalesCompleted->get();
+        $GetORderunitamountr = $TotalsalesRefunded->get();
+
+        $totalcompletedSale = 0 ;
+        $GetORderunitamount = 0 ;
+
+        foreach ($totalcompletedSaler as $order) {
+        
+            if( $order->status == 'Completed' || $order->status == 'Refunded' || $order->status == 'Partially Refunded'){
                 $totalcompletedSale += $order->total;
-            }
-            if( $order->status == 'Partially Refunded' ){
-                $totalcompletedSale += $order->total;
-                $GetORderunitamount += $order->total_amount_refunded;
             }
         }
-        $totaloverAllsales = formatCurrency($totalcompletedSale - $GetORderunitamount);
 
-        $orderswL = Orders::with('orderlines')->get();
+        foreach ($GetORderunitamountr as $ord) {
 
-        $totalsale =0;
+            if( $ord->status == 'Refunded' || $ord->status == 'Partially Refunded'){
+                $GetORderunitamount += $ord->total_amount_refunded;
+            }
+        }
+        $totaloverAllsales = number_format($totalcompletedSale - $GetORderunitamount);
+
+        $orderswL = $orderlineQuery->with('orderlines')->get();
+
         $totalmembSale = 0 ;
         $totalcreditsale =0;
         $totalRefundedAmount = 0;
@@ -80,53 +121,10 @@ class DashboardController extends Controller
             }
         }
 
-        $totalsales = formatCurrency($totalsale);
-        $totalcreditSales = formatCurrency($totalcreditsale - $totalRefundedAmountC);
-        $totalMembershipSales = formatCurrency($totalmembSale - $totalRefundedAmount);
+        $totalcreditSales = number_format($totalcreditsale - $totalRefundedAmountC);
+        $totalMembershipSales = number_format($totalmembSale - $totalRefundedAmount);
 
-        // $forecastrecord = MembershipInstances::sum('renewal_rate');
-        // $forecastsales = formatCurrency($forecastrecord);
-
-        $locations = Locations::all();
-
-        $locationId = $request->input('location');
-        $location = Locations::find($locationId);
-
-        $date = $request->input('dates');
-        if ($date) {
-            $dates = explode(' - ', $date);
-            $startDateString = $dates[0];
-            $endDateString = $dates[1];
-
-            $startDate = Carbon::parse($startDateString);
-            $endDate = Carbon::parse($endDateString);
-        } else {
-            $startDate = null;
-            $endDate = null;
-        }
-
-        $queryOrders = Orders::query();
-        $queryMemberships = MembershipInstances::query();
-        $queryCancelMemberships = MembershipInstances::query();
-        $TrialSoldMemberships = MembershipInstances::query();
-        $visitorsdata = AllUsers::query();
-
-        if ($startDate && $endDate) {
-            $queryOrders->whereBetween(DB::raw('STR_TO_DATE(date_placed, "%Y-%m-%d")'), [$startDate, $endDate]);
-            $queryMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
-            $queryCancelMemberships->whereBetween('end_date', [$startDate, $endDate]);
-            $TrialSoldMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
-            $visitorsdata->whereBetween(DB::raw('STR_TO_DATE(date_joined, "%Y-%m-%d")'), [$startDate, $endDate]);
-        }
-
-        if ($location) {
-            $queryOrders->where('location', $location->name);
-            $queryMemberships->where('purchase_location_id', $location->location_id);
-            $queryCancelMemberships->where('purchase_location_id', $location->location_id);
-            $TrialSoldMemberships->where('purchase_location_id', $location->location_id);
-            $visitorsdata->where('home_location_id', $location->location_id);
-        }
-
+    
         $failedPayments = $queryOrders->clone()
             ->where('status', 'Payment Failure')
             ->selectRaw('COUNT(*) as count')
@@ -143,9 +141,9 @@ class DashboardController extends Controller
             ->value('count');
 
         $totalMemberships = $queryMemberships->count();
-        $activeMemberships = $queryMemberships->clone()->where('status', 'active')->count();
-        $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['cancelled', 'terminated','payment_failure','ding_failure'])->count();
-        $TrialSoldMembershipsCount = $TrialSoldMemberships->where(DB::raw('STR_TO_DATE(start_date, "%Y-%m-%d")'), '>', DB::raw('STR_TO_DATE(purchase_date, "%Y-%m-%d")'))->where('status',['active','pending_start_date','pending_customer_activation'])->count();
+        $activeMemberships = $queryMemberships->clone()->where('status', 'active')->whereIn('membership_type_id',[2985,2922,2919,2921,2920,2918,3053,2984,3052])->count();
+        $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['cancelled', 'terminated','payment_failure','ding_failure'])->whereIn('membership_type_id',[2985,2922,2919,2921,2920,2918,3053,2984,3052])->count();
+        $TrialSoldMembershipsCount = $TrialSoldMemberships->whereIn('membership_type_id',[3085,2952,2951])->count();
         
         $allvisitors = $visitorsdata->count();
         if ($request->ajax()) {
@@ -166,7 +164,6 @@ class DashboardController extends Controller
         }
 
         return view('admin_dashboard.home.index', [
-            'totalsales' => $totalsales,
             // 'forecastsales' => $forecastsales,
             'failedPayments' => $failedPayments,
             'completedPayments' => $completedPayments,
@@ -258,7 +255,7 @@ class DashboardController extends Controller
             });
         }
     
-        $query->with('location');
+        $query->with(['location','membership']);
     
         $allusers = $query->get();
     

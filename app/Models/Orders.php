@@ -29,4 +29,8 @@ class Orders extends Model
         return formatDate($value);
 
     }
+
+    public function user(){
+        return $this->hasOne(AllUsers::class, 'user_id','user_id');
+    }
 }

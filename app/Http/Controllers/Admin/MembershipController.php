@@ -535,6 +535,5 @@ class MembershipController extends Controller
             'data' => $membershipInstance
         ]);
     }
-    
-
+ 
 }

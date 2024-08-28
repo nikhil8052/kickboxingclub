@@ -21,6 +21,10 @@ class MembershipInstances extends Model
         return $this->hasOne(MembershipTransaction::class,'membership_instances_id','membership_id');
     }
 
+    public function membership(){
+        return $this->hasOne(Membership::class,'membership_type_id','membership_id');
+    }
+
     public function getPurchaseDateAttribute($value){
         return formatDate($value);
     }

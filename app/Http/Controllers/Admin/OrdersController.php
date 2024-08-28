@@ -39,7 +39,8 @@ class OrdersController extends Controller
         $pendingCount = 0;
         $paymentFailuerCount = 0;
 
-        $orderswL = $query->get();
+        $orderswL = $query->with(['user', 'orderlines'])->get();
+
         foreach ($orderswL as $order) {
         
             if( $order->status == 'Completed' || $order->status == 'Refunded' || $order->status == 'Partially Refunded'){
@@ -53,7 +54,7 @@ class OrdersController extends Controller
             }
         }
 
-        $orderrefunds = $refundquery->get();
+        $orderrefunds = $refundquery->with(['user', 'orderlines'])->get();
         foreach ($orderrefunds as $ord) {
 
             if( $ord->status == 'Refunded' || $ord->status == 'Partially Refunded'){
@@ -117,7 +118,7 @@ class OrdersController extends Controller
         $pendingCount = 0;
         $paymentFailuerCount = 0;
 
-        $orderswL = $query->get();
+        $orderswL = $query->with(['user', 'orderlines'])->get();
         foreach ($orderswL as $order) {
         
             if( $order->status == 'Completed' || $order->status == 'Refunded' || $order->status == 'Partially Refunded'){
@@ -131,7 +132,7 @@ class OrdersController extends Controller
             }
         }
 
-        $orderrefunds = $refundquery->get();
+        $orderrefunds = $refundquery->with(['user', 'orderlines'])->get();
         foreach ($orderrefunds as $ord) {
 
             if( $ord->status == 'Refunded' || $ord->status == 'Partially Refunded'){

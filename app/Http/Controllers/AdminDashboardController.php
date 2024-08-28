@@ -22,17 +22,19 @@ class AdminDashboardController extends Controller
     }
 
     public function getLocation(Request $request){
-        $client = new Client();
-        $url = "https://kbxf.marianatek.com/api/locations";
-        $response = $client->request('GET',$url);
-        $statuscode = $response->getStatusCode();
+        // $client = new Client();
+        // $url = "https://kbxf.marianatek.com/api/locations";
+        // $response = $client->request('GET',$url);
+        // $statuscode = $response->getStatusCode();
 
-        if($statuscode == 200){
-            $body = $response->getBody()->getContents();
-            $data = json_decode($body,true);
+        // if($statuscode == 200){
+        //     $body = $response->getBody()->getContents();
+        //     $data = json_decode($body,true);
 
-            return response()->json($data);
-        }
+        //     return response()->json($data);
+        // }
+        $locations = Locations::all();
+        return response()->json($locations);
     }
 
     public function memberships(){

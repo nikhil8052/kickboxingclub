@@ -29,6 +29,11 @@
                     <button class="btn btn-dark" id="apply-filters">Apply Filter</button>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
         </div> 
         <div class="nk-block top_sec">
             <div class="row g-gs">
@@ -129,12 +134,15 @@
             <table id="order_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="true" bordered>
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
-                        <th class="nk-tb-col"><span class="sub-text">Order Number</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Location</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Currency</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Amount</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Status</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Order Date</span></th>
+                        <th class="nk-tb-col">Order Number</th>
+                        <th class="nk-tb-col">Location</th>
+                        <th class="nk-tb-col">Customer Name</th>
+                        <th class="nk-tb-col">Customer Email</th>
+                        <th class="nk-tb-col">Item</th>
+                        <th class="nk-tb-col">Currency</th>
+                        <th class="nk-tb-col">Amount</th>
+                        <th class="nk-tb-col">Status</th>
+                        <th class="nk-tb-col">Order Date</th>
                     </tr>
                 </thead>
                 <tbody id="orders_data">
@@ -183,6 +191,7 @@
         var location = '';
         var startDate = '';
         var endDate = '';
+        var csvContent = ''; 
 
         OrderFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
 
@@ -196,6 +205,26 @@
             var location = $('#location_filter').val();
 
             OrderFilter(location, startDate, endDate);
+        });
+
+        $('#export-button').on('click', function () {
+            if (csvContent === '') {
+                alert('No data to export.');
+                return;
+            }
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            var link = document.createElement('a');
+            if (link.download !== undefined) { 
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'orders.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         });
 
         function OrderFilter(location, startDate, endDate) {
@@ -212,6 +241,7 @@
                 data: data, 
                 success: function(response) {
                     updateRecord(response.masterArray);
+                    generateCSVContent(response.masterArray);
                     $('#overlay').hide();
                 },
                 error: function(xhr, status, error) {
@@ -220,6 +250,7 @@
                 }
             });
         }
+
 
         function updateRecord(data) {
             $("#completed-amount").text('$' + (data.totalcompletedSale));
@@ -242,6 +273,24 @@
                 var number = item.number;
                 var location = item.location;
                 var currency = item.currency;
+                var user_name = item.user ? item.user.full_name : 'unknown'; 
+                var user_email = item.user ? item.user.email : 'unknown'; 
+                var orderlines = item.orderlines ? item.orderlines : null; 
+                console.log(item.orderlines);
+                var itemName = 'others';
+                if (orderlines && orderlines.length > 0) {
+                    if (orderlines.length === 1) {
+                        var itemName = orderlines[0].title;
+                        console.log('Item Name:', itemName);
+                    } else {
+                        orderlines.forEach((orderline) => {
+                            if (orderline.transaction_type == 'MembershipTransaction') {
+                                var itemName = orderline.title;
+                            }
+                        });
+                    }
+                } 
+
                 if(item.status == 'Refunded' || item.status == 'Partially Refunded') {
                     var Amount = item.total_amount_refunded;
                     var status = item.status;
@@ -256,6 +305,9 @@
                 rows.push([
                     number,
                     location,
+                    user_name,
+                    user_email,
+                    itemName,
                     currency,
                     Amount,
                     status,
@@ -265,10 +317,62 @@
 
             table.rows.add(rows); 
             table.draw();
+        }
 
+        function generateCSVContent(data) {
+            csvContent = ''; 
+
+            var headers = ["Order Number", "Location", "User Name", "User Email", "Item Name", "Currency", "Amount", "Status", "Order Date"];
+            csvContent += headers.join(',') + "\n";
+
+            $.each(data.orders, function(index, item) {
+                var number = item.number;
+                var location = item.location;
+                var currency = item.currency;
+                var user_name = item.user ? item.user.full_name : 'unknown'; 
+                var user_email = item.user ? item.user.email : 'unknown'; 
+                var orderlines = item.orderlines ? item.orderlines : null; 
+                var itemName = 'others';
+
+                if (orderlines && orderlines.length > 0) {
+                    if (orderlines.length === 1) {
+                        itemName = orderlines[0].title;
+                    } else {
+                        orderlines.forEach((orderline) => {
+                            if (orderline.transaction_type == 'MembershipTransaction') {
+                                itemName = orderline.title;
+                            }
+                        });
+                    }
+                } 
+
+                var Amount, status, orderDate;
+                if(item.status == 'Refunded' || item.status == 'Partially Refunded') {
+                    Amount = item.total_amount_refunded;
+                    status = item.status;
+                    orderDate = item.refund_date_created_copy;
+                } else {
+                    Amount = item.total;
+                    status = item.status;
+                    orderDate = item.date_created_copy;
+                }
+
+                var rowData = [
+                    number,
+                    location,
+                    user_name,
+                    user_email,
+                    itemName,
+                    currency,
+                    Amount,
+                    status,
+                    orderDate
+                ];
+
+                csvContent += rowData.join(',') + "\n";
+            });
         }
     });
 
 </script>
-
 @endsection

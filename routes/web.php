@@ -51,7 +51,7 @@ Route::group(['middleware' =>['auth']],function(){
     Route::get('/admin-dashboard/get-employees',[EmployeeStatController::class,'GetEmployees'])->middleware('permission:6');
 
     Route::get('/admin-dashboard/locations',[AdminDashboardController::class,'locations']);
-    Route::get('get/locations',[AdminDashboardController::class,'getLocation']);
+    Route::get('/admin-dashboard/get/locations',[AdminDashboardController::class,'getLocation']);
 
 
     Route::get('/admin-dashboard/memberships',[AdminDashboardController::class,'memberships'])->middleware('permission:1');
@@ -86,6 +86,7 @@ Route::group(['middleware' =>['auth']],function(){
 
     Route::get('/admin-dashboard/memberships-instances',[MembershipController::class,'Instances'])->name('admin.dashboard.Instances')->middleware('permission:1');
     Route::get('/admin-dashboard/get-instances',[MembershipController::class,'GetInstances'])->middleware('permission:1');
+    Route::get('/admin-dashboard/export-instances',[MembershipController::class,'exportInstances'])->middleware('permission:1');
 
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 

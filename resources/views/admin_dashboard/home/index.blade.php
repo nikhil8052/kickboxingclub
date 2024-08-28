@@ -8,14 +8,45 @@
     <div class="container-fluid">
         <div class="nk-content-inner">
             <div class="nk-content-body">
-                <div class="nk-block-head nk-block-head-sm">
-                    <div class="nk-block d-flex ">
+                <div class="nk-block-head nk-block-head-sm chart-filter-block busns_top">
+                    <div class="nk-block d-flex busns_sls">
                         <div class="nk-block-head-content">
                             <h3 class="nk-block-title page-title">Business Performance</h3>
-                            <!-- <div class="nk-block-des text-soft">
-                                <p>Welcome to Crypto Invest Dashboard</p>
-                            </div> -->
                         </div>
+                        <form id="filterForm" class="ryt_frm_blk">
+                            <div class="nk-block-head-content">
+                                <div class="toggle-wrap nk-block-tools-toggle">
+                                    <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
+                                    <div class="toggle-expand-content" data-content="pageMenu">
+                                        <ul class="nk-block-tools g-3">
+                                            <li class="filter-options"> 
+                                                <div class="form-control-wrap">
+                                                    <div class="form-group d-flex">
+                                                        <label for="date-range-picker">Date</label>
+                                                        <input type="text" name="dates" id="date-range-picker" class="form-control" />
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="filter-options">
+                                                <div class="d-flex">
+                                                    <span><label class="form-label" for="default-06">Location</label></span>
+                                                    <div class="form-control-wrap ">
+                                                        <div class="form-control-select">
+                                                            <select class="form-control" name="location" id="location">
+                                                                <option value="">All</option>
+                                                                @foreach($locations as $location)
+                                                                    <option data-id="{{ $location->name }}" value="{{ $location->location_id }}">{{ $location->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="nk-block top_sec">
@@ -32,9 +63,7 @@
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount">${{ $totaloverAllsales ?? 0 }}
-                                             <!-- <span class="currency currency-usd">USD</span> -->
-                                            </span>
+                                        <span class="amount" id="total_all_sales">${{ $totaloverAllsales ?? 0 }}</span>
                                     </div>
                                     <div class="invest-data">
                                         <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
@@ -56,7 +85,7 @@
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount">${{ $totalcreditSales ?? 0 }} 
+                                        <span class="amount" id="total_credit_sales">${{ $totalcreditSales ?? 0 }} 
                                         </span>
                                     </div>
                                 </div>
@@ -109,7 +138,7 @@
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount"> ${{$totalMembershipSales ?? 0}}
+                                        <span class="amount" id="total_membership_sales"> ${{$totalMembershipSales ?? 0}}
                                             <!-- <span class="currency currency-usd">USD</span> -->
                                         </span>
                                     </div>
@@ -151,7 +180,7 @@
                                 <p>Welcome to Crypto Invest Dashboard</p>
                             </div> -->
                         </div>
-                        <form id="filterForm" class="ryt_frm_blk">
+                        {{-- <form id="filterForm" class="ryt_frm_blk">
                             <div class="nk-block-head-content">
                                 <div class="toggle-wrap nk-block-tools-toggle">
                                     <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
@@ -195,7 +224,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </form> --}}
                     </div>
                 </div>
                 <div class="nk-block busines-info-blk pie-chart-section">
@@ -480,6 +509,10 @@
             var membershipsCtx = document.getElementById('membershipChart').getContext('2d');
             var TrialSoldCtx = document.getElementById('trialsoldChart').getContext('2d');
             var visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
+
+            $('#total_membership_sales').html("$"+ data.totalMembershipSales);
+            $('#total_credit_sales').html("$"+ data.totalcreditSales);
+            $('#total_all_sales').html("$"+ data.totaloverAllsales);
 
             var paymentslabels = $('#payments_labels'); 
             var membershipslabels = $('#memberships_labels');

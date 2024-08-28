@@ -33,6 +33,11 @@
                     <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
         </div>
 
         <div class="nk-content-inner">
@@ -52,6 +57,7 @@
                                              <th class="nk-tb-col"><span class="sub-text">End date</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Purchased Date</span></th>
+                                            <th class="nk-tb-col"><span class="sub-text">Price</span></th>
                                         </tr>
                                     </thead>
                                     <tbody id="instance_data">
@@ -128,9 +134,9 @@
             $("#data-list li").each(function () {
                 var date = moment($(this).data("date"));
                 if (date.isBetween(start, end, "day", "[]")) {
-                        $(this).show();
+                    $(this).show();
                 } else {
-                        $(this).hide();
+                    $(this).hide();
                 }
             });
         }
@@ -144,6 +150,7 @@
 
 <script>
     $(document).ready(function () {
+        var currentData = [];
         $('#instance_data_table').DataTable();
         $('#filter').on('click', function(){
             var dateRange = $('#date-range-picker').val();
@@ -157,6 +164,7 @@
         });
 
         function instanceFilter(location, startDate, endDate) {
+            $('#overlay').show();
             var data = {
                 start_date: startDate,
                 end_date: endDate,
@@ -168,10 +176,13 @@
                 type: "GET", 
                 data: data, 
                 success: function(response) {
+                    currentData = response.data;
                     updateInstanceTable(response.data);
+                    $('#overlay').hide();
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX error:", status, error);
+                    $('#overlay').hide();
                 }
             });
         }
@@ -189,6 +200,7 @@
                 var endDate = item.end_date;
                 var status = item.status;
                 var purchaseDate = item.purchase_date;
+                var price = item.renewal_rate;
 
                 rows.push([
                     membershipName,
@@ -197,7 +209,8 @@
                     startDate,
                     endDate,
                     status,
-                    purchaseDate
+                    purchaseDate,
+                    price
                 ]);
                 
             });
@@ -205,6 +218,42 @@
             table.rows.add(rows); 
             table.draw();
         }
+
+        $('#export-button').on('click', function () {
+            var csvContent = '';
+            var table = $('#instance_data_table').DataTable();
+           
+            var headers = [];
+            $('#instance_data_table thead tr th').each(function () {
+                var headerText = $(this).text().trim();
+                if (headerText !== '') { 
+                    headers.push(headerText.replace(/,/g, "")); 
+                }
+            });
+
+            csvContent += headers.join(',') + "\n";
+
+            table.rows({ search: 'applied' }).every(function () {
+                var rowData = this.data(); // Get row data
+                var csvRow = rowData.map(function(cell) {
+                    return typeof cell === 'string' ? cell.replace(/,/g, "") : cell;
+                });
+                csvContent += csvRow.join(',') + "\n";
+            });
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            var link = document.createElement('a');
+            if (link.download !== undefined) { 
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'Memberships_Instances_Export.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
 
         instanceFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
     });

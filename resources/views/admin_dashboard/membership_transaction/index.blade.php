@@ -33,6 +33,11 @@
                     <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
         </div>
         <div class="nk-content-inner">
             <div class="nk-content-body">
@@ -74,24 +79,6 @@
 @endsection
 
 <script type="text/javascript">
-    // $(document).ready(function() {
-    //     $('#membership_transaction_table').DataTable({
-    //         processing: true,
-    //         serverSide: false, 
-    //         ajax: {
-    //             url: "{{ url('/admin-dashboard/get/memberships-transactions') }}", 
-    //             type: 'GET',
-    //             dataSrc: '' 
-    //         },
-    //         columns: [
-    //             { data: 'membership_name' },
-    //             { data: 'total_count' }
-    //         ]
-    //     });
-    // });
-</script>
-
-<script type="text/javascript">
     $(document).ready(function () {
         var start = moment().startOf("month");
         var end = moment().endOf("month");
@@ -125,13 +112,11 @@
             });
         }
 
-        // Initial filter to show today's data
         var start = moment().startOf("day");
         var end = moment().endOf("day");
         filterData(start, end);
     });
 </script>
-
 
 <script>
 
@@ -149,7 +134,7 @@ $(document).ready(function () {
     });
 
     function transactionFilter(location, startDate, endDate) {
-        // $('#overlay').show();
+        $('#overlay').show();
         var data = {
             start_date: startDate,
             end_date: endDate,
@@ -162,11 +147,11 @@ $(document).ready(function () {
             data: data, 
             success: function(response) {
                 updateTransactionTable(response.data);
-                // $('#overlay').hide();
+                $('#overlay').hide();
             },
             error: function(xhr, status, error) {
                 console.error("AJAX error:", status, error);
-                // $('#overlay').hide();
+                $('#overlay').hide();
             }
         });
     }
@@ -209,6 +194,43 @@ $(document).ready(function () {
             secs.toString().padStart(2, '0')
         ].join(':');
     }
+
+    $('#export-button').on('click', function () {
+        var csvContent = '';
+        var table = $('#membership_transaction_table').DataTable();
+        
+        var headers = [];
+        $('#membership_transaction_table thead tr th').each(function () {
+            var headerText = $(this).text().trim();
+            if (headerText !== '') { 
+                headers.push(headerText.replace(/,/g, "")); 
+            }
+        });
+
+        csvContent += headers.join(',') + "\n";
+
+        table.rows({ search: 'applied' }).every(function () {
+            var rowData = this.data(); // Get row data
+            var csvRow = rowData.map(function(cell) {
+                return typeof cell === 'string' ? cell.replace(/,/g, "") : cell;
+            });
+            csvContent += csvRow.join(',') + "\n";
+        });
+
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        var link = document.createElement('a');
+        if (link.download !== undefined) { 
+            var url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'Memberships_Transaction_Export.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+
 
     transactionFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
 });

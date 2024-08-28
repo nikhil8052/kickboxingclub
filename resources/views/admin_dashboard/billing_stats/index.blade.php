@@ -21,7 +21,13 @@
                          <div class="nk-block nk-block-lg">
                               <div class="card card-bordered card-preview">
                                    <div class="card-inner">
-                                        <div class="d-flex justify-content-end">
+                                        <div class="d-flex justify-content-between">
+                                             <div class="nk-block-head-content">
+                                                  <div class="mbsc-form-group">
+                                                       <span class="d-none d-sm-inline-block"></span>
+                                                       <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                                                  </div>
+                                             </div>
                                              <div class="dropdown-filter">
                                                   <label for="month">
                                                        <span class="d-none d-sm-inline-block">Month</span>
@@ -38,7 +44,7 @@
                                              </div>
                                         </div>
                                         <h6 class="mt-2">Billing Stats</h6>
-                                        <table class="nowrap nk-tb-list nk-tb-ulist table table-bordered">
+                                        <table class="nowrap nk-tb-list nk-tb-ulist table table-bordered" id="billing-table">
                                              <thead>
                                                   <tr>
                                                        <th>Date</th>
@@ -59,7 +65,7 @@
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
                                                        <?php 
-                                                            $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->whereIn('status',['active','done'])->with('locations')->get();
+                                                            $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
                                                             // $membership_billing = App\Models\MembershipInstances::where('purchase_date',$current_date)->whereIn('status',['active','done'])->with('locations')->get();
                                                             // $membership_billing = App\Models\Orders::where('date_placed_copy',$current_date)->where('status','Completed')->get();
                                                        ?>
@@ -102,23 +108,26 @@
 @endsection
 
 <script>
-$(document).ready(function(){
-     const queryString = window.location.search;
-     const urlParams = new URLSearchParams(queryString);
-     const month = urlParams.get('month');
-     
-     if(month !== '' && month !== null && month !== undefined){
-          $('#month').val(month);
-     }
-})
+     $(document).ready(function(){
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+          const month = urlParams.get('month');
+          
+          if(month !== '' && month !== null && month !== undefined){
+               $('#month').val(month);
+          }
+     })
 </script>
 
 <script>
      function searchByMonthANDYear(){
+          $('#overlay').show();
           var month = $('#month').val();
           var url = `{{ url('admin-dashboard/get/billing-stats') }}?month=${month}`;
           window.location.href = url;
      }
+     // $('#overlay').hide();
+
 </script>
 
 <script type="text/javascript">
@@ -151,23 +160,46 @@ $(document).ready(function(){
             });
         }
 
-        // Initial filter to show today's data
         var start = moment().startOf("day");
         var end = moment().endOf("day");
         filterData(start, end);
     });
 
-
-
-    
-    // Get the current date
     const today = new Date();
-    // Extract the current year and month, and format them as "YYYY-MM"
     const currentMonth = today.toISOString().slice(0, 7);
-    // Set the value of the input field to the current month
     document.getElementById('month').value = currentMonth;
 
+</script>
 
+<script>
+
+     $(document).ready(function(){
+          $('#export-button').on('click',function(){
+               let table = document.getElementById('billing-table');
+               let rows = table.querySelectorAll('tr');
+               let csv = [];
+
+               rows.forEach(function (row) {
+                    let cells = row.querySelectorAll('th, td');
+                    let rowData = [];
+                    cells.forEach(function (cell) {
+                         let cellValue = '"' + cell.innerText.replace(/"/g, '""') + '"';
+                         rowData.push(cellValue);
+                    });
+                    csv.push(rowData.join(','));
+               });
+
+               let csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+
+               let link = document.createElement('a');
+               link.setAttribute('href', encodeURI(csvContent));
+               link.setAttribute('download', 'Billing_Export.csv');
+               document.body.appendChild(link);
+               link.click();
+               document.body.removeChild(link)
+          });
+     });
 
 </script>
+
 @endsection

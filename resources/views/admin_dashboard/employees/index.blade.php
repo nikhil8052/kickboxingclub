@@ -46,6 +46,11 @@
                     <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
         </div>
 
         <div class="nk-content-inner">
@@ -121,113 +126,10 @@
 @endsection
 
 
-<!-- <script type="text/javascript">
-    $(document).ready(function() {
-        $('#users_data_table').DataTable({
-            processing: true,
-            serverSide: false, 
-            ajax: {
-                url: "{{ url('/admin-dashboard/get-employees') }}", 
-                type: 'GET',
-                data: function (d) {
-                    var dateRange = $('#date-range-picker').val();
-                    if (dateRange) {
-                        var dates = dateRange.split(" - ");
-                        d.start_date = dates[0]; 
-                        d.end_date = dates[1];  
-                    }
-                    d.location_id = $('#location').val(); 
-                },
-                dataSrc: function(json){
-                    return json.data; 
-                } 
-            },
-            columns: [
-                { data: 'employee_id' },
-                { data: 'user.full_name'},
-                { data: 'user.email'},
-                { data: 'user.country',
-                    render: function(data, type, row) {
-                        return data ? data : 'null';
-                    }
-                },
-                { data: 'user.location.name',
-                    render: function(data, type, row) {
-                        return data ? data : 'null'; 
-                    }
-                },
-                { data: 'payrate.regular_pay',
-                    render: function(data, type, row) {
-                        return data ? `$${data}` : 'null'; 
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).addClass('regular-pay');
-                    }
-                },
-                { data: 'payrate.instructor_pay',
-                    render: function(data, type, row) {
-                        return data ? `$${data}` : 'null'; 
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).addClass('regular-pay');
-                    }
-                }
-            ],
-            // stateSave: true
-        });
-
-        var table = $('#users_data_table').DataTable();
-        $('#filter').on('click', function() {
-            table.ajax.reload();
-        });
-        
-        $('#users_data_table').on('click','.regular-pay',function(){
-            var row = $(this).closest('tr');
-            var data = table.row(row).data();
-
-            var id = data['employee_id'];
-            var regular_pay = data.payrate ? data.payrate.regular_pay : undefined;
-            var instructor_pay = data.payrate ? data.payrate.instructor_pay : undefined;
-
-            $('#employee_id').val(id);
-            $('#regular_pay').val(regular_pay);
-            $('#instructor_pay').val(instructor_pay);
-            $('#regular-error').hide();
-            $('#instructor-error').hide();
-            $('#modalForm').modal('show');
-        })
-    });
-
-
-    $('.update_rates_btn').on('click',(e)=>{
-        e.preventDefault(); 
-        var isValid = true;
-        var regularPay = $('#regular_pay').val();
-        var instructorPay = $('#instructor_pay').val();
-
-        if(regularPay == null || regularPay == ''){
-            $('#regular-error').show();
-            isValid = false;
-        }else{
-            $('#regular-error').hide();
-        }
-
-        if(instructorPay == null || instructorPay == ''){
-            $('#instructor-error').show();
-            isValid = false;
-        }else{
-            $('#instructor-error').hide();
-        }
-
-        if(isValid){
-            $('#payRateform').submit();
-        }
-    });
-
-</script> -->
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $('#overlay').show();
         // var startOfMonth = moment().subtract(1, "month").startOf("month").format('YYYY-MM-DD');
         var startOfMonth = moment().year(2020).month(0).date(1).format('YYYY-MM-DD');
         var endOfMonth = moment().subtract(1, "month").endOf("month").format('YYYY-MM-DD');
@@ -235,6 +137,7 @@
         $('#date-range-picker').val(startOfMonth + ' - ' + endOfMonth);
 
         var table = $('#users_data_table').DataTable({
+            
             processing: true,
             serverSide: true, 
             ajax: {
@@ -254,7 +157,13 @@
                 },
                 dataSrc: function(json) {
                     return json.data; 
-                }
+                },
+                beforeSend: function() {
+                    $('#overlay').show();
+                },
+                complete: function() {
+                    $('#overlay').hide();
+                } 
             },
             columns: [
                 { data: 'employee_id' },
@@ -291,6 +200,7 @@
         });
 
         $('#filter').on('click', function() {
+            // $('#overlay').show();
             table.ajax.reload();
         });
 
@@ -334,6 +244,61 @@
                 $('#payRateform').submit();
             }
         });
+
+        $('#export-button').on('click', function () {
+            $.ajax({
+                url: "{{ url('/admin-dashboard/get-employees') }}",
+                type: 'GET',
+                data: {
+                    export: true, // Custom parameter to indicate export
+                    start_date: $('#date-range-picker').val().split(" - ")[0],
+                    end_date: $('#date-range-picker').val().split(" - ")[1],
+                    location_id: $('#location').val()
+                },
+                success: function (response) {
+                    var csvContent = '';
+
+                    // Generate CSV headers
+                    var headers = [];
+                    $('#users_data_table thead tr th').each(function () {
+                        var headerText = $(this).text().trim();
+                        if (headerText !== '') { 
+                            headers.push(headerText.replace(/,/g, "")); 
+                        }
+                    });
+
+                    csvContent += headers.join(',') + "\n";
+                    response.data.forEach(function (rowData) {
+                        var csvRow = [];
+                        csvRow.push(rowData.employee_id);
+                        csvRow.push(rowData.user ? rowData.user.full_name : 'unknown');
+                        csvRow.push(rowData.user ? rowData.user.email : 'unknown');
+                        csvRow.push(rowData.user ? (rowData.user.country ? rowData.user.country : 'unknown') : 'unknown');
+                        csvRow.push(rowData.user && rowData.user.location ? rowData.user.location.name : 'unknown');
+                        csvRow.push(rowData.payrate ? `$${rowData.payrate.regular_pay}` : 'null');
+                        csvRow.push(rowData.payrate ? `$${rowData.payrate.instructor_pay}` : 'null');
+
+                        csvContent += csvRow.join(',') + "\n";
+                    });
+
+                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    var link = document.createElement('a');
+                    if (link.download !== undefined) {
+                        var url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', 'Employees_Export.csv');
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching data for export:", status, error);
+                }
+            });
+        });
+
     });
 </script>
 

@@ -35,7 +35,7 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <button class="btn btn-dark" id="export-button">Export</button>
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
                 </div>
             </div>
         </div>

@@ -1,14 +1,26 @@
 @extends('admin_layout/master')
 @section('content')
 
+@section('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+@endsection
+
 <div class="nk-content">
     <div class="container-fluid">
+        <div class="d-flex justify-content-end p-2">
+            <div class="nk-block-head-content">
+                <div class="mbsc-form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
+        </div> 
+
         <div class="nk-content-inner">
             <div class="nk-content-body">
                 <div class="nk-block">
                     <div class="card card-bordered card-preview">
                         <div class="card-inner">
-                            <table class="datatable-init nowrap nk-tb-list nk-tb-ulist table table-tranx" data-auto-responsive="false">
+                            <table id="location-table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx dataTable" data-auto-responsive="false">
                                 <thead>
                                     <tr class="nk-tb-item nk-tb-head">
                                         <th class="nk-tb-col"><span class="sub-text"></span>Name</th>
@@ -22,64 +34,92 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(isset($locations) && $locations != null)
-                                    @foreach($locations as $location)
-                                    <tr>
-                                        <td>{{ $location->name ?? '' }}</td>
-                                        <td>{{ $location->timezone ?? '' }}</td>
-                                        <td>{{ $location->email_address ?? '' }}</td>
-                                        <td>{{ $location->address_line1 ?? '' }}</td>
-                                        <td>{{ $location->city ?? '' }}</td>
-                                        <td>{{ $location->latitude ?? '' }}</td>
-                                        <td>{{ $location->longitude ?? '' }}</td>
-                                        <td>{{ $location->primary_language ?? '' }}</td>
-                                    </tr>
-                                    @endforeach
-                                    @endif
+                                    
                                 </tbody>
                             </table>
-                        </div><!-- .card-preview -->
-                    </div> <!-- nk-block -->
-                </div><!-- .components-preview -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+@section('js')
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+@endsection
+
 <script>
-    //  $(document).ready(function(){
-    //       $('#location-table').DataTable({
-    //             "autoWidth": false,
-    //             "fixedHeader": true,
-    //             "ajax":{
-    //                 "url":"{{ url('get/locations') }}",
-    //                 "dataSrc":"data",
-    //             },
-    //             "columns": [
-    //                 { "data": "attributes.name" },
-    //                 { "data": "attributes.timezone" },
-    //                 { "data": "attributes.email_address" },
-    //                 { "data": "attributes.address_line1" },
-    //                 { "data": "attributes.city" },
-    //                 { "data": "attributes.latitude" },
-    //                 { "data": "attributes.longitude" },
-    //                 { "data": "attributes.primary_language" }
-    //             ],
-    //             "columnDefs": [
-    //                 { "width": "5%", "targets": 0 },
-    //                 { "width": "14%", "targets": 1 },
-    //                 { "width": "30%", "targets": 2 },
-    //                 { "width": "21%", "targets": 3 },
-    //                 { "width": "7%", "targets": 4 },
-    //                 { "width": "8%", "targets": 5 },
-    //                 { "width": "8%", "targets": 6 },
-    //                 { "width": "7%", "targets": 7 }
-    //             ],
-    //             // "scroller": true, 
-    //             // "scrollY": "400px", 
-    //             // "scrollCollapse": true,
-    //         })
-    //     })
+    $(document).ready(function(){
+        $('#overlay').show();
+        
+        $('#location-table').DataTable({
+            processing: true,
+            serverSide: false, 
+            ajax: {
+                url: "{{ url('admin-dashboard/get/locations') }}", 
+                type: 'GET',
+                dataSrc: '',
+                beforeSend: function() {
+                    $('#overlay').show();
+                },
+                complete: function() {
+                    $('#overlay').hide();
+                } 
+            },
+            columns: [
+                { data: 'name' },
+                { data: 'timezone' },
+                { data: 'email_address' },
+                { data: 'address_line1' },
+                { data: 'city' },
+                { data: 'latitude' },
+                { data: 'longitude' },
+                { data: 'primary_language' }                
+            ]
+        });
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#export-button').on('click', function () {
+            var csvContent = '';
+
+            // Fix the selection to use the correct header element
+            var headers = [];
+            $('#location-table thead tr th').each(function () {
+                var headerText = $(this).text().trim();
+                if (headerText !== '') { 
+                    headers.push(headerText.replace(/,/g, "")); 
+                }
+            });
+
+            csvContent += headers.join(',') + "\n"; 
+
+            $('#location-table tbody tr').each(function () {
+                var rowData = [];
+                $(this).find('td').each(function () {
+                    var cellText = $(this).text().trim(); 
+                    rowData.push(cellText.replace(/,/g, "")); 
+                });
+                csvContent += rowData.join(',') + "\n"; 
+            });
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            var link = document.createElement('a');
+            if (link.download !== undefined) { 
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'Location_Export.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    });
 </script>
 
 @endsection

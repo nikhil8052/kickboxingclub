@@ -34,6 +34,11 @@
                     <button class="btn btn-dark" id="filter">Search</button>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
+                </div>
+            </div>
         </div>
         <div class="nk-content-inner">
             <div class="nk-content-body">
@@ -203,20 +208,60 @@
                 var signedWaver = item.signed_waiver ? 'Yes' : 'No';
                 var waverSignedDatetime = item.waiver_signed_datetime;
 
-                rows.push([
-                    userID,
-                    fullName,
-                    email,
-                    accountBalance,
-                    joiningDate,
-                    location,
-                    signedWaver,
-                    waverSignedDatetime
-                ]);
+                var membership = item.membership ? item.membership : null; 
+
+                if(membership &&( membership.status == 'active' || membership.status == 'pending_customer_activation')) {
+                    rows.push([
+                        userID,
+                        fullName,
+                        email,
+                        accountBalance,
+                        joiningDate,
+                        location,
+                        signedWaver,
+                        waverSignedDatetime
+                    ]);
+                }
             });
             table.rows.add(rows); 
             table.draw();
         }
+
+        $('#export-button').on('click', function () {
+            var csvContent = '';
+            var table = $('#users_data_table').DataTable();
+           
+            var headers = [];
+            $('#users_data_table thead tr th').each(function () {
+                var headerText = $(this).text().trim();
+                if (headerText !== '') { 
+                    headers.push(headerText.replace(/,/g, "")); 
+                }
+            });
+
+            csvContent += headers.join(',') + "\n";
+
+            table.rows({ search: 'applied' }).every(function () {
+                var rowData = this.data(); // Get row data
+                var csvRow = rowData.map(function(cell) {
+                    return typeof cell === 'string' ? cell.replace(/,/g, "") : cell;
+                });
+                csvContent += csvRow.join(',') + "\n";
+            });
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            var link = document.createElement('a');
+            if (link.download !== undefined) { 
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'All_Users_Export.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
 
         usersFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
 

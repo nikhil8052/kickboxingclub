@@ -68,7 +68,7 @@
                </div>
                <div class="col-md-3">
                     <div class="form-group">
-                         <button class="btn btn-dark" id="export-button">Export</button>
+                         <button class="btn btn-dark" id="export-button"><i class="fa fa-download"></i> Export</button>
                     </div>
                </div>
           </div>
@@ -210,7 +210,7 @@ $(document).ready(function () {
           var csvContent = '';
 
           var headers = [];
-          $('#membership-table thead tr.nk-tb-head td').each(function () {
+          $('#membership-table thead tr th').each(function () {
           var headerText = $(this).text().trim();
           if (headerText !== '') { 
                headers.push(headerText.replace(/,/g, "")); 

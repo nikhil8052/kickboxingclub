@@ -18,7 +18,8 @@ class PermissionMiddleware
         $user = auth()->user();
 
         if (!$user || !$user->hasPermission($permission)) {
-           return redirect('/admin-dashboard')->with('error',"You don\'t have access");
+            $userpermission = $user->permissions->first();
+            return redirect($userpermission->url)->with('error',"You don\'t have access");
         }
 
         return $next($request);

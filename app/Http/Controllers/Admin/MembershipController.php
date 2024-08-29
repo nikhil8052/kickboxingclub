@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MembershipTransaction;
+use App\Models\ActiveMember;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
@@ -314,6 +315,7 @@ class MembershipController extends Controller
                 $membership_transaction = new MembershipTransaction;
                 $membership_transaction->type = $membership['type'];
                 $membership_transaction->membership_name = $membership['attributes']['membership_name'];
+                $membership_transaction->membership_transactions_id = $membership['id'];
                 $membership_transaction->transaction_amount = $membership['attributes']['transaction_amount'];
                 $membership_transaction->user_id = $membership['relationships']['user']['data']['id'];
                 $membership_transaction->membership_instances_id = $membership['relationships']['membership_instance']['data']['id'];
@@ -501,14 +503,15 @@ class MembershipController extends Controller
 
     public function Instances(){
         $locations = Locations::all();
-        $allinstances = MembershipInstances::where('type','membership_instances')->with('user.location')->get();
+        // $allinstances = MembershipInstances::where('type','membership_instances')->with('user.location')->get();
+        
+        $allinstances = null;
 
         return view('admin_dashboard.memberships_instances.index',compact('locations','allinstances'));
     }
 
     public function GetInstances(Request $request) {
         $query = MembershipInstances::query();
-        $query = $query->where('type', 'membership_instances');
     
         $startDate = $request->start_date;
         $endDate = $request->end_date;
@@ -518,18 +521,28 @@ class MembershipController extends Controller
             $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
     
-            $query->whereBetween('purchase_date', [$start, $end]);
+            $query->whereBetween('purchase_date_copy', [$start, $end]);
         }
     
         if ($location != null) {
-            $query->whereHas('user.location', function ($q) use ($location) {
-                $q->where('location_id', $location);
-            });
+            // $query->whereHas('user.location', function ($q) use ($location) {
+            //     $q->where('location_id', $location);
+            // });
+             $query->whereBetween('purchase_date_copy', [$start, $end]);
         }
     
-        $query->with('user.location');
+        $membershipexclud = ActiveMember::all();
+        $membershipsExcludes = [];
+        foreach($membershipexclud as $exclude) {
+            $membershipsExcludes[] = $exclude->name;
+        }
+
     
-        $membershipInstance = $query->get();
+        foreach ($membershipsExcludes as $excludeName) {
+            $query->where('membership_name', 'NOT LIKE', "%$excludeName%");
+        }
+    
+        $membershipInstance = $query->with(['user','locations','membership'])->get();
     
         return response()->json([
             'data' => $membershipInstance

@@ -21,63 +21,64 @@ class OrdersController extends Controller
 {
     public function Orders()
     {
-        $query = Orders::query();
-        $refundquery = Orders::query();
+        // $query = Orders::query();
+        // $refundquery = Orders::query();
         $locations = Locations::all();
     
-        $totalcompletedSale = 0 ;
-        $totalRefunds =0;
-        $totalRefundedAmountPartiall = 0;
-        $totalcancelled = 0;
-        $totalPending = 0;
-        $totalPF = 0;
+        // $totalcompletedSale = 0 ;
+        // $totalRefunds =0;
+        // $totalRefundedAmountPartiall = 0;
+        // $totalcancelled = 0;
+        // $totalPending = 0;
+        // $totalPF = 0;
 
-        $completedSaleCount = 0;
-        $RefundsCount = 0;
-        $partiallyRefundCount = 0;
-        $CancelledCount = 0;
-        $pendingCount = 0;
-        $paymentFailuerCount = 0;
+        // $completedSaleCount = 0;
+        // $RefundsCount = 0;
+        // $partiallyRefundCount = 0;
+        // $CancelledCount = 0;
+        // $pendingCount = 0;
+        // $paymentFailuerCount = 0;
 
-        $orderswL = $query->with(['user', 'orderlines'])->get();
+        // $orderswL = $query->with(['user', 'orderlines'])->get();
 
-        foreach ($orderswL as $order) {
+        // foreach ($orderswL as $order) {
         
-            if( $order->status == 'Completed' || $order->status == 'Refunded' || $order->status == 'Partially Refunded'){
-                $completedSaleCount++;
-                $totalcompletedSale += $order->total;
-            }
+        //     if( $order->status == 'Completed' || $order->status == 'Refunded' || $order->status == 'Partially Refunded'){
+        //         $completedSaleCount++;
+        //         $totalcompletedSale += $order->total;
+        //     }
             
-            if($order->status == 'Cancelled' ){
-                $CancelledCount++;
-                $totalcancelled += $order->total;
-            }
-        }
+        //     if($order->status == 'Cancelled' ){
+        //         $CancelledCount++;
+        //         $totalcancelled += $order->total;
+        //     }
+        // }
 
-        $orderrefunds = $refundquery->with(['user', 'orderlines'])->get();
-        foreach ($orderrefunds as $ord) {
+        // $orderrefunds = $refundquery->with(['user', 'orderlines'])->get();
+        // foreach ($orderrefunds as $ord) {
 
-            if( $ord->status == 'Refunded' || $ord->status == 'Partially Refunded'){
-                $RefundsCount++;
-                $totalRefunds += $ord->total_amount_refunded;
-            }
-        }
+        //     if( $ord->status == 'Refunded' || $ord->status == 'Partially Refunded'){
+        //         $RefundsCount++;
+        //         $totalRefunds += $ord->total_amount_refunded;
+        //     }
+        // }
 
-        $allorders = collect(array_merge($orderswL->toArray(), $orderrefunds->toArray()))->unique('order_id');;
+        // $allorders = collect(array_merge($orderswL->toArray(), $orderrefunds->toArray()))->unique('order_id');;
 
-        $masterArray = [
-            'totalcompletedSale' => formatCurrency($totalcompletedSale - $totalRefunds),
-            'totalRefunds' => formatCurrency($totalRefunds),
-            'totalPending'  => formatCurrency($totalPending),
-            'totalcancelled' => formatCurrency($totalcancelled),
-            'totalPF'  => formatCurrency($totalPF),
-            'completedSaleCount' => $completedSaleCount,
-            'RefundsCount'  => $RefundsCount,
-            'CancelledCount' => $CancelledCount,
-            'paymentFailuerCount' => $paymentFailuerCount,
-            'pendingCount' => $pendingCount,
-            'orders' =>  $allorders
-        ];  
+        // $masterArray = [
+        //     'totalcompletedSale' => formatCurrency($totalcompletedSale - $totalRefunds),
+        //     'totalRefunds' => formatCurrency($totalRefunds),
+        //     'totalPending'  => formatCurrency($totalPending),
+        //     'totalcancelled' => formatCurrency($totalcancelled),
+        //     'totalPF'  => formatCurrency($totalPF),
+        //     'completedSaleCount' => $completedSaleCount,
+        //     'RefundsCount'  => $RefundsCount,
+        //     'CancelledCount' => $CancelledCount,
+        //     'paymentFailuerCount' => $paymentFailuerCount,
+        //     'pendingCount' => $pendingCount,
+        //     'orders' =>  $allorders
+        // ];  
+        $masterArray = [];
 
         return view('admin_dashboard.orders.orders2',compact('locations','masterArray'));
     }
@@ -101,9 +102,9 @@ class OrdersController extends Controller
             $refundquery->whereBetween(DB::raw('refund_date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
         }
 
-        if($location) {
-            $query->where('location',$location);
-            $refundquery->where('location',$location);
+        if(isset($location) && count($location) > 0) {
+            $query->whereIn('location',$location);
+            $refundquery->whereIn('location',$location);
         }
 
         $totalcompletedSale = 0 ;

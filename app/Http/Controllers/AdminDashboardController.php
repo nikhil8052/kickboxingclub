@@ -43,20 +43,20 @@ class AdminDashboardController extends Controller
         $endDate = Carbon::now()->endOfMonth()->toDateString();
 
         if($startDate && $endDate){
-            $starter = MembershipInstances::where([['membership_name','LIKE','%Starter%'],['status','active']])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $club = MembershipInstances::where([['membership_name','LIKE','%Club%'],['status','active']])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $gold = MembershipInstances::where([['membership_name','LIKE','%Gold%'],['status','active']])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $vip = MembershipInstances::where([['membership_name','LIKE','%Vip%'],['status','active']])->whereBetween('purchase_date', [$startDate, $endDate])->get();
+            $starter = MembershipInstances::where([['membership_name','LIKE','%Starter%'],['status','active']])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $club = MembershipInstances::where([['membership_name','LIKE','%Club%'],['status','active']])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $gold = MembershipInstances::where([['membership_name','LIKE','%Gold%'],['status','active']])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $vip = MembershipInstances::where([['membership_name','LIKE','%Vip%'],['status','active']])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
 
-            $pending_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $pending_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $pending_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $pending_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
+            $pending_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $pending_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $pending_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $pending_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['pending_customer_activation','pending_start_date'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
 
-            $cancel_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $cancel_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $cancel_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
-            $cancel_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date', [$startDate, $endDate])->get();
+            $cancel_starter = MembershipInstances::where([['membership_name','LIKE','%Starter%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $cancel_club = MembershipInstances::where([['membership_name','LIKE','%Club%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $cancel_gold = MembershipInstances::where([['membership_name','LIKE','%Gold%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
+            $cancel_vip = MembershipInstances::where([['membership_name','LIKE','%Vip%']])->whereIn('status',['cancelled','terminated','payment_failure','ding_failure'])->whereBetween('purchase_date_copy', [$startDate, $endDate])->get();
 
         }
         

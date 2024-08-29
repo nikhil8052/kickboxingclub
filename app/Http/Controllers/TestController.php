@@ -16,6 +16,8 @@ use App\Models\Discount;
 use App\Models\Product;
 use App\Models\ChildProduct;
 use App\Models\OrderLine;
+use App\Models\Membership;
+use App\Models\MembershipLocation;
 use Carbon\Carbon;
 use Execption;
 
@@ -49,9 +51,12 @@ class TestController extends Controller
         $statuscode = $response->getStatusCode();
 
         if($statuscode == 200){
+            // $body = $response->getBody()->getContents();
             $body = $response->getBody()->getContents();
-            // return $body;
-            // $data = json_decode($body,true);
+            $data = json_decode($body, true);
+            
+            $savedOrders =  $this->saveMemberships($data['data']);
+
             echo "<pre>";
             print_r($body);
             echo "</pre>";
@@ -84,49 +89,80 @@ class TestController extends Controller
     //     $url = env('API_URL') . $api;
     //     $accessToken = env('API_ACCESS_TOKEN');
 
-        // $currentPage = 2;
-        // $pageSize = 500;
-        // $hasMorePages = true;
+    //     $currentPage = 1;
+    //     $pageSize = 10;
+    //     $hasMorePages = true;
 
-        // while ($hasMorePages) {
-        //     $response = $client->request('GET', $url, [
-        //         'headers' => [
-        //             'Authorization' => 'Bearer ' . $accessToken,
-        //         ],
-        //         'query' => [
-        //             'page' => $currentPage,
-        //             'page_size' => $pageSize,
-        //         ],
-        //     ]);
+    //     while ($hasMorePages) {
+    //         $response = $client->request('GET', $url, [
+    //             'headers' => [
+    //                 'Authorization' => 'Bearer ' . $accessToken,
+    //             ],
+    //             'query' => [
+    //                 'page' => $currentPage,
+    //                 'page_size' => $pageSize,
+    //             ],
+    //         ]);
 
-        //     $statuscode = $response->getStatusCode();
+    //         $statuscode = $response->getStatusCode();
 
-        //     if ($statuscode == 200) {
-        //         $body = $response->getBody()->getContents();
-        //         $data = json_decode($body, true);
+    //         if ($statuscode == 200) {
+    //             $body = $response->getBody()->getContents();
+    //             $data = json_decode($body, true);
                
-        //         $savedOrders =  $this->saveOrderLines($data['data']);
+    //             $savedOrders =  $this->saveMemberships($data['data']);
 
-        //         if($savedOrders) {
-        //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
-        //             if ($currentPage >= $totalPages) {
-        //                 $hasMorePages = false;
-        //             } else {
-        //                 $hasMorePages = false;
-        //                 $currentPage++;
-        //             }
-        //         } else {
+    //             if($savedOrders) {
+    //                 $totalPages = $data['meta']['pagination']['pages'] ?? 0;
+    //                 if ($currentPage >= $totalPages) {
+    //                     $hasMorePages = false;
+    //                 } else {
+    //                     $hasMorePages = false;
+    //                     $currentPage++;
+    //                 }
+    //             } else {
                     
-        //             die();
-        //         }
+    //                 die();
+    //             }
                 
-        //     } else {
-        //         $hasMorePages = false;
-        //     }
-        // }
+    //         } else {
+    //             $hasMorePages = false;
+    //         }
+    //     }
 
     //     return "Order Lines Added in database";
     // }
+
+    public function saveMemberships($memberships)
+    {
+        $locations = [];
+        $membership_ids = [];
+        foreach($memberships as $data){        
+            $membershipold = Membership::where('membership_type_id' ,$data['id'] )->first();   
+            if(!$membershipold)  {
+                $attributes = $data['attributes'] ?? [];
+                $relationships = $data['relationships'] ?? [];
+                $locations = $relationships['locations']['data'];
+                $membership_id = $data['id'];
+            
+                $membership = new Membership;
+
+                $membership->membership_type_id = $membership_id;
+                $membership->name = $attributes['name'];
+                $membership->type = $data['type'];
+                $membership->is_active = $attributes['is_active'];
+                $membership->save();
+
+                foreach($locations as $location){
+                    $membership_location = new MembershipLocation;
+                    $membership_location->membership_id = $membership_id;
+                    $membership_location->location_id = $location['id'];
+                    $membership_location->save();               
+                }
+            }
+        }
+        return true;
+    }
 
 
     public function saveOrderLines($orderlines)

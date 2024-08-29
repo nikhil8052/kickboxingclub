@@ -13,8 +13,8 @@ class AllUsers extends Model
         return $this->hasOne(Locations::class,'location_id','home_location_id');
     }
 
-    public function membership(){
-        return $this->belongsTo(MembershipInstances::class,'user_id','user_id');
+    public function memberships(){
+        return $this->hasMany(MembershipInstances::class,'user_id','user_id');
     }
 
     public function getDateJoinedAttribute($value){

@@ -9,7 +9,7 @@ use App\Models\Locations;
 use App\Models\MembershipInstances;
 use Carbon\Carbon;
 use App\Models\AllUsers;
-use App\Models\OrderLine;
+use App\Models\MembershipTrial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $locations = Locations::all();
         $locationId = $request->input('location');
         $location = Locations::find($locationId);
+
 
         $date = $request->input('dates');
         if ($date) {
@@ -43,6 +44,8 @@ class DashboardController extends Controller
         $queryCancelMemberships = MembershipInstances::query();
         $TrialSoldMemberships = MembershipInstances::query();
         $visitorsdata = AllUsers::query();
+
+
         
         if ($startDate && $endDate) {
             $TotalsalesCompleted->whereBetween(DB::raw('date_created_copy'), [Carbon::parse($startDate), Carbon::parse($endDate)]);
@@ -51,7 +54,7 @@ class DashboardController extends Controller
 
             $queryOrders->whereBetween(DB::raw('date_created_copy'), [$startDate, $endDate]);
             $queryMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
-            $queryCancelMemberships->whereBetween('end_date', [$startDate, $endDate]);
+            $queryCancelMemberships->whereBetween('end_date_copy', [$startDate, $endDate]);
             $TrialSoldMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
             $visitorsdata->whereBetween(DB::raw('STR_TO_DATE(date_joined, "%Y-%m-%d")'), [$startDate, $endDate]);
         }
@@ -141,9 +144,21 @@ class DashboardController extends Controller
             ->value('count');
 
         $totalMemberships = $queryMemberships->count();
-        $activeMemberships = $queryMemberships->clone()->where('status', 'active')->whereIn('membership_type_id',[2985,2922,2919,2921,2920,2918,3053,2984,3052])->count();
-        $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['cancelled', 'terminated','payment_failure','ding_failure'])->whereIn('membership_type_id',[2985,2922,2919,2921,2920,2918,3053,2984,3052])->count();
-        $TrialSoldMembershipsCount = $TrialSoldMemberships->whereIn('membership_type_id',[3085,2952,2951])->count();
+        $activeMemberships = $queryMemberships->clone()->whereIn('status',[ 'active','pending_customer_activation','pending_start_date'])->count();
+        $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['active','cancelled', 'terminated','payment_failure','ding_failure'])->count();
+
+
+        $membershipstrail = MembershipTrial::all();
+        $membershipstrailnames = [];
+        foreach($membershipstrail as $trial) {
+            $membershipstrailnames[] = $trial->name;
+        }
+        $TrialSoldMembershipsCount = $TrialSoldMemberships->where(function ($query) use ($membershipstrailnames) {
+            foreach ($membershipstrailnames as $trialName) {
+                $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+            }
+        })->count();
+
         
         $allvisitors = $visitorsdata->count();
         if ($request->ajax()) {
@@ -255,7 +270,7 @@ class DashboardController extends Controller
             });
         }
     
-        $query->with(['location','membership']);
+        $query->with(['location','memberships']);
     
         $allusers = $query->get();
     

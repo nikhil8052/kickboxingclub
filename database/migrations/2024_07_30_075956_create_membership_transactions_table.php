@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('type')->nullable();
             $table->string('membership_name')->nullable();
+            $table->string('membership_transactions_id')->nullable();
             $table->bigInteger('transaction_amount')->nullable();
             $table->string('user_id')->default(0);
             $table->string('membership_instances_id')->nullable();

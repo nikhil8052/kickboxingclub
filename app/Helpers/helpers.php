@@ -83,6 +83,9 @@ use Illuminate\Support\Facades\Http;
 
     function convertToUSATimezone($utcDate)
     {
+        if(!$utcDate){
+            return null;
+        }
         
         $date = Carbon::parse($utcDate);
 

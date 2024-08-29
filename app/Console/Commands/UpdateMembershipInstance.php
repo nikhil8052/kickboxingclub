@@ -49,7 +49,7 @@ class UpdateMembershipInstance extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 100; 
+        $pageSize = 500; 
         $hasMorePages = true;
 
         while ($hasMorePages) {
@@ -114,15 +114,32 @@ class UpdateMembershipInstance extends Command
 
                     $or->billing_cycles = json_encode($order['attributes']['billing_cycles']) ?? null;
                     $or->billing_type = $order['attributes']['billing_type'] ?? null;
-                    $or->calculated_end_datetime = $order['attributes']['calculated_end_datetime'] ? Carbon::parse($order['attributes']['calculated_end_datetime']) : null;
-                    $or->calculated_start_datetime = $order['attributes']['calculated_start_datetime'] ? Carbon::parse($order['attributes']['calculated_start_datetime']) : null;
-                    // $or->cancellation_datetime = Carbon::parse($order['attributes']['cancellation_datetime']) ?? null;
-                    $or->cancellation_datetime = $order['attributes']['cancellation_datetime'] ? Carbon::parse($order['attributes']['cancellation_datetime']) : null;
+
+                    $calculated_end_datetime =  isset( $order['attributes']['calculated_end_datetime'])  ? Carbon::parse( $order['attributes']['calculated_end_datetime']) : null;
+                    $calculated_start_datetime =  isset( $order['attributes']['calculated_start_datetime'])  ? Carbon::parse( $order['attributes']['calculated_start_datetime']) : null;
+
+                    $or->calculated_end_datetime =  $calculated_end_datetime;
+                    $or->calculated_end_datetime_copy = convertToUSATimezone($calculated_end_datetime);
+
+                    $or->calculated_start_datetime =  $calculated_start_datetime;
+                    $or->calculated_start_datetime_copy = convertToUSATimezone($calculated_start_datetime);
+
+                    $cancellation_datetime =  isset( $order['attributes']['cancellation_datetime'])  ? Carbon::parse( $order['attributes']['cancellation_datetime']) : null;
+                    $or->cancellation_datetime = $cancellation_datetime;
+                    $or->cancellation_datetime_copy = convertToUSATimezone($cancellation_datetime);
+
+
                     $or->cancellation_reason = $order['attributes']['cancellation_reason'] ?? null;
                     $or->commitment_length = $order['attributes']['commitment_length'] ?? null;
-                    $or->end_date = $order['attributes']['end_date'] ? Carbon::parse($order['attributes']['end_date']) : null;
+
+                    $end_date =  isset( $order['attributes']['end_date'])  ? Carbon::parse( $order['attributes']['end_date']) : null;
+                    $or->end_date = $end_date;
+                    $or->end_date_copy = convertToUSATimezone($end_date);
+                    // $or->end_date = $order['attributes']['end_date'] ? Carbon::parse($order['attributes']['end_date']) : null;
+
                     $or->freeze_datetime = $order['attributes']['freeze_datetime'] ? Carbon::parse($order['attributes']['freeze_datetime']) : null;
                     $or->freeze_reactivation_datetime =$order['attributes']['freeze_reactivation_datetime'] ?? null;
+
                     $or->guest_usage_interval_limit = $order['attributes']['guest_usage_interval_limit'] ?? null;
                     $or->is_intro_offer =$order['attributes']['is_intro_offer'] ?? null;
                     $or->last_interval_remaining_guest_usage_count = $order['attributes']['last_interval_remaining_guest_usage_count'];
@@ -136,8 +153,12 @@ class UpdateMembershipInstance extends Command
                     $or->payment_interval_end_date = $order['attributes']['payment_interval_end_date'] ?? null;
                     $or->payment_interval_length =$order['attributes']['payment_interval_length'] ?? null;
                     $or->payment_interval_start_date = $order['attributes']['payment_interval_start_date'];
-                    $or->purchase_date = $order['attributes']['purchase_date'] ? Carbon::parse($order['attributes']['purchase_date']) : null;
-                    $or->purchase_date_copy = $order['attributes']['purchase_date'] ? Carbon::parse($order['attributes']['purchase_date']) : null;
+
+                    $purchase_date =  isset( $order['attributes']['purchase_date'])  ? Carbon::parse( $order['attributes']['purchase_date']) : null;
+
+                    $or->purchase_date = $purchase_date;
+                    $or->purchase_date_copy = convertToUSATimezone($purchase_date);
+
                     $or->remaining_renewal_count = $order['attributes']['remaining_renewal_count'];
                     $or->renewal_count = $order['attributes']['renewal_count'] ?? null;
                     $or->renewal_currency = $order['attributes']['renewal_currency'] ?? null;
@@ -147,7 +168,12 @@ class UpdateMembershipInstance extends Command
 
                     $or->scheduled_end_datetime = $order['attributes']['scheduled_end_datetime'] ?? null;
                     $or->should_display_price_include_tax = $order['attributes']['should_display_price_include_tax'] ?? null;
-                    $or->start_date = $order['attributes']['start_date'] ? Carbon::parse($order['attributes']['start_date']) : null;
+
+                    $start_date =  isset( $order['attributes']['start_date'])  ? Carbon::parse( $order['attributes']['start_date']) : null;
+                    $or->start_date = $start_date;
+                    $or->start_date_copy = convertToUSATimezone($start_date);
+                    // $or->start_date = $order['attributes']['start_date'] ? Carbon::parse($order['attributes']['start_date']) : null;
+
                     $or->status = $order['attributes']['status'] ?? null;
                     $or->usage_interval_limit = $order['attributes']['usage_interval_limit'] ?? null;
 

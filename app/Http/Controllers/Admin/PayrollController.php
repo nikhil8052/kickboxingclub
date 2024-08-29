@@ -41,6 +41,7 @@ class PayrollController extends Controller
         }
 
         $shifts = $alldata->with(['employee.user'])->with('location')->get();
+        
         return response()->json([
             'shifts' => $shifts
          ]);

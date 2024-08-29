@@ -16,10 +16,10 @@
             <div class="col-md-3">
                 <div class="form-control-wrap">
                     <label class="form-label" for="location_filter">Filter by Location:</label>
-                    <select  id="location_filter" class="form-select" name="location_filter">
-                        <option value="">All</option>
+                    <select  id="location_filter" class="form-select js-select2 select2-hidden-accessible" data-placeholder="select location" multiple="" name="location_filter[]" data-select2-id="9" tabindex="-1" aria-hidden="true">
+                        {{-- <option value="">All</option> --}}
                         @foreach($locations as $location)
-                            <option data-id="{{ $location->id }}" value="{{ $location->name }}">{{ $location->name }}</option>
+                            <option data-id="{{ $location->location_id }}" value="{{ $location->name }}">{{ $location->name }}</option>
                         @endforeach
                     </select>
                 </div>

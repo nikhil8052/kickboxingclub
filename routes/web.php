@@ -13,6 +13,7 @@ use App\Http\Controllers\Webhooks\WebhookController;
 use App\Http\Controllers\MarianaController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\Admin\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,8 +42,8 @@ Route::get('/webhooks',[WebhookController::class,'handle']);
 
 Route::group(['middleware' =>['auth']],function(){
 
-    Route::get('/admin-dashboard',[DashboardController::class,'Dashboard']);
-    Route::get('/sales-data', [DashboardController::class, 'salesData']);
+    Route::get('/admin-dashboard',[DashboardController::class,'Dashboard'])->middleware('permission:7');;
+    Route::get('/sales-data', [DashboardController::class, 'salesData'])->middleware('permission:7');;
 
     Route::get('/admin-dashboard/users',[DashboardController::class,'Users'])->name('admin.dashboard.users')->middleware('permission:4');
     Route::get('/admin-dashboard/get-users',[DashboardController::class,'GetUsers'])->middleware('permission:4');
@@ -86,8 +87,7 @@ Route::group(['middleware' =>['auth']],function(){
 
     Route::get('/admin-dashboard/memberships-instances',[MembershipController::class,'Instances'])->name('admin.dashboard.Instances')->middleware('permission:1');
     Route::get('/admin-dashboard/get-instances',[MembershipController::class,'GetInstances'])->middleware('permission:1');
-    Route::get('/admin-dashboard/export-instances',[MembershipController::class,'exportInstances'])->middleware('permission:1');
-
+   
     Route::get('/admin-dashboard/update-records-automatically',[UpdateDatabaseController::class,'saveUsersdata']);
 
     Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll'])->middleware('permission:2');
@@ -97,6 +97,10 @@ Route::group(['middleware' =>['auth']],function(){
     Route::get('admin-dashboard/add-user',[UserController::class,'AddUser'])->name('add.user')->middleware('admin');
     Route::post('admin-dashboard/user-addProcc',[UserController::class,'UserAddProcc'])->name('user.addProcc')->middleware('admin');
     Route::get('admin-dashboard/user-remove/{id}',[UserController::class,'UserRemove'])->name('user.remove')->middleware('admin');
+
+    Route::get('admin-dashboard/settings/',[SettingController::class,'index'])->name('admin.dashboard.Settings')->middleware('admin');
+    Route::post('admin-dashboard/update/credentials/',[SettingController::class,'updateCredentials'])->middleware('admin');
+    Route::post('admin-dashboard/update/trials/',[SettingController::class,'updateTrials'])->middleware('admin');
 });
 
 Route::get('/test-api/{api}',[TestController::class,'testapi'])->name('test.api');

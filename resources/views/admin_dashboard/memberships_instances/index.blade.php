@@ -49,7 +49,8 @@
                                 <table id="instance_data_table" class="nowrap nk-tb-list nk-tb-ulist table table-tranx dataTable" data-auto-responsive="false">
                                     <thead>
                                         <tr class="nk-tb-item nk-tb-head">
-                                            <!-- <th class="nk-tb-col"><span class="sub-text">Membership Id</span></th> -->
+                                             <th class="nk-tb-col"><span class="sub-text">Membership Id</span></th> 
+                                             <th class="nk-tb-col"><span class="sub-text">Membership Type</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Membership Name</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">Location</span></th>
                                             <th class="nk-tb-col"><span class="sub-text">User</span></th>
@@ -193,9 +194,11 @@
             var rows = [];
 
             $.each(data, function(index, item) {
+                var membership_id = item.membership_id;
                 var membershipName = item.membership_name;
-                var location = item.user && item.user.location ? item.user.location.name : 'unknown';
+                var location = item.locations ? item.locations.name : 'unknown';
                 var user = item.user ? item.user.full_name : 'unknown';
+                var memType = item.membership ? item.membership.name : 'unknown';
                 var startDate = item.start_date;
                 var endDate = item.end_date;
                 var status = item.status;
@@ -203,6 +206,8 @@
                 var price = item.renewal_rate;
 
                 rows.push([
+                    membership_id,
+                    memType,
                     membershipName,
                     location,
                     user,

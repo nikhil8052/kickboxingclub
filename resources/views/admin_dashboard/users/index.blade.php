@@ -2,8 +2,8 @@
 @section('content')
 
 @section('css')
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 @endsection
 
 
@@ -19,7 +19,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label class="form-label" for="location">Locations</label>
-                    <select name="location" id="location" class="form-select" name="location">
+                    <select name="location" id="location" class="form-select" name="location" >
                     @if(isset($locations) && $locations != null)
                         <option value="">All</option>
                         @foreach($locations as $location)
@@ -174,6 +174,7 @@
         });
 
         function usersFilter(location, startDate, endDate) {
+            $('#overlay').show();
             var data = {
                 start_date: startDate,
                 end_date: endDate,
@@ -186,9 +187,11 @@
                 data: data, 
                 success: function(response) {
                     updateUsersTable(response.data);
+                    $('#overlay').hide();
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX error:", status, error);
+                    $('#overlay').hide();
                 }
             });
         }
@@ -208,9 +211,26 @@
                 var signedWaver = item.signed_waiver ? 'Yes' : 'No';
                 var waverSignedDatetime = item.waiver_signed_datetime;
 
-                var membership = item.membership ? item.membership : null; 
+                var memberships = item.memberships ? item.memberships : null;
+                var activeuser = false;
+                if (memberships && memberships.length > 0) {
+                    if (memberships.length === 1) {
+                       
+                        if(memberships &&( memberships[0].status == 'active' || memberships[0].status == 'pending_customer_activation' || memberships[0].status == 'pending_start_date')) {
+                            activeuser = true;
+                        } else {
+                            activeuser = false;
+                        }
+                    } else {
+                        memberships.forEach((membership) => {
+                            if(membership &&( membership.status == 'active' || membership.status == 'pending_customer_activation' || membership.status == 'pending_start_date')) {
+                                activeuser = true;
+                            } 
+                        });
+                    }
+                } 
 
-                if(membership &&( membership.status == 'active' || membership.status == 'pending_customer_activation')) {
+                if(activeuser) {
                     rows.push([
                         userID,
                         fullName,

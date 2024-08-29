@@ -211,6 +211,10 @@
                         var cellText = $(this).text().trim(); 
                         rowData.push(cellText.replace(/,/g, "")); 
                     });
+                    $(this).find('th').each(function () {
+                        var cellText = $(this).text().trim(); 
+                        rowData.push(cellText.replace(/,/g, "")); 
+                    });
                     csvContent += rowData.join(',') + "\n"; 
                 });
 
@@ -220,7 +224,7 @@
                 if (link.download !== undefined) { 
                     var url = URL.createObjectURL(blob);
                     link.setAttribute('href', url);
-                    link.setAttribute('download', 'export.csv');
+                    link.setAttribute('download', 'Payroll_Export.csv');
                     link.style.visibility = 'hidden';
                     document.body.appendChild(link);
                     link.click();

@@ -112,9 +112,11 @@
                     <div class="nk-sidebar-content">
                         <div class="nk-sidebar-menu" data-simplebar>
                             <ul class="nk-menu main-ul">
+                            @if (Auth::user()->hasPermission('7')) 
                                 <li class="nk-menu-heading menu-li">
                                     <a href="{{ url('/admin-dashboard') }}"><h6 class="overline-title text-primary-alt">Dashboard</h6></a>
                                 </li>
+                            @endif
                                 <!-- <li class="nk-menu-item has-sub">
                                     <a href="{{ url('/admin-dashboard/total-sales') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon"><i class="fa-solid fa-chart-bar"></i></span>
@@ -234,6 +236,18 @@
                                         <ul class="nk-menu-sub ul-sub"> 
                                             <li class="nk-menu-item li-sub">
                                                 <a href="{{ url('/admin-dashboard/add-user') }}" class="nk-menu-link"><span class="nk-menu-text">Add user</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa fa-gear"></i></span>
+                                            <span class="nk-menu-text">Settings</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub">
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/settings') }}" class="nk-menu-link"><span class="nk-menu-text">Settings</span></a>
                                             </li>
                                         </ul>
                                     </li>

@@ -5,6 +5,11 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 @endsection
 <div class="nk-content ">
+    <style>
+        /* .filter-options input.select2-search__field {
+            width: 100% !important;
+        } */
+    </style>
     <div class="container-fluid">
         <div class="nk-content-inner">
             <div class="nk-content-body">
@@ -31,14 +36,12 @@
                                                 <div class="d-flex">
                                                     <span><label class="form-label" for="default-06">Location</label></span>
                                                     <div class="form-control-wrap ">
-                                                        <div class="form-control-select">
-                                                            <select class="form-control" name="location" id="location">
-                                                                <option value="">All</option>
-                                                                @foreach($locations as $location)
-                                                                    <option data-id="{{ $location->name }}" value="{{ $location->location_id }}">{{ $location->name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
+                                                        <select  id="location" class="form-select" data-placeholder="select location"  name="location" >
+                                                            <option value="">All</option>
+                                                            @foreach($locations as $location)
+                                                                <option data-id="{{ $location->name }}" value="{{ $location->location_id }}">{{ $location->name }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </li>
@@ -670,7 +673,10 @@
                                `);
         }
 
-        $('#date-range-picker,#location').on('change',function(){
+        $('#date-range-picker').on('change',function(){
+            $('#filterForm').submit();
+        });
+        $('#location').on('change',function(){
             $('#filterForm').submit();
         });
 

@@ -55,7 +55,7 @@ class TestController extends Controller
             $body = $response->getBody()->getContents();
             $data = json_decode($body, true);
             
-            $savedOrders =  $this->saveMemberships($data['data']);
+            // $savedOrders =  $this->saveMemberships($data['data']);
 
             echo "<pre>";
             print_r($body);

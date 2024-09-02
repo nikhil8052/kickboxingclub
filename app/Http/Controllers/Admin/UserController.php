@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\RolePermission;
 use App\Models\Permission;
 use App\Models\User;
+use App\Models\Employees;
 use Hash;
 
 class UserController extends Controller
@@ -14,8 +15,16 @@ class UserController extends Controller
     public function AddUser()
     {
         $permissions = Permission::all();
-        $users = User::where('is_admin',0)->get();
-        return view('admin_dashboard.add_users.index',compact('permissions','users'));
+        $users = User::whereNot('is_admin',1)->get();
+        $employees  = Employees::with(['user.location'])->where('is_active',1)->get();
+        return view('admin_dashboard.add_users.index',compact('permissions','users','employees'));
+    }
+
+    public function GetEmpData(Request $request)
+    {
+        $employee  = Employees::with(['user.location'])->where('employee_id',$request->id)->first();
+
+        return response()->json(['employee' => $employee]);
     }
 
     public function UserAddProcc(Request $request)
@@ -24,7 +33,7 @@ class UserController extends Controller
             $request->validate([
                 'first_name' => 'required',
                 'email' => 'required|email',
-                // 'password' => 'required',
+                // 'user_type' => 'required',
             ]);
 
             $user = User::find($request->id);
@@ -37,9 +46,12 @@ class UserController extends Controller
                 }
             } 
             $user->name = $request->first_name." ".$request->last_name;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->is_admin = 0;
+            if($request->password){
+                $user->password = Hash::make($request->password);
+            }
             $user->save();
 
             if($user && !empty($request->permissions)){
@@ -63,12 +75,13 @@ class UserController extends Controller
                 }
             }
             return redirect()->back()->with('success',' User Updated successfully');
-        } else {
+        } else {    
 
             $request->validate([
                 'first_name' => 'required',
                 'email' => 'required|email',
                 'password' => 'required',
+                'user_type' => 'required',
             ]);
 
             $olduser = User::where('email',$request->email)->first();
@@ -76,9 +89,19 @@ class UserController extends Controller
                 $user = new User();
     
                 $user->name = $request->first_name." ".$request->last_name;
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
-                $user->is_admin = 0;
+                if($request->user_type == 'employee' && isset($request->employee)) {
+                    $user->type = 'employee';
+                    $user->employee_id = $request->employee;
+                    $user->is_admin = 2;
+                } else {
+                    $user->type = 'user';
+                    $user->is_admin = 0;
+                }
+            
                 $user->save();
     
                 if($user && !empty($request->permissions)){

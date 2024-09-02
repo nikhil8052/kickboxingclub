@@ -1,10 +1,43 @@
 @extends('admin_layout.master')
 @section('content')
-    @section('css')
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
-    @endsection
+
+@section('css')
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+
+    <style>
+        table#payrolesTable .employee-name {
+            cursor: pointer;
+            /* text-decoration: underline; */
+        }
+
+        .close{
+            text-decoration: none;
+        }
+    </style>
+@endsection
+
     <div class="nk-content">
+        <div class="modal fade" id="modalForm">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Employee Details</h5>
+                        <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <em class="icon ni ni-cross"></em>
+                        </a>
+                    </div>
+                    <div class="modal-body">
+                        <p>Employee name: <span id="name">kjfhhuihi</span></p>
+                        <p>Location: <span id="location_id">erfr</span></p>
+                        <p>Start Date: <span id="start_date">erfr</span</p>
+                        <p>End Date: <span id="end_date">erfr</span</p>
+                        <p>Duration: <span id="duration">erfr</span</p>
+                        <p>Total Payrate: <span id="total-pay">erfr</span</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container-fluid">
             <div class="d-flex paper card-preview card-bordered p-4 mb-3 date-filter">
                 <div class="col-md-4">
@@ -46,7 +79,6 @@
                                     <thead>
                                         <tr class="nk-tb-item nk-tb-head">
                                             <td class="nk-tb-col">Sno.</td>
-                                            <!-- <td class="nk-tb-col">Employee ID</td> -->
                                             <td class="nk-tb-col">Employee Name</td>
                                             <td class="nk-tb-col">Location</td>
                                             <td class="nk-tb-col">Start Date</td>
@@ -55,7 +87,6 @@
                                             <td class="nk-tb-col">End time</td>
                                             <td class="nk-tb-col">Duration</td>
                                             <td class="nk-tb-col">Regular PayRate</td>
-                                            <!-- <td class="nk-tb-col">Instructor PayRate</td> -->
                                         </tr>
                                     </thead>
                                     <tbody id="payroll-table-data">
@@ -86,17 +117,14 @@
                     startDate: start,
                     endDate: end,
                     ranges: {
-                            Today: [moment(), moment()],
-                            Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                            "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                            "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                            "This Month": [moment().startOf("month"), moment().endOf("month")],
-                            "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                        Today: [moment(), moment()],
+                        Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                        "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                        "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                        "This Month": [moment().startOf("month"), moment().endOf("month")],
+                        "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
                     },
                 },
-                // function (start, end, label) {
-                //         filterData(start, end);
-                // }
             );
     
         });
@@ -140,17 +168,16 @@
 
                 $.each(data, function(index, item) {
                     var employeeName = item.employee && item.employee.user ? item.employee.user.full_name : 'Unknown';
+                    var emp_id = item.employee && item.employee.user ? item.employee.user.user_id : 'undefined';
                     var startDateTime = formatDateTime(item.start_datetime);
                     var endDateTime = formatDateTime(item.end_datetime);
                     var totalDuration = secondsToTime(Math.floor(item.duration || 0));
                     var regularPay = item.regular_pay_amount.toFixed(2);
-                    // var instructorPay = item.instructor_pay_amount;
-                    // console.log(item.regular_pay_amount);
 
                     var row = `
                         <tr>
                             <td>${index + 1}</td>
-                            <td>${employeeName}</td>
+                            <td class="employee-name" data-id=${emp_id}' data-location=${item.location.location_id}>${employeeName}</td>
                             <td>${item.location.name}</td>
                             <td>${startDateTime.date}</td>
                             <td>${startDateTime.time}</td>
@@ -162,7 +189,64 @@
                     `;
                     table.append(row); 
                 });
-                
+
+                $('.employee-name').on('click', function(e) {
+                    e.preventDefault();
+                    var id = $(this).data('id');
+                    var locationId = $(this).data('location');
+                    var dateRange = $('#date-range-picker').val();
+                    var dates = dateRange.split(" - ");
+                    startDate = dates[0];
+                    endDate = dates[1];
+                    employeeDetails(id,locationId,startDate,endDate);
+                    // $('#modalForm').modal('show');
+                });
+
+                function employeeDetails(id,locationId,startDate,endDate){
+                    var data = {
+                        id: id,
+                        location_id: locationId,
+                        startDate: startDate,
+                        endDate: endDate,
+                        _token: "{{ csrf_token() }}"
+                    }
+                    $.ajax({
+                        url: "{{ url('admin-dashboard/get/employees/details') }}",
+                        type: "post",
+                        data: data,
+                        dataType: "json",
+                        success: function(response){
+
+                            if (response.success === true) {
+                                if (response.details) {
+                                    var details = response.details;
+                                    var totalPayrate = 0;
+                                    var totalDuration = 0;
+                                    $.each(details, function(key, val) {
+                                        totalPayrate += parseFloat(val.regular_pay_amount);
+                                        var name = val.employee.user.full_name;
+                                        var location = val.location.name;
+                                        var startDate = data.startDate;
+                                        var endDate = data.endDate;
+                                        totalDuration += parseFloat(val.duration);
+                                        duration = secondsToTime(Math.floor(totalDuration || 0));
+
+                                        $("#name").html(name);
+                                        $("#location_id").html(location);
+                                        $("#start_date").html(startDate);
+                                        $("#end_date").html(endDate);
+                                        $("#duration").html(duration);
+                                        $("#total-pay").html(totalPayrate.toFixed(2));
+                                    });
+                                }
+                                $('#modalForm').modal('show');
+                            }
+                        },
+                        error: function(error) {
+                            console.log("AJAX error:",error);
+                        }
+                    })
+                }
             }
 
             function formatDateTime(dateTimeString) {
@@ -194,7 +278,6 @@
             $('#export-button').on('click', function () {
                 var csvContent = '';
 
-                // Fix the selection to use the correct header element
                 var headers = [];
                 $('#payrolesTable thead tr.nk-tb-head td').each(function () {
                     var headerText = $(this).text().trim();

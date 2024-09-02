@@ -139,8 +139,10 @@
           
           if(status !== '' && status !== null && status !== undefined){
                $('#'+status).addClass('active');
+               
           }
      });
+    
 </script>
 
 <script>

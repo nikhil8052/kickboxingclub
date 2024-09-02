@@ -109,14 +109,26 @@ class UpdatetimeClockShifts extends Command
                     $time_clock = new TimeClockShift();
                     $time_clock->type = $data['type'];
                     $time_clock->time_clock_id = $data['id'];
-                    $time_clock->start_datetime = $attributes['start_datetime'] ? Carbon::parse($attributes['start_datetime']) : null;
-                    $time_clock->end_datetime =  $attributes['end_datetime'] ? Carbon::parse($attributes['end_datetime']) : null;
+
+                    $enddate = $attributes['end_datetime'] ? Carbon::parse($attributes['end_datetime']) : null;
+                    $startdate = $attributes['start_datetime'] ? Carbon::parse($attributes['start_datetime']) : null;
+
+                    $time_clock->start_datetime =  $startdate;
+                    $time_clock->end_datetime =  $enddate;
+
+                    $time_clock->start_datetime_copy =  convertToUSATimezone($startdate);
+                    $time_clock->end_datetime_copy =  convertToUSATimezone($enddate);
+
                     $time_clock->duration = $attributes['duration'];
                     $time_clock->user_has_turf_access = $attributes['user_has_turf_access'];
                     $time_clock->relationships = json_encode($relationships);
                     $time_clock->employee_id = $relationships['employee']['data']['id'];
                     $time_clock->location_id = $relationships['location']['data']['id'];
-                    $time_clock->save(); 
+
+                    
+                    if($enddate){
+                        $time_clock->save(); 
+                    }
                 }
 
             }

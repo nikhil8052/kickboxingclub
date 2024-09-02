@@ -65,24 +65,36 @@
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
                                                        <?php 
-                                                            $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
-                                                            // $membership_billing = App\Models\MembershipInstances::where('purchase_date',$current_date)->whereIn('status',['active','done'])->with('locations')->get();
-                                                            // $membership_billing = App\Models\Orders::where('date_placed_copy',$current_date)->where('status','Completed')->get();
+                                                           
+                                                            // $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
+                                                            // $membership_instance = App\Models\MembershipInstances::where('start_date_copy',$current_date)->whereIn('billing_type',['bill_on_start'])->with('order_lines','locations')->get();
+                                                            $orders = App\Models\Orders::where('date_placed_copy',$current_date)->with('orderlines.membership_instance')->get();
+                                                          
                                                        ?>
-                                                                                    
-                                                       @foreach($membership_billing as $billing)
-                                                            @if($billing->locations->name === 'Torrance')
-                                                                 <?php $torrance_billing += $billing->renewal_rate; ?>
-                                                            @elseif($billing->locations->name === 'Lakewood')
-                                                                 <?php $lakewood_billing += $billing->renewal_rate; ?>
-                                                            @elseif($billing->locations->name === 'Orange')
-                                                                 <?php $orange_billing += $billing->renewal_rate; ?>
+                                                       @foreach($orders as $order)
+                                                            <?php 
+                                                                 
+                                                                 $location = $order->location;
+                                                                 $line_total = $order->net_total;
+                                                            ?>
+                                                           
+                                                          
+                                                            @if($location === 'Torrance')
+                                                            <?php $torrance_billing += $line_total; ?>
+                                                            
+                                                            @elseif($location === 'Lakewood')
+                                                            <?php $lakewood_billing += $line_total; ?>
+                         
+                                                            @elseif($location === 'Orange')
+                                                            <?php $orange_billing += $line_total; ?>
                                                             @endif
+                                                                
                                                        @endforeach
+
 
                                                        <td>${{ number_format($torrance_billing) ?? '' }}</td>
                                                        <td>${{ number_format($lakewood_billing) ?? '' }}</td>
-                                                       <td>${{ number_format($orange_billing) ?? '' }}</td>
+                                                       <td>${{ number_format($orange_billing) ?? '' }}</td>   
                                                   </tr>
                                                   @endforeach
                                              @endif

@@ -227,6 +227,22 @@
                                         </ul>
                                     </li>
                                 @endif
+                                @if(Auth::user()->isEmployee())
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa fa-gear"></i></span>
+                                            <span class="nk-menu-text">Membership Sold</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub">
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ route('membership.sold') }}" class="nk-menu-link"><span class="nk-menu-text">Membership Sold</span></a>
+                                            </li>
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ route('membership.sold.stats') }}" class="nk-menu-link"><span class="nk-menu-text">Membership Sold Stats</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
                                 @if(Auth::user()->isAdmin())
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
@@ -239,7 +255,17 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    
+                                    <li class="nk-menu-item has-sub main-li">
+                                        <a href="#" class="nk-menu-link nk-menu-toggle">
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                            <span class="nk-menu-text">Memberships tracking</span>
+                                        </a>
+                                        <ul class="nk-menu-sub ul-sub"> 
+                                            <li class="nk-menu-item li-sub">
+                                                <a href="{{ url('/admin-dashboard/membership-tracking') }}" class="nk-menu-link"><span class="nk-menu-text">Memberships tracking</span></a>
+                                            </li>
+                                        </ul>
+                                    </li>
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
                                             <span class="nk-menu-icon"><i class="fa fa-gear"></i></span>

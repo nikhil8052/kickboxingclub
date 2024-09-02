@@ -27,9 +27,6 @@ class EmployeeStatController extends Controller
     }
 
     // public function getEmployees(Request $request) {
-    //     // $allemployees = Employees::where('type','employees')->with(['user.location','payrate'])->get();
-
-    //     // return response()->json(['data' => $allemployees]);
     //     $query = Employees::query();
     
     //     $startDate = $request->start_date;
@@ -38,7 +35,7 @@ class EmployeeStatController extends Controller
     
     //     if($startDate && $endDate){
     //         $start = Carbon::parse($startDate);
-    //         $end = Carbon::parse($endDate) ;
+    //         $end = Carbon::parse($endDate);
     
     //         $query->whereHas('user', function($q) use ($start, $end) {
     //             $q->whereBetween('date_joined', [$start, $end]);
@@ -53,54 +50,72 @@ class EmployeeStatController extends Controller
     
     //     $query->with(['user.location', 'payrate']);
     
-    //     $employees = $query->paginate($request->length, ['*'], 'page', $request->start / $request->length + 1);
-    
-    //     return response()->json([
-    //         'data' => $employees->items(),
-    //         'recordsTotal' => $employees->total(),
-    //         'recordsFiltered' => $employees->total(),
-    //     ]);
-    // }
-    
+    //     if ($request->has('export')) {
+    //         $employees = $query->get();
+    //         return response()->json(['data' => $employees]);
+    //     } else {
+    //         $employees = $query->paginate($request->length, ['*'], 'page', $request->start / $request->length + 1);
+    //         return response()->json([
+    //             'data' => $employees->items(),
+    //             'recordsTotal' => $employees->total(),
+    //             'recordsFiltered' => $employees->total(),
+    //         ]);
+    //     }
+    // }    
+
     public function getEmployees(Request $request) {
         $query = Employees::query();
     
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
-        $location = $request->location_id;
-    
-        if($startDate && $endDate){
-            $start = Carbon::parse($startDate);
-            $end = Carbon::parse($endDate);
+        if ($request->start_date && $request->end_date) {
+            $start = Carbon::parse($request->start_date);
+            $end = Carbon::parse($request->end_date);
     
             $query->whereHas('user', function($q) use ($start, $end) {
                 $q->whereBetween('date_joined', [$start, $end]);
             });
         }
     
-        if(!empty($location)){
-            $query->whereHas('user.location', function ($q) use ($location) {
-                $q->where('location_id', $location);
+        if (!empty($request->location_id)) {
+            $query->whereHas('user.location', function ($q) use ($request) {
+                $q->where('location_id', $request->location_id);
+            });
+        }
+
+        if ($request->has('search') && !empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $query->where(function ($q) use ($searchValue) {
+                $q->whereHas('user', function($q) use ($searchValue) {
+                    $q->where('full_name', 'like', "%{$searchValue}%")
+                      ->orWhere('email', 'like', "%{$searchValue}%")
+                      ->orWhere('country', 'like', "%{$searchValue}%");
+                })->orWhereHas('user.location', function($q) use ($searchValue) {
+                    $q->where('name', 'like', "%{$searchValue}%");
+                })->orWhereHas('payrate', function($q) use ($searchValue) {
+                    $q->where('regular_pay', 'like', "%{$searchValue}%")
+                      ->orWhere('instructor_pay', 'like', "%{$searchValue}%");
+                });
             });
         }
     
         $query->with(['user.location', 'payrate']);
     
         if ($request->has('export')) {
-            // If exporting, return all results
             $employees = $query->get();
             return response()->json(['data' => $employees]);
         } else {
-            // Otherwise, paginate the results
-            $employees = $query->paginate($request->length, ['*'], 'page', $request->start / $request->length + 1);
+            $length = $request->input('length', 10); 
+            $start = $request->input('start', 0); 
+            $page = ($start / $length) + 1; 
     
+            $employees = $query->paginate($length, ['*'], 'page', $page);
             return response()->json([
                 'data' => $employees->items(),
                 'recordsTotal' => $employees->total(),
                 'recordsFiltered' => $employees->total(),
             ]);
         }
-    }    
+    }
+    
 
     public function addPayRates(){
         return view('admin_dashboard.employees.add_pay_rates');

@@ -9,6 +9,11 @@ class AllUsers extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'first_name',
+        'last_name'
+    ];
+
     public function location(){
         return $this->hasOne(Locations::class,'location_id','home_location_id');
     }

@@ -47,6 +47,41 @@ class PayrollController extends Controller
          ]);
     }
 
+    public function getEmployeesPayrollDetails(Request $request){
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+        $user_id = $request->id;
+        $location = $request->location_id;
+
+        $query = TimeClockShift::query();
+
+        if($user_id){
+            $query->whereHas('employee.user', function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            });
+        }
+
+        if($location){
+            $query->where('location_id',$location)->get();
+        }
+
+        if($startDate && $endDate){
+            $start_d=Carbon::parse($startDate);
+            $end_d=Carbon::parse($endDate);
+            $query->where(function ($q) use ($start_d,$end_d ) {
+                $q->whereBetween('start_datetime', [$start_d, $end_d])
+                  ->orWhereBetween('end_datetime', [$start_d, $end_d]);
+            });
+        }
+
+        $employeeDetails = $query->with(['employee.user'])->with('location')->get();
+        
+        return response()->json([
+            'success' => true,
+            'details' => $employeeDetails
+        ]);
+    }
+
     public function PayrollStates(Request $request)
     {
         $startDate = $request->start_date;

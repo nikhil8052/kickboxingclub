@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Webhooks\WebhookController;
-use App\Http\Controllers\MarianaController;
+use App\Http\Controllers\Admin\MembershipSoldController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Admin\SettingController;
@@ -93,14 +93,31 @@ Route::group(['middleware' =>['auth']],function(){
     Route::get('admin-dashboard/payroll',[PayrollController::class,'Payroll'])->middleware('permission:2');
     Route::get('admin-dashboard/payroll-stats',[PayrollController::class,'PayrollStates'])->middleware('permission:2');
     Route::get('admin-dashboard/get-payroll',[PayrollController::class,'GetPayroll'])->middleware('permission:2');
+    Route::post('admin-dashboard/get/employees/details/',[PayrollController::class,'getEmployeesPayrollDetails'])->middleware('permission:2');
 
     Route::get('admin-dashboard/add-user',[UserController::class,'AddUser'])->name('add.user')->middleware('admin');
     Route::post('admin-dashboard/user-addProcc',[UserController::class,'UserAddProcc'])->name('user.addProcc')->middleware('admin');
     Route::get('admin-dashboard/user-remove/{id}',[UserController::class,'UserRemove'])->name('user.remove')->middleware('admin');
 
+    Route::get('get-employee-data',[UserController::class,'GetEmpData'])->name('get.empData')->middleware('admin');
+
+
+    // Memnership sold Routes
+    Route::get('admin-dashboard/membership-sold',[MembershipSoldController::class,'SoldMembership'])->name('membership.sold')->middleware('employee');
+    Route::post('admin-dashboard/membership-sold-addProcc',[MembershipSoldController::class,'MembershipSoldAddProcc'])->name('membership.sold.addProcc')->middleware('employee');
+    Route::get('admin-dashboard/membership-sold-remove/{id}',[MembershipSoldController::class,'SoldMembershipremove'])->name('membership.sold.remove')->middleware('employee');
+    Route::get('admin-dashboard/membership-sold-stats',[MembershipSoldController::class,'SoldMembershipStats'])->name('membership.sold.stats')->middleware('employee');
+    Route::get('admin-dashboard/get-sold-memberships',[MembershipSoldController::class,'GetSoldMembershipStats'])->middleware('employee');
+
+    Route::get('admin-dashboard/membership-tracking',[MembershipSoldController::class,'AllSoldMemberships'])->name('sold.memberships');
+    Route::get('admin-dashboard/get-overall-sold-stats',[MembershipSoldController::class,'GetOverallStats']);
+
     Route::get('admin-dashboard/settings/',[SettingController::class,'index'])->name('admin.dashboard.Settings')->middleware('admin');
     Route::post('admin-dashboard/update/credentials/',[SettingController::class,'updateCredentials'])->middleware('admin');
+    Route::post('admin-dashboard/add/trials/',[SettingController::class,'addTrials'])->middleware('admin');
+    Route::post('admin-dashboard/add/active/members/',[SettingController::class,'addActiveMembers'])->middleware('admin');
     Route::post('admin-dashboard/update/trials/',[SettingController::class,'updateTrials'])->middleware('admin');
+    Route::post('admin-dashbaord/update/members/',[SettingController::class,'updateActiveMembers'])->middleware('admin');
 });
 
 Route::get('/test-api/{api}',[TestController::class,'testapi'])->name('test.api');

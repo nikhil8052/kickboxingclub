@@ -53,9 +53,19 @@ class User extends Authenticatable
         return $this->permissions()->pluck('permissions.id')->toArray();
     }
 
+    public function employee()
+    {
+        return $this->hasOne(Employees::class, 'employee_id', 'employee_id');
+    }
+
     public function isAdmin()
     {
         return $this->is_admin == 1;
+    }
+
+    public function isEmployee()
+    {
+        return $this->is_admin == 2;
     }
 
     public function hasPermission($permissionId)

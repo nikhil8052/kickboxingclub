@@ -145,8 +145,10 @@ class UpdateMembershipInstance extends Command
                     $or->last_interval_remaining_guest_usage_count = $order['attributes']['last_interval_remaining_guest_usage_count'];
                     $or->last_interval_remaining_usage_count =$order['attributes']['last_interval_remaining_usage_count'];
                     $or->membership_name = $order['attributes']['membership_name'];
-                    $or->next_charge_date = $order['attributes']['next_charge_date'] ?? null;
-                    $or->next_charge_date_display = $order['attributes']['next_charge_date_display'];
+
+                    $next_charge_date =  isset( $order['attributes']['next_charge_date'])  ? Carbon::parse( $order['attributes']['next_charge_date']) : null;
+                    $or->next_charge_date = $next_charge_date;
+                    $or->next_charge_date_display = convertToUSATimezone($next_charge_date);
 
                     $or->interval_start_date_display = $order['attributes']['interval_start_date_display'] ?? null;
                     $or->payment_interval =$order['attributes']['payment_interval'] ?? null;

@@ -22,6 +22,10 @@ class AllUsers extends Model
         return $this->hasMany(MembershipInstances::class,'user_id','user_id');
     }
 
+    public function employee(){
+        return $this->hasMany(Employees::class,'user_id','user_id');
+    }
+
     public function getDateJoinedAttribute($value){
         return formatDate($value);
     }

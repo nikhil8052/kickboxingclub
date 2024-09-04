@@ -61,7 +61,7 @@
                                             <th class="nk-tb-col"><span class="sub-text">Price</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="instance_data">
+                                    <tbody>
                                         
                                     </tbody>
                                 </table>

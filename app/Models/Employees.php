@@ -16,4 +16,8 @@ class Employees extends Model
     public function payrate(){
         return $this->hasOne(EmployeePayRate::class, 'employee_id', 'employee_id');
     }
+
+    public function shifts(){
+        return $this->hasOne(TimeClockShift::class,'employee_id','employee_id');
+    }
 }

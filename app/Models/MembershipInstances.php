@@ -37,6 +37,6 @@ class MembershipInstances extends Model
     }
 
     public function order_lines(){
-        return $this->hasOne(OrderLine::class,'membership_instance_id','membership_id');
+        return $this->hasMany(OrderLine::class,'membership_instance_id','membership_id');
     }
 }

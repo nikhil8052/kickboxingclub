@@ -28,12 +28,12 @@
                         </a>
                     </div>
                     <div class="modal-body">
-                        <p>Employee name: <span id="name">kjfhhuihi</span></p>
-                        <p>Location: <span id="location_id">erfr</span></p>
-                        <p>Start Date: <span id="start_date">erfr</span</p>
-                        <p>End Date: <span id="end_date">erfr</span</p>
-                        <p>Duration: <span id="duration">erfr</span</p>
-                        <p>Total Payrate: <span id="total-pay">erfr</span</p>
+                        <p>Employee name: <span id="name"></span></p>
+                        <p>Location: <span id="location_id"></span></p>
+                        <p>Start Date: <span id="start_date"></span</p>
+                        <p>End Date: <span id="end_date"></span</p>
+                        <p>Duration: <span id="duration"></span</p>
+                        <p>Total Payrate: <span id="total-pay"></span</p>
                     </div>
                 </div>
             </div>

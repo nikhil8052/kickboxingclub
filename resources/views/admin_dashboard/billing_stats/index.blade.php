@@ -69,16 +69,14 @@
                                                             // $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
                                                             // $membership_instance = App\Models\MembershipInstances::where('start_date_copy',$current_date)->whereIn('billing_type',['bill_on_start'])->with('order_lines','locations')->get();
                                                             $orders = App\Models\Orders::where('date_placed_copy',$current_date)->with('orderlines.membership_instance')->get();
-                                                          
                                                        ?>
-                                                       @foreach($orders as $order)
+                                                      @foreach($orders as $order)
                                                             <?php 
                                                                  
                                                                  $location = $order->location;
                                                                  $line_total = $order->net_total;
                                                             ?>
                                                            
-                                                          
                                                             @if($location === 'Torrance')
                                                             <?php $torrance_billing += $line_total; ?>
                                                             
@@ -90,7 +88,6 @@
                                                             @endif
                                                                 
                                                        @endforeach
-
 
                                                        <td>${{ number_format($torrance_billing) ?? '' }}</td>
                                                        <td>${{ number_format($lakewood_billing) ?? '' }}</td>

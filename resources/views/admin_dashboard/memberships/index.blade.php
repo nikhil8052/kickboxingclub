@@ -40,22 +40,6 @@
                          <div class="nk-block">
                               <div class="card card-bordered card-preview">
                                    <div class="card-inner">
-                                        <!-- <div class="nk-block-between g-3 p-2">
-                                             <div class="nk-block-head-content"></div>
-                                             <div class="nk-block-head-content">
-                                                  <div class="mbsc-form-group">
-                                                       <label for="location"><span class="d-none d-sm-inline-block">Location:</span></label>
-                                                       <select name="location" id="location" class="form-select">
-                                                       @if(isset($locations) && $locations != null)
-                                                            <option value="">All</option>
-                                                            @foreach($locations as $location)
-                                                                 <option value="{{ $location->location_id ?? '' }}">{{ $location->name ?? '' }}</option>
-                                                            @endforeach
-                                                       @endif
-                                                       </select>
-                                                  </div>
-                                             </div>
-                                        </div> -->
                                         <h6 class="mt-2">Active</h6>
                                         <div class="d-flex justify-content-end p-2">
                                              <div class="nk-block-head-content">

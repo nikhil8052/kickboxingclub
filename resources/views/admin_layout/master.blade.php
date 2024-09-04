@@ -182,6 +182,26 @@
                                         </ul>
                                     </li>
                                 @endif
+                                <li class="nk-menu-item has-sub main-li">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                        <span class="nk-menu-text">Lead</span>
+                                    </a>
+                                    <ul class="nk-menu-sub ul-sub">
+                                        <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/trials-purchased-not-scheduled') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Purchased and Not Scheduled</span></a>
+                                        </li>
+                                        <!-- <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/purchased-trial') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Purchased</span></a>
+                                        </li> -->
+                                        <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/active-trial') }}" class="nk-menu-link"><span class="nk-menu-text">Active Trials</span></a>
+                                        </li>
+                                        <li class="nk-menu-item li-sub">
+                                            <a href="{{ url('/admin-dashboard/complete-trials') }}" class="nk-menu-link"><span class="nk-menu-text">Complete Trials</span></a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 @if (Auth::user()->hasPermission('6')) 
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">

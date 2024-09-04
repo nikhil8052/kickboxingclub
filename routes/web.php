@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\MembershipSoldController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\LeadSectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,13 @@ Route::group(['middleware' =>['auth']],function(){
     Route::get('/admin-dashboard/locations',[AdminDashboardController::class,'locations']);
     Route::get('/admin-dashboard/get/locations',[AdminDashboardController::class,'getLocation']);
 
+    Route::get('/admin-dashboard/trials-purchased-not-scheduled',[LeadSectionController::class,'index']);
+    Route::get('/admin-dashboard/get/trial/purchased',[LeadSectionController::class,'getTrialsPurchased']);
+    Route::get('/admin-dashboard/purchased-trial',[LeadSectionController::class,'purchasedTrails']);
+    Route::get('/admin-dashboard/active-trial',[LeadSectionController::class,'activeTrails']);
+    Route::get('/admin-dashboard/get/active/trials',[LeadSectionController::class,'getActiveTrialsMembers']);
+    Route::get('/admin-dashboard/complete-trials',[LeadSectionController::class,'completeTrial']);
+    Route::get('/admin-dashboard/get/complete/trials',[LeadSectionController::class,'getCompleteTrial']);
 
     Route::get('/admin-dashboard/memberships',[AdminDashboardController::class,'memberships'])->middleware('permission:1');
     Route::post('/admin-dashboard/memberships/locations',[AdminDashboardController::class,'getMembershipByLocation'])->middleware('permission:1');
@@ -118,6 +126,9 @@ Route::group(['middleware' =>['auth']],function(){
     Route::post('admin-dashboard/add/active/members/',[SettingController::class,'addActiveMembers'])->middleware('admin');
     Route::post('admin-dashboard/update/trials/',[SettingController::class,'updateTrials'])->middleware('admin');
     Route::post('admin-dashbaord/update/members/',[SettingController::class,'updateActiveMembers'])->middleware('admin');
+
+   
+
 });
 
 Route::get('/test-api/{api}',[TestController::class,'testapi'])->name('test.api');

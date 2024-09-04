@@ -57,7 +57,6 @@ Route::group(['middleware' =>['auth']],function(){
 
     Route::get('/admin-dashboard/trials-purchased-not-scheduled',[LeadSectionController::class,'index']);
     Route::get('/admin-dashboard/get/trial/purchased',[LeadSectionController::class,'getTrialsPurchased']);
-    Route::get('/admin-dashboard/purchased-trial',[LeadSectionController::class,'purchasedTrails']);
     Route::get('/admin-dashboard/active-trial',[LeadSectionController::class,'activeTrails']);
     Route::get('/admin-dashboard/get/active/trials',[LeadSectionController::class,'getActiveTrialsMembers']);
     Route::get('/admin-dashboard/complete-trials',[LeadSectionController::class,'completeTrial']);

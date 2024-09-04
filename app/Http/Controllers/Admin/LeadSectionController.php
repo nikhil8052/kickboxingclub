@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TimeClockShift;
 use App\Models\ActiveMember;
 use App\Models\AllUsers;
+use App\Models\Locations;
+use Carbon\Carbon;
 
 class LeadSectionController extends Controller
 {
@@ -18,8 +20,17 @@ class LeadSectionController extends Controller
     }
 
     public function getTrialsPurchased(){
+        $timeClock = TimeClockShift::query();
+        $timeClock->select('employee_id')->groupBy('employee_id');
+        $classes = $timeClock->with('employee')->get();
+
+        $userIDs = [];
+        foreach($classes as $class){
+            $userIDs[] = $class->employee->user_id;
+        }
+     
         $membership_instance = MembershipInstances::query();
-        $membershipstrail = MembershipTrial::all();
+        $membershipstrail = MembershipTrial::where('status',1)->get();
 
         $membershipstrailnames = [];
         foreach($membershipstrail as $trial) {
@@ -32,87 +43,39 @@ class LeadSectionController extends Controller
             }
         });
 
-        // $membership_instance->select('user_id', DB::raw('count(user_id) as total_count'))
-        //     ->groupBy('user_id');
-
-        $membership_instance->whereIn('status',['pending_customer_activation']);
-        $trials = $membership_instance->with('user')->get();
-
-        return response()->json($trials);
+        $membership_instance->whereNotIn('user_id',$userIDs);
+        $membership_instance->whereIn('status',['active','done']);
+        $alluser = $membership_instance->with('user')->get();
+    
+        return response()->json($alluser);
     }
-
-    // public function getTrialsPurchased(){
-    //     $membershipstrailnames = MembershipTrial::where('status', 1)->pluck('name')->toArray();
-    //     $purchasedTrials = MembershipInstances::where(function ($query) use ($membershipstrailnames) {
-    //             foreach ($membershipstrailnames as $trialName) {
-    //                 $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-    //             }
-    //         })
-    //         ->whereIn('status', ['pending_customer_activation','pending_start_date','done','terminated','frozen','payment_failure','cancelled','ding_failure'])
-    //         ->select('user_id', DB::raw('count(user_id) as total_count'))
-    //         ->groupBy('user_id')
-    //         ->pluck('user_id')->toArray();
-
     
-
-    //     $activeMembers = MembershipInstances::whereIn('user_id', $purchasedTrials)
-    //         ->where(function ($query) use ($membershipstrailnames) {
-    //             foreach ($membershipstrailnames as $trialName) {
-    //                 $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-    //             }
-    //         })
-    //         ->where('status','active')
-    //         ->pluck('user_id')->toArray();
-    
-
-    //     $usersNotScheduled = array_diff($purchasedTrials, $activeMembers);
-    //     $usersNotScheduledDetails = AllUsers::whereIn('user_id', $usersNotScheduled)->get();
-
-    //     return response()->json($usersNotScheduledDetails);
-    // }
-    
-
-    public function purchasedTrails(){
-        return view('admin_dashboard.leads.purchased_trials');
-    }
 
     public function activeTrails(){
-        // $activeMembers = ActiveMember::where('status',1)->get();
-        // $membership_instance = MembershipInstances::query();
-
-        // $activeMemberTrials = [];
-
-        // foreach($activeMembers as $trials){
-        //     $activeMemberTrials[] = $trials->name;
-        // }
-
-        // // dd($activeMemberTrials);
-        
-        // $membership_instance->where(function ($query) use ($activeMemberTrials) {
-        //     foreach ($activeMemberTrials as $trialName) {
-        //         $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-        //     }
-        // });
-
-       
-
-        // $membership_instance->select('user_id', DB::raw('count(user_id) as total_count'))
-        //     ->groupBy('user_id');
-
-        // $membership_instance->where('status','active');
-        // $activetrials = $membership_instance->with('user')->get();
-
-        // dd($activetrials);
-
-
-        return view('admin_dashboard.leads.active_trials');
+        $locations = Locations::all();
+        return view('admin_dashboard.leads.active_trials',compact('locations'));
     }
 
-    public function getActiveTrialsMembers(){
-        // $activeMembers = ActiveMember::where('status',1)->get();
+    public function getActiveTrialsMembers(Request $request){
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
         $membership_instance = MembershipInstances::query();
-        $membershipstrail = MembershipTrial::where('status',1)->get();
 
+        if($startDate && $endDate){
+            $start = Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+    
+            $membership_instance->whereBetween('purchase_date_copy', [$start, $end]);
+        }
+
+        if($location != null){
+            $membership_instance->whereHas('user.location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
+        }
+
+        $membershipstrail = MembershipTrial::where('status',1)->get();
         $membershipstrailnames = [];
         foreach($membershipstrail as $trial) {
             $membershipstrailnames[] = $trial->name;
@@ -127,93 +90,103 @@ class LeadSectionController extends Controller
         $membership_instance->where('status','active');
         $activetrials = $membership_instance->with('user')->get();
 
-        return response()->json($activetrials);
-
+        return response()->json([
+            'data' => $activetrials
+        ]);
     }
 
 
     public function completeTrial(){
-        $membershipstrailnames = MembershipTrial::where('status', 1)->pluck('name')->toArray();
-        $completedTrials = MembershipInstances::where(function ($query) use ($membershipstrailnames) {
-                foreach ($membershipstrailnames as $trialName) {
-                    $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-                }
-            })
-            ->where('status', 'done')
-            ->select('user_id', DB::raw('count(user_id) as total_count'))
-            ->groupBy('user_id')
-            ->pluck('user_id')->toArray();
+        // $membership_instance = MembershipInstances::query();
+        // $membershipstrail = MembershipTrial::where('status',1)->get();
 
+        // $membershipstrailnames = [];
+        // foreach($membershipstrail as $trial){
+        //     $membershipstrailnames[] = $trial->name;
+        // }
+
+        // $membership_instance->where(function ($query) use ($membershipstrailnames) {
+        //     foreach ($membershipstrailnames as $trialName) {
+        //         $query->orWhere('membership_name', 'NOT LIKE', "%$trialName%");
+        //     }
+        // });
+
+        // $membership_instance->where('status','active');
+        // $activeMembers = $membership_instance->with('user')->get();
+
+        // dd($activeMembers);
+
+        $locations = Locations::all();
+        return view('admin_dashboard.leads.complete_trial',compact('locations'));
+    }
+
+    public function getCompleteTrial(Request $request){
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $location = $request->location_id;
+        $membership_instance = MembershipInstances::query();
+
+        if($startDate && $endDate){
+            $start = Carbon::parse($startDate);
+            $end = Carbon::parse($endDate);
+    
+            $membership_instance->whereBetween('purchase_date_copy', [$start, $end]);
+        }
+
+        if($location != null){
+            $membership_instance->whereHas('user.location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
+        }
+
+        $membershipstrail = MembershipTrial::where('status',1)->get();
+
+        $membershipstrailnames = [];
+        foreach($membershipstrail as $trial) {
+            $membershipstrailnames[] = $trial->name;
+        }
+
+        $membership_instance->where(function ($query) use ($membershipstrailnames) {
+            foreach ($membershipstrailnames as $trialName) {
+                $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+            }
+        });
         
+        $membership_instance->whereIn('status',['pending_customer_activation','pending_start_date']);
+        $completetrials = $membership_instance->with('user')->get();
 
-        $nonMembers = MembershipInstances::whereIn('user_id', $completedTrials)
-            ->where(function ($query) use ($membershipstrailnames) {
-                foreach ($membershipstrailnames as $trialName) {
-                    $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-                }
-            })
-            ->whereIn('status',['active'])
-            ->pluck('user_id')->toArray();
-
-        $usersNotMembers = array_diff($completedTrials, $nonMembers);
-        
-        $usersNotMembersDetails = AllUsers::whereIn('user_id', $usersNotMembers)->get();
-        // dd($usersNotMembersDetails);
-
-        return view('admin_dashboard.leads.complete_trial');
+        return response()->json([
+            'data' => $completetrials
+        ]);
     }
 
     // public function getCompleteTrial(){
-    //     $membership_instance = MembershipInstances::query();
-    //     $membershipstrail = MembershipTrial::where('status',1)->get();
+    //     $membershipstrailnames = MembershipTrial::where('status', 1)->pluck('name')->toArray();
+    //     $completedTrials = MembershipInstances::where(function ($query) use ($membershipstrailnames) {
+    //             foreach ($membershipstrailnames as $trialName) {
+    //                 $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+    //             }
+    //         })
+    //         ->whereIn('status',['pending_start_date','pending_customer_activation'])
+    //         ->select('user_id', DB::raw('count(user_id) as total_count'))
+    //         ->groupBy('user_id')
+    //         ->pluck('user_id')->toArray();
 
-    //     $membershipstrailnames = [];
-    //     foreach($membershipstrail as $trial) {
-    //         $membershipstrailnames[] = $trial->name;
-    //     }
-
-    //     $membership_instance->where(function ($query) use ($membershipstrailnames) {
-    //         foreach ($membershipstrailnames as $trialName) {
-    //             $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-    //         }
-    //     });
         
-    //     $membership_instance->where('status','done');
-    //     $membership_instance->select('user_id', DB::raw('count(user_id) as total_count'))
-    //     ->groupBy('user_id');
 
-    //     $completetrials = $membership_instance->with('user')->get();
+    //     $nonMembers = MembershipInstances::whereIn('user_id', $completedTrials)
+    //         ->where(function ($query) use ($membershipstrailnames) {
+    //             foreach ($membershipstrailnames as $trialName) {
+    //                 $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+    //             }
+    //         })
+    //         ->where('status','active')
+    //         ->pluck('user_id')->toArray();
 
-    //     return response()->json($completetrials);
+    //     $usersNotMembers = array_diff($completedTrials, $nonMembers);
+        
+    //     $usersNotMembersDetails = AllUsers::whereIn('user_id', $usersNotMembers)->get();
+
+    //     return response()->json($usersNotMembersDetails);
     // }
-
-    public function getCompleteTrial(){
-        $membershipstrailnames = MembershipTrial::where('status', 1)->pluck('name')->toArray();
-        $completedTrials = MembershipInstances::where(function ($query) use ($membershipstrailnames) {
-                foreach ($membershipstrailnames as $trialName) {
-                    $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-                }
-            })
-            ->where('status', 'done')
-            ->select('user_id', DB::raw('count(user_id) as total_count'))
-            ->groupBy('user_id')
-            ->pluck('user_id')->toArray();
-
-        
-
-        $nonMembers = MembershipInstances::whereIn('user_id', $completedTrials)
-            ->where(function ($query) use ($membershipstrailnames) {
-                foreach ($membershipstrailnames as $trialName) {
-                    $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-                }
-            })
-            ->whereIn('status',['active'])
-            ->pluck('user_id')->toArray();
-
-        $usersNotMembers = array_diff($completedTrials, $nonMembers);
-        
-        $usersNotMembersDetails = AllUsers::whereIn('user_id', $usersNotMembers)->get();
-
-        return response()->json($usersNotMembersDetails);
-    }
 }

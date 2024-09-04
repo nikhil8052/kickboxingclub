@@ -188,17 +188,14 @@
                                         <span class="nk-menu-text">Lead</span>
                                     </a>
                                     <ul class="nk-menu-sub ul-sub">
-                                        <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/trials-purchased-not-scheduled') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Purchased and Not Scheduled</span></a>
-                                        </li>
                                         <!-- <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/purchased-trial') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Purchased</span></a>
+                                            <a href="{{ url('/admin-dashboard/trials-purchased-not-scheduled') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Purchased and Not Scheduled</span></a>
                                         </li> -->
                                         <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/active-trial') }}" class="nk-menu-link"><span class="nk-menu-text">Active Trials</span></a>
+                                            <a href="{{ url('/admin-dashboard/active-trial') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Active and In Trial</span></a>
                                         </li>
                                         <li class="nk-menu-item li-sub">
-                                            <a href="{{ url('/admin-dashboard/complete-trials') }}" class="nk-menu-link"><span class="nk-menu-text">Complete Trials</span></a>
+                                            <a href="{{ url('/admin-dashboard/complete-trials') }}" class="nk-menu-link"><span class="nk-menu-text">Trials Completed and Not Members</span></a>
                                         </li>
                                     </ul>
                                 </li>

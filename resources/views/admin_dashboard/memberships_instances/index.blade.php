@@ -79,7 +79,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 @endsection
 
@@ -118,12 +117,12 @@
                 startDate: start,
                 endDate: end,
                 ranges: {
-                        Today: [moment(), moment()],
-                        Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                        "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                        "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                        "This Month": [moment().startOf("month"), moment().endOf("month")],
-                        "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                    Today: [moment(), moment()],
+                    Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                    "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                    "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                    "This Month": [moment().startOf("month"), moment().endOf("month")],
+                    "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
                 },
             },
             function (start, end, label) {

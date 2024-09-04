@@ -5,11 +5,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
 @endsection
 <div class="nk-content ">
-    <style>
-        /* .filter-options input.select2-search__field {
-            width: 100% !important;
-        } */
-    </style>
+ 
     <div class="container-fluid">
         <div class="nk-content-inner">
             <div class="nk-content-body">
@@ -81,81 +77,58 @@
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
                                         <div class="card-title">
-                                            <h6 class="subtitle">Total Credit Sales</h6>
+                                            <h6 class="subtitle">Forecasted Sale</h6>
                                         </div>
                                         <div class="card-tools">
                                             <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Credit Sales" data-bs-original-title="Total Credit Sales"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount" id="total_credit_sales">${{ $totalcreditSales ?? 0 }} 
+                                        <span class="amount" id="total_credit_sales">${{ $forcastedSales ?? 0 }} 
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="col-md-4">
+                        <div class="col-md-4">
                             <div class="card top_box card-bordered card-full">
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
                                         <div class="card-title">
-                                            <h6 class="subtitle">Total Forecasted Sales</h6>
+                                            <h6 class="subtitle">Classpass Total Sales</h6>
                                         </div>
                                         <div class="card-tools">
-                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Forcasted Sales" data-bs-original-title="Total Forcasted Sales"></em>
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Classpass Total Sales" data-bs-original-title="Classpass Total Sales"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount">${{ $forecastsales ?? 0 }} 
-                                            <!-- <span class="currency currency-usd">USD</span> -->
+                                        <span class="amount">$0
                                         </span>
-                                        <!-- <span class="change down text-danger"><em class="icon ni ni-arrow-long-down"></em>1.93%</span> -->
                                     </div>
                                     <div class="invest-data">
-                                        <!-- <div class="invest-data-amount g-2">
-                                            <div class="invest-data-history">
-                                                <div class="title">This Month</div>
-                                                <div class="amount">2,940.59 <span class="currency currency-usd">USD</span></div>
-                                            </div>
-                                            <div class="invest-data-history">
-                                                <div class="title">This Week</div>
-                                                <div class="amount">1,259.28 <span class="currency currency-usd">USD</span></div>
-                                            </div>
-                                        </div> -->
                                         <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
                                             <canvas class="iv-data-chart chartjs-render-monitor" id="totalWithdraw" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div> --}}
+                        </div> 
                         <div class="col-md-4">
                             <div class="card top_box card-bordered  card-full">
                                 <div class="card-inner">
                                     <div class="card-title-group align-start mb-0">
                                         <div class="card-title">
-                                            <h6 class="subtitle">Memberships Sales</h6>
+                                            <h6 class="subtitle">Classpass Forecasted Sales</h6>
                                         </div>
                                         <div class="card-tools">
-                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Total Membership Sales" data-bs-original-title="Total Membership Sales"></em>
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Classpass Forecasted Sales" data-bs-original-title="Classpass Forecasted Sales"></em>
                                         </div>
                                     </div>
                                     <div class="card-amount">
-                                        <span class="amount" id="total_membership_sales"> ${{$totalMembershipSales ?? 0}}
-                                            <!-- <span class="currency currency-usd">USD</span> -->
+                                        <span class="amount" id="total_classpass_forecasted_sales"> $0
                                         </span>
                                     </div>
                                     <div class="invest-data">
-                                        <!-- <div class="invest-data-amount g-2">
-                                            <div class="invest-data-history">
-                                                <div class="title">This Month</div>
-                                                <div class="amount">2,940.59 <span class="currency currency-usd">USD</span></div>
-                                            </div>
-                                            <div class="invest-data-history">
-                                                <div class="title">This Week</div>
-                                                <div class="amount">1,259.28 <span class="currency currency-usd">USD</span></div>
-                                            </div>
-                                        </div> -->
                                         <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
                                             <canvas class="iv-data-chart chartjs-render-monitor" id="totalBalance" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
                                         </div>
@@ -163,6 +136,122 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="card top_box card-bordered card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Classpass Daily Average</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Classpass Daily Average" data-bs-original-title="Classpass Daily Average"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount">$0
+                                        </span>
+                                    </div>
+                                    <div class="invest-data">
+                                        <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas class="iv-data-chart chartjs-render-monitor" id="totalWithdraw" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-4">
+                            <div class="card top_box card-bordered card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Membership Billing</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Membership Billing Processed By System" data-bs-original-title="Membership Billing Processed By System"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount" id="membership_billing">$0
+                                        </span>
+                                    </div>
+                                    <div class="invest-data">
+                                        <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas class="iv-data-chart chartjs-render-monitor" id="totalWithdraw" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-4">
+                            <div class="card top_box card-bordered card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Over The Counter</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Membership Billing  Processed By System False" data-bs-original-title="Membership Billing  Processed By System False"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount" id="over_the_counter">$0
+                                        </span>
+                                    </div>
+                                    <div class="invest-data">
+                                        <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas class="iv-data-chart chartjs-render-monitor" id="totalWithdraw" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-4">
+                            <div class="card top_box card-bordered card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Active Members</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Active Members" data-bs-original-title="Active Members"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount" id="active_members">0
+                                        </span>
+                                    </div>
+                                    <div class="invest-data">
+                                        <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas class="iv-data-chart chartjs-render-monitor" id="totalWithdraw" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-4">
+                            <div class="card top_box card-bordered  card-full">
+                                <div class="card-inner">
+                                    <div class="card-title-group align-start mb-0">
+                                        <div class="card-title">
+                                            <h6 class="subtitle">Glofox total sales</h6>
+                                        </div>
+                                        <div class="card-tools">
+                                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" aria-label="Glofix total sales" data-bs-original-title="Glofox total sales"></em>
+                                        </div>
+                                    </div>
+                                    <div class="card-amount">
+                                        <span class="amount" id="total_classpass_forecasted_sales"> $0
+                                        </span>
+                                    </div>
+                                    <div class="invest-data">
+                                        <div class="invest-data-ck"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                                            <canvas class="iv-data-chart chartjs-render-monitor" id="totalBalance" width="34" height="48" style="display: block; width: 34px; height: 48px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="nk-block line-chart-section">
@@ -179,55 +268,7 @@
                     <div class="nk-block d-flex busns_sls">
                         <div class="nk-block-head-content">
                             <h3 class="nk-block-title page-title">Business sales</h3>
-                            <!-- <div class="nk-block-des text-soft">
-                                <p>Welcome to Crypto Invest Dashboard</p>
-                            </div> -->
                         </div>
-                        {{-- <form id="filterForm" class="ryt_frm_blk">
-                            <div class="nk-block-head-content">
-                                <div class="toggle-wrap nk-block-tools-toggle">
-                                    <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em class="icon ni ni-more-v"></em></a>
-                                    <div class="toggle-expand-content" data-content="pageMenu">
-                                        <ul class="nk-block-tools g-3">
-                                            <!-- <li class="filter-options">
-                                                <div class="d-flex">
-                                                    <span><em class="icon ni ni-filter-alt"></em></span>
-                                                    <div class="form-control-wrap ">
-                                                        <div class="form-control-select">
-                                                            <select class="form-control" name="filter" id="filter">
-                                                                <option value="all">All</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li> -->
-                                            <li class="filter-options"> 
-                                                <div class="form-control-wrap">
-                                                    <div class="form-group d-flex">
-                                                        <label for="date-range-picker">Date</label>
-                                                        <input type="text" name="dates" id="date-range-picker" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="filter-options">
-                                                <div class="d-flex">
-                                                    <span><label class="form-label" for="default-06">Location</label></span>
-                                                    <div class="form-control-wrap ">
-                                                        <div class="form-control-select">
-                                                            <select class="form-control" name="location" id="location">
-                                                                @foreach($locations as $location)
-                                                                    <option data-id="{{ $location->name }}" value="{{ $location->location_id }}">{{ $location->name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </form> --}}
                     </div>
                 </div>
                 <div class="nk-block busines-info-blk pie-chart-section">
@@ -513,9 +554,12 @@
             var TrialSoldCtx = document.getElementById('trialsoldChart').getContext('2d');
             var visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
 
-            $('#total_membership_sales').html("$"+ data.totalMembershipSales);
-            $('#total_credit_sales').html("$"+ data.totalcreditSales);
+            // $('#total_membership_sales').html("$"+ data.totalMembershipSales);
+            $('#total_credit_sales').html("$"+ data.forcastedSales);
             $('#total_all_sales').html("$"+ data.totaloverAllsales);
+            $('#over_the_counter').html("$"+ data.overthecounter);
+            $('#membership_billing').html("$"+ data.membershipbilling);
+            $('#active_members').html( data.activeMembers);
 
             var paymentslabels = $('#payments_labels'); 
             var membershipslabels = $('#memberships_labels');

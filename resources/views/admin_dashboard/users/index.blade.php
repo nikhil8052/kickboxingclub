@@ -210,38 +210,17 @@
                 var location = item.location ? item.location.name : 'unknown';
                 var signedWaver = item.signed_waiver ? 'Yes' : 'No';
                 var waverSignedDatetime = item.waiver_signed_datetime;
-
-                var memberships = item.memberships ? item.memberships : null;
-                var activeuser = false;
-                if (memberships && memberships.length > 0) {
-                    if (memberships.length === 1) {
-                       
-                        if(memberships &&( memberships[0].status == 'active' || memberships[0].status == 'pending_customer_activation' || memberships[0].status == 'pending_start_date')) {
-                            activeuser = true;
-                        } else {
-                            activeuser = false;
-                        }
-                    } else {
-                        memberships.forEach((membership) => {
-                            if(membership &&( membership.status == 'active' || membership.status == 'pending_customer_activation' || membership.status == 'pending_start_date')) {
-                                activeuser = true;
-                            } 
-                        });
-                    }
-                } 
-
-                if(activeuser) {
-                    rows.push([
-                        userID,
-                        fullName,
-                        email,
-                        accountBalance,
-                        joiningDate,
-                        location,
-                        signedWaver,
-                        waverSignedDatetime
-                    ]);
-                }
+               
+                rows.push([
+                    userID,
+                    fullName,
+                    email,
+                    accountBalance,
+                    joiningDate,
+                    location,
+                    signedWaver,
+                    waverSignedDatetime
+                ]);
             });
             table.rows.add(rows); 
             table.draw();

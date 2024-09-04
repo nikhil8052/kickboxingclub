@@ -57,10 +57,10 @@
                     type: 'GET',
                     dataSrc: '',
                     beforeSend: function() {
-                         // $('#overlay').show();
+                         $('#overlay').show();
                     },
                     complete: function() {
-                         // $('#overlay').hide();
+                         $('#overlay').hide();
                     } 
                },
                columns: [

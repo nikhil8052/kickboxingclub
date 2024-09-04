@@ -19,11 +19,13 @@ use App\Models\EmployeePayRate;
 use App\Models\AllUsers;
 use App\Models\BillingCycle;
 use App\Models\Orders;
+use App\Models\MembershipTrial;
 
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
+
         // $client = new Client();
         // $url="https://kbxf.marianatek.com/api/membership_transactions";
         // $url = "https://kbxf.marianatek.com/api/memberships";
@@ -525,10 +527,10 @@ class MembershipController extends Controller
         }
     
         if ($location != null) {
-            // $query->whereHas('user.location', function ($q) use ($location) {
-            //     $q->where('location_id', $location);
-            // });
-             $query->whereBetween('purchase_date_copy', [$start, $end]);
+            $query->whereHas('user.location', function ($q) use ($location) {
+                $q->where('location_id', $location);
+            });
+            //  $query->whereBetween('purchase_date_copy', [$start, $end]);
         }
     
         $membershipexclud = ActiveMember::all();
@@ -548,5 +550,4 @@ class MembershipController extends Controller
             'data' => $membershipInstance
         ]);
     }
- 
 }

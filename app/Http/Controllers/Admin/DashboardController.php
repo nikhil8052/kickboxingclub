@@ -278,15 +278,25 @@ class DashboardController extends Controller
             $query->whereBetween('date_joined', [$start, $end]);
         }
     
-        if ($location != null) {
-            $query->whereHas('location', function ($q) use ($location) {
-                $q->where('location_id', $location);
-            });
-        }
+        // if ($location != null) {
+        //     $query->whereHas('location', function ($q) use ($location) {
+        //         $q->where('location_id', $location);
+        //     });
+        // }
     
-        $allusers =  $query->whereHas('memberships', function ($query) {
-            $query->where('status', 'active');
-        })->with(['location','memberships'])->get();
+        // $allusers =  $query->whereHas('memberships', function ($query,$location) {
+        //     $query->where('status', 'active')->where('purchase_location_id',$location);
+        // })->with(['location','memberships'])->get();
+        if ($location !== null) {
+            $allusers = $query->whereHas('memberships', function ($query) use ($location) {
+                $query->where('status', 'active')
+                      ->where('purchase_location_id', $location);
+            })->with(['location', 'memberships'])->get();
+        } else {
+            $allusers = $query->whereHas('memberships', function ($query) {
+                $query->where('status', 'active');
+            })->with(['location', 'memberships'])->get();
+        }
         
     
         return response()->json([

@@ -20,77 +20,153 @@ use App\Models\AllUsers;
 use App\Models\BillingCycle;
 use App\Models\Orders;
 use App\Models\MembershipTrial;
+use App\Models\Group;
+use App\Models\EmployeeGroup;
+use App\Models\Employees;
 
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
 
-        // $client = new Client();
+        $client = new Client();
         // $url="https://kbxf.marianatek.com/api/membership_transactions";
         // $url = "https://kbxf.marianatek.com/api/memberships";
         // $url = "https://kbxf.marianatek.com/api/credits";
         // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
 
-        // $url = "https://kbxf.marianatek.com/api/employees";
+        $url = "https://kbxf.marianatek.com/api/employees";
 
         // $url = "https://kbxf.marianatek.com/api/users";
         // $url = "https://kbxf.marianatek.com/api/membership_instances";
-        // $bearerToken = env('API_ACCESS_TOKEN');
 
-        // $currentPage = 28;
-        // $pageSize = 100;
-        // $hasMorePages = true;
+        // $url = "https://kbxf.marianatek.com/api/groups";
+        $bearerToken = env('API_ACCESS_TOKEN');
 
-        // while ($hasMorePages) {
-        //     $response = $client->request('GET', $url, [
-        //         'headers' => [
-        //             'Authorization' => 'Bearer ' . $bearerToken,
-        //         ],
-        //         'query' => [
-        //             'page' => $currentPage,
-        //             'page_size' => $pageSize,
-        //         ],
-        //     ]);
+        $currentPage = 1;
+        $pageSize = 100;
+        $hasMorePages = true;
 
-        //     $statuscode = $response->getStatusCode();
+        while ($hasMorePages) {
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $bearerToken,
+                ],
+                'query' => [
+                    'page' => $currentPage,
+                    'page_size' => $pageSize,
+                ],
+            ]);
 
-        //     if ($statuscode == 200) {
-        //         $body = $response->getBody()->getContents();
-        //         $data = json_decode($body, true);
+            $statuscode = $response->getStatusCode();
 
-        //         // $savedMemberships = $this->saveMemberships($data['data']);
-        //         // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
+            if ($statuscode == 200) {
+                $body = $response->getBody()->getContents();
+                $data = json_decode($body, true);
 
-        //         // $saveCredits = $this->saveCredits($data['data']);
-        //         // dd($data['data']);
+                // $savedMemberships = $this->saveMemberships($data['data']);
+                // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
 
-        //         // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
+                // $saveCredits = $this->saveCredits($data['data']);
+                // dd($data['data']);
 
-        //         // $saveUsers = $this->saveUsersdata($data['data']);
-        //         $saveMembershipsBilling = $this->saveBillingCycle($data['data']);
+                // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
 
-        //         // $saveInstance = $this->saveMembership($data['data']);
-        //         if($saveMembershipsBilling) {
-        //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
-        //             if ($currentPage >= $totalPages) {
-        //                 $hasMorePages = false;
-        //             } else {
-        //                 $hasMorePages = false;
-        //                 $currentPage++;
-        //             }
-        //         } else {
+                // $saveUsers = $this->saveUsersdata($data['data']);
+                // $saveMembershipsBilling = $this->saveBillingCycle($data['data']);
+
+                // $saveInstance = $this->saveMembership($data['data']);
+
+                // $saveGroups = $this->saveGroups($data['data']);
+                $saveEmployeewithGroup = $this->saveEmployeeGroups($data['data']);
+
+                if($saveEmployeewithGroup) {
+                    $totalPages = $data['meta']['pagination']['pages'] ?? 0;
+                    if ($currentPage >= $totalPages) {
+                        $hasMorePages = false;
+                    } else {
+                        $hasMorePages = false;
+                        $currentPage++;
+                    }
+                } else {
                     
-        //             die();
-        //         }
+                    die();
+                }
                 
-        //     } else {
-        //         $hasMorePages = false;
-        //     }
-        // } 
+            } else {
+                $hasMorePages = false;
+            }
+        } 
 
-        // return response()->json(['Memberships saved into database']);
+        return response()->json(['Memberships saved into database']);
     }
+
+    public function saveEmployeeGroups($employeeGroups){
+        try{
+            foreach($employeeGroups as $data){
+                $employee_id = $data['id'];
+                $attributes = $data['attributes'] ?? [];
+                $relationships = $data['relationships'] ?? [];
+
+                $employee = new Employees;
+                $employee->type = $data['type'];
+                $employee->employee_id = $employee_id;
+                $employee->payroll_id = $attributes['payroll_id'] ?? null;
+                $employee->is_active = $attributes['is_active'] ?? null;
+                $employee->can_chat = $attributes['can_chat'] ?? null;
+                $employee->is_beta_user = $attributes['is_beta_user'] ?? null;
+                $employee->relationships = json_encode($relationships) ?? null;
+                $employee->user_type = $relationships['user']['data']['type'] ?? null;
+                $employee->user_id = $relationships['user']['data']['id'] ?? null;
+                $employee->recent_location_type = $relationships['recent_location']['data']['type'] ?? null;
+                $employee->recent_location_id = $relationships['recent_location']['data']['id'] ?? null;
+                $employee->public_profile_type = $relationships['public_profile']['data']['type'] ?? null;
+                $employee->public_profile_id = $relationships['public_profile']['data']['id'] ?? null;
+                $employee->groups = json_encode($relationships['groups']['data']) ?? null;
+                $employee->turfs = json_encode($relationships['turfs']['data']) ?? null;
+                $employee->save();
+
+                $groups = $relationships['groups']['data'];
+
+                foreach($groups as $group){
+                    $employeeGroup = new EmployeeGroup;
+                    $employeeGroup->employee_id = $employee_id;
+                    $employeeGroup->group_id = $group['id'];
+                    $employeeGroup->save();
+                }
+            }
+        }catch(Exception $e) {
+            return false;
+        }
+    }
+
+    public function saveGroups($groups){
+        try{
+            foreach($groups as $data){
+                $attributes = $data['attributes'] ?? [];
+                // $permissions = json_encode($attributes['permissions']);
+                $relationships = $data['relationships'] ?? [];
+
+                $group = new Group;
+                $group->type = $data['type'] ?? null;
+                $group->group_id = $data['id'] ?? null;
+                $group->group_name = $attributes['name'] ?? null;
+                $group->description = $attributes['description'] ?? null;
+                if(isset($attributes['permissions']) && is_array($attributes['permissions'])) {
+                    $group->permissions = json_encode($attributes['permissions']);
+                } else {
+                    $group->permissions = null; 
+                }
+                $group->user_can_assign_group = $attributes['user_can_assign_group'] ?? null;
+                $group->public = $attributes['public'] ?? null;
+                $group->relationships = json_encode($relationships) ?? null;
+                $group->save();
+            }
+        }catch(Exception $e) {
+            return false;
+        }
+    }
+
     public function saveMembership($orders)
     {
         try {

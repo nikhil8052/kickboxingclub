@@ -19,6 +19,10 @@ class TimeClockShift extends Model
         return $this->hasOne(Employees::class,'employee_id','employee_id');
     }
 
+    public function employee_group(){
+        return $this->hasOne(EmployeeGroup::class,'employee_id','employee_id');
+    }
+
     public function employee_payrate(){
         return $this->hasOne(EmployeePayRate::class, 'employee_id', 'employee_id');
     }

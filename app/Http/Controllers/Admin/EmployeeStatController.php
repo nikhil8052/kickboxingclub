@@ -20,48 +20,10 @@ use Illuminate\Support\Facades\DB;
 class EmployeeStatController extends Controller
 {
 
-    public function Employees()
-    {
+    public function Employees(){
         $locations = Locations::all();
         return view('admin_dashboard.employees.index',compact('locations'));
     }
-
-    // public function getEmployees(Request $request) {
-    //     $query = Employees::query();
-    
-    //     $startDate = $request->start_date;
-    //     $endDate = $request->end_date;
-    //     $location = $request->location_id;
-    
-    //     if($startDate && $endDate){
-    //         $start = Carbon::parse($startDate);
-    //         $end = Carbon::parse($endDate);
-    
-    //         $query->whereHas('user', function($q) use ($start, $end) {
-    //             $q->whereBetween('date_joined', [$start, $end]);
-    //         });
-    //     }
-    
-    //     if(!empty($location)){
-    //         $query->whereHas('user.location', function ($q) use ($location) {
-    //             $q->where('location_id', $location);
-    //         });
-    //     }
-    
-    //     $query->with(['user.location', 'payrate']);
-    
-    //     if ($request->has('export')) {
-    //         $employees = $query->get();
-    //         return response()->json(['data' => $employees]);
-    //     } else {
-    //         $employees = $query->paginate($request->length, ['*'], 'page', $request->start / $request->length + 1);
-    //         return response()->json([
-    //             'data' => $employees->items(),
-    //             'recordsTotal' => $employees->total(),
-    //             'recordsFiltered' => $employees->total(),
-    //         ]);
-    //     }
-    // }    
 
     public function getEmployees(Request $request) {
         $query = Employees::query();
@@ -93,11 +55,13 @@ class EmployeeStatController extends Controller
                 })->orWhereHas('payrate', function($q) use ($searchValue) {
                     $q->where('regular_pay', 'like', "%{$searchValue}%")
                       ->orWhere('instructor_pay', 'like', "%{$searchValue}%");
+                })->orWhereHas('employeeGroup.group', function($q) use ($searchValue) {
+                    $q->where('group_name', 'like', "%{$searchValue}%");
                 });
             });
         }
     
-        $query->with(['user.location', 'payrate']);
+        $query->with(['user.location', 'payrate','employeeGroup.group']);
     
         if ($request->has('export')) {
             $employees = $query->get();

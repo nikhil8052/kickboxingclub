@@ -17,6 +17,10 @@ class Employees extends Model
         return $this->hasOne(EmployeePayRate::class, 'employee_id', 'employee_id');
     }
 
+    public function employeeGroup(){
+        return $this->hasMany(EmployeeGroup::class, 'employee_id','employee_id');
+    }
+
     public function shifts(){
         return $this->hasOne(TimeClockShift::class,'employee_id','employee_id');
     }

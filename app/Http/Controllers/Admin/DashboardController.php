@@ -41,6 +41,7 @@ class DashboardController extends Controller
             $orderlineQuery= Orders::query();
 
             $userquery = AllUsers::query();
+            // $userquery = MembershipInstances::query();
 
             $queryOrders = Orders::query();
             $queryMemberships = MembershipInstances::query();
@@ -64,6 +65,7 @@ class DashboardController extends Controller
                 $visitorsdata->whereBetween(DB::raw('STR_TO_DATE(date_joined, "%Y-%m-%d")'), [$startDate, $endDate]);
 
                 $userquery->whereBetween('date_joined', [$startDate, $endDate]);
+                // $userquery->whereBetween('purchase_date_copy',[$startDate, $endDate]);
             }
 
             if($location) {
@@ -79,8 +81,12 @@ class DashboardController extends Controller
                 $visitorsdata->where('home_location_id', $location->location_id);
 
                 $userquery->whereHas('location', function ($q) use ($location) {
-                    $q->where('location_id', $location);
+                    $q->where('location_id', $location->location_id);
                 });
+
+                // $userquery->whereHas('user.location', function ($q) use ($location) {
+                //     $q->where('location_id', $location->location_id);
+                // });
             }
 
             $totalcompletedSale  = $TotalsalesCompleted->whereIn('status',['Completed','Refunded','Partially Refunded'])->sum('total');
@@ -155,9 +161,9 @@ class DashboardController extends Controller
 
         
             $activeMembers = $userquery->whereHas('memberships', function ($query) {
-                $query->where('status', 'active');
+                $query->where('status','active');
             })->count();
-
+            // $activeMembers = $userquery->where('status','active')->count();
 
             $membershipstrail = MembershipTrial::all();
             $membershipstrailnames = [];

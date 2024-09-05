@@ -63,6 +63,7 @@
                                     <th class="nk-tb-col"><span class="sub-text">ID</span></th>
                                     <th class="nk-tb-col"><span class="sub-text">Employee Name</span></th>
                                     <th class="nk-tb-col"><span class="sub-text">Email</span></th>
+                                    <th class="nk-tb-col"><span class="sub-text">Employee Type</span></th>
                                     <th class="nk-tb-col"><span class="sub-text">Country</span></th>
                                     <th class="nk-tb-col"><span class="sub-text">Location</span></th>
                                     <th class="nk-tb-col"><span class="sub-text">Regular Pay</span></th>
@@ -156,6 +157,7 @@
                     d.location_id = $('#location').val(); 
                 },
                 dataSrc: function(json) {
+                    // console.log(json.data);
                     return json.data; 
                 },
                 beforeSend: function() {
@@ -169,6 +171,19 @@
                 { data: 'employee_id' },
                 { data: 'user.full_name'},
                 { data: 'user.email'},
+                { 
+                    data: 'employee_group',
+                    render: function(data, type, row) {
+                        if (data && data.length > 0) {
+                            return data.map(function(employee_group) {
+                                return employee_group.group && employee_group.group.group_name 
+                                    ? employee_group.group.group_name 
+                                    : 'none';
+                            }).join(', ');
+                        }
+                        return 'none';
+                    }
+                },
                 { data: 'user.country', 
                     render: function(data, type, row) {
                         return data ? data : 'unknown';
@@ -257,8 +272,6 @@
                 },
                 success: function (response) {
                     var csvContent = '';
-
-                    // Generate CSV headers
                     var headers = [];
                     $('#users_data_table thead tr th').each(function () {
                         var headerText = $(this).text().trim();
@@ -268,15 +281,29 @@
                     });
 
                     csvContent += headers.join(',') + "\n";
+
                     response.data.forEach(function (rowData) {
                         var csvRow = [];
+                        function wrapInQuotes(text) {
+                            return text.includes(',') ? `"${text}"` : text;
+                        }
+
                         csvRow.push(rowData.employee_id);
-                        csvRow.push(rowData.user ? rowData.user.full_name : 'unknown');
-                        csvRow.push(rowData.user ? rowData.user.email : 'unknown');
-                        csvRow.push(rowData.user ? (rowData.user.country ? rowData.user.country : 'unknown') : 'unknown');
-                        csvRow.push(rowData.user && rowData.user.location ? rowData.user.location.name : 'unknown');
-                        csvRow.push(rowData.payrate ? `$${rowData.payrate.regular_pay}` : 'null');
-                        csvRow.push(rowData.payrate ? `$${rowData.payrate.instructor_pay}` : 'null');
+                        csvRow.push(wrapInQuotes(rowData.user ? rowData.user.full_name : 'unknown'));
+                        csvRow.push(wrapInQuotes(rowData.user ? rowData.user.email : 'unknown'));
+                        csvRow.push(
+                            rowData.employee_group && rowData.employee_group.length > 0
+                                ? wrapInQuotes(rowData.employee_group.map(function(employee_group) {
+                                    return employee_group.group && employee_group.group.group_name
+                                        ? employee_group.group.group_name
+                                        : 'none';
+                                }).join(', '))
+                                : 'none'
+                        );
+                        csvRow.push(wrapInQuotes(rowData.user ? (rowData.user.country ? rowData.user.country : 'unknown') : 'unknown'));
+                        csvRow.push(wrapInQuotes(rowData.user && rowData.user.location ? rowData.user.location.name : 'unknown'));
+                        csvRow.push(wrapInQuotes(rowData.payrate ? `$${rowData.payrate.regular_pay}` : 'null'));
+                        csvRow.push(wrapInQuotes(rowData.payrate ? `$${rowData.payrate.instructor_pay}` : 'null'));
 
                         csvContent += csvRow.join(',') + "\n";
                     });
@@ -298,6 +325,69 @@
                 }
             });
         });
+
+        // $('#export-button').on('click', function () {
+        //     $.ajax({
+        //         url: "{{ url('/admin-dashboard/get-employees') }}",
+        //         type: 'GET',
+        //         data: {
+        //             export: true, // Custom parameter to indicate export
+        //             start_date: $('#date-range-picker').val().split(" - ")[0],
+        //             end_date: $('#date-range-picker').val().split(" - ")[1],
+        //             location_id: $('#location').val()
+        //         },
+        //         success: function (response) {
+        //             var csvContent = '';
+
+        //             // Generate CSV headers
+        //             var headers = [];
+        //             $('#users_data_table thead tr th').each(function () {
+        //                 var headerText = $(this).text().trim();
+        //                 if (headerText !== '') { 
+        //                     headers.push(headerText.replace(/,/g, "")); 
+        //                 }
+        //             });
+
+        //             csvContent += headers.join(',') + "\n";
+        //             response.data.forEach(function (rowData) {
+        //                 var csvRow = [];
+        //                 csvRow.push(rowData.employee_id);
+        //                 csvRow.push(rowData.user ? rowData.user.full_name : 'unknown');
+        //                 csvRow.push(rowData.user ? rowData.user.email : 'unknown');
+        //                 csvRow.push(
+        //                     rowData.employee_group && rowData.employee_group.length > 0
+        //                         ? rowData.employee_group.map(function(employee_group) {
+        //                             return employee_group.group && employee_group.group.group_name
+        //                                 ? employee_group.group.group_name
+        //                                 : 'none';
+        //                         }).join(', ')
+        //                         : 'none'
+        //                 );
+        //                 csvRow.push(rowData.user ? (rowData.user.country ? rowData.user.country : 'unknown') : 'unknown');
+        //                 csvRow.push(rowData.user && rowData.user.location ? rowData.user.location.name : 'unknown');
+        //                 csvRow.push(rowData.payrate ? `$${rowData.payrate.regular_pay}` : 'null');
+        //                 csvRow.push(rowData.payrate ? `$${rowData.payrate.instructor_pay}` : 'null');
+
+        //                 csvContent += csvRow.join(',') + "\n";
+        //             });
+
+        //             var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        //             var link = document.createElement('a');
+        //             if (link.download !== undefined) {
+        //                 var url = URL.createObjectURL(blob);
+        //                 link.setAttribute('href', url);
+        //                 link.setAttribute('download', 'Employees_Export.csv');
+        //                 link.style.visibility = 'hidden';
+        //                 document.body.appendChild(link);
+        //                 link.click();
+        //                 document.body.removeChild(link);
+        //             }
+        //         },
+        //         error: function (xhr, status, error) {
+        //             console.error("Error fetching data for export:", status, error);
+        //         }
+        //     });
+        // });
 
     });
 </script>

@@ -102,6 +102,7 @@ class UpdateBillingCycle extends Command
                 $olddata = BillingCycle::where('billing_id',$billing['id'])->first();
                 if(!$olddata){
                     $membership_instance_id = $billing['id'];
+                    $billingType = $billing['attributes']['billing_type'];
                     $renewal_rate = $billing['attributes']['renewal_rate'];
                     $billing_cycles = $billing['attributes']['billing_cycles'];
                     $location_id = $billing['relationships']['purchase_location']['data']['id'] ?? null;
@@ -110,6 +111,7 @@ class UpdateBillingCycle extends Command
                     foreach($billing_cycles as $bill){
                         $billingCycle = new BillingCycle;
                         $billingCycle->billing_id = $bill['id'];
+                        $billingCycle->billing_type = $billingType;
                         $billingCycle->membership_instance_id = $membership_instance_id;
                         $billingCycle->start_datetime = $bill['start_datetime'] == null 
                             ? null 

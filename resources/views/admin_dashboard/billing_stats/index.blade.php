@@ -8,9 +8,6 @@
 
 <div class="nk-content ">
      <div class="container-fluid">
-          <!-- <div class="d-flex paper card-preview card-bordered p-4 mb-3">
-               
-          </div> -->
           <div class="nk-content-inner">
                <div class="nk-content-body">
                     <div class="components-preview wide-md mx-auto">
@@ -64,31 +61,39 @@
                                                             $orange_billing = 0;
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
-                                                       <?php 
-                                                           
-                                                            // $membership_billing = App\Models\BillingCycle::where('start_date_copy',$current_date)->with('locations')->get();
-                                                            // $membership_instance = App\Models\MembershipInstances::where('start_date_copy',$current_date)->whereIn('billing_type',['bill_on_start'])->with('order_lines','locations')->get();
-                                                            $orders = App\Models\Orders::where('date_placed_copy',$current_date)->with('orderlines.membership_instance')->get();
-                                                       ?>
-                                                      @foreach($orders as $order)
-                                                            <?php 
-                                                                 
-                                                                 $location = $order->location;
-                                                                 $line_total = $order->net_total;
-                                                            ?>
-                                                           
-                                                            @if($location === 'Torrance')
-                                                            <?php $torrance_billing += $line_total; ?>
-                                                            
-                                                            @elseif($location === 'Lakewood')
-                                                            <?php $lakewood_billing += $line_total; ?>
-                         
-                                                            @elseif($location === 'Orange')
-                                                            <?php $orange_billing += $line_total; ?>
-                                                            @endif
-                                                                
-                                                       @endforeach
+                                                       <?php
+                                                            $membershipInstanceIds = App\Models\MembershipInstances::where('billing_type','bill_on_start')->pluck('membership_id');
+                                                            $orders = App\Models\Orders::where('date_created_copy',$current_date)
+                                                                      ->whereHas('orderlines', function($query) use ($membershipInstanceIds) {
+                                                                           $query->whereIn('membership_instance_id', $membershipInstanceIds);
+                                                                      })
 
+                                                                      ->with(['orderlines' => function($query) use ($membershipInstanceIds) {
+                                                                           $query->whereIn('membership_instance_id', $membershipInstanceIds)
+                                                                                ->with('membership_instance');
+                                                                      }])
+                                                                      ->get();
+
+                                                       ?>
+                                                       @foreach($orders as $order)
+                                                            @foreach($order->orderlines as $orderline)
+                                                                 <?php      
+                                                                      $location = $order->location;
+                                                                      $total = $orderline->line_total;
+                                                                 ?>
+                                                                 
+                                                                 @if($location === 'Torrance')
+                                                                 <?php $torrance_billing += $total; ?>
+                                                                 @endif
+                                                                 @if($location === 'Lakewood')
+                                                                 <?php $lakewood_billing += $total; ?>
+                                                                 @endif
+                                                                 @if($location === 'Orange')
+                                                                 <?php $orange_billing += $total; ?>
+                                                                 @endif
+                                                            @endforeach
+                                                       @endforeach
+                                             
                                                        <td>${{ number_format($torrance_billing) ?? '' }}</td>
                                                        <td>${{ number_format($lakewood_billing) ?? '' }}</td>
                                                        <td>${{ number_format($orange_billing) ?? '' }}</td>   
@@ -111,7 +116,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
 @endsection
@@ -140,43 +144,43 @@
 </script>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#date-range-picker").daterangepicker(
-            {
-                opens: "left",
-                ranges: {
-                    Today: [moment(), moment()],
-                    Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                    "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                    "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                    "This Month": [moment().startOf("month"), moment().endOf("month")],
-                    "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
-                },
-            },
-            function (start, end, label) {
-                filterData(start, end);
-            }
-        );
+     $(document).ready(function () {
+          $("#date-range-picker").daterangepicker(
+               {
+                    opens: "left",
+                    ranges: {
+                         Today: [moment(), moment()],
+                         Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                         "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                         "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                         "This Month": [moment().startOf("month"), moment().endOf("month")],
+                         "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+                    },
+               },
+               function (start, end, label) {
+                    filterData(start, end);
+               }
+          );
 
-        function filterData(start, end) {
-            $("#data-list li").each(function () {
-                var date = moment($(this).data("date"));
-                if (date.isBetween(start, end, "day", "[]")) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
+          function filterData(start, end) {
+               $("#data-list li").each(function () {
+                    var date = moment($(this).data("date"));
+                    if (date.isBetween(start, end, "day", "[]")) {
+                         $(this).show();
+                    } else {
+                         $(this).hide();
+                    }
+               });
+          }
 
-        var start = moment().startOf("day");
-        var end = moment().endOf("day");
-        filterData(start, end);
-    });
+          var start = moment().startOf("day");
+          var end = moment().endOf("day");
+          filterData(start, end);
+     });
 
-    const today = new Date();
-    const currentMonth = today.toISOString().slice(0, 7);
-    document.getElementById('month').value = currentMonth;
+     const today = new Date();
+     const currentMonth = today.toISOString().slice(0, 7);
+     document.getElementById('month').value = currentMonth;
 
 </script>
 

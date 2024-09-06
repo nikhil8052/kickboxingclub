@@ -19,7 +19,21 @@
                          </a>
                     </div>
                     <div class="modal-body" id="modalBody">
-                         <form id="trialForm"   method="POST">
+                         <form id="trialForm" method="POST">
+                              @csrf
+                              <div class="form-group">
+                                   <label class="form-label" for="name">Name</label>
+                                   <div class="form-control-wrap">
+                                        <input type="text" class="form-control" id="name" name="name" value="">
+                                   </div>
+                                   <span class="text text-danger" id="error" style="display:none;">This field is required</span>
+                              </div>
+                              <div class="form-group">
+                                   <button type="button" class="btn btn-dark add-trials-btn">Add</button>
+                              </div>
+                         </form>
+
+                         <form id="activeMemberForm" method="POST" style="display:none;">
                               @csrf
                               <div class="form-group">
                                    <label class="form-label" for="name">Name</label>
@@ -195,7 +209,6 @@
 
 
 <script>
-
      $('.add-btns').on('click',(e)=>{
           var name = $('#name').val('');
           var button = $(e.target);

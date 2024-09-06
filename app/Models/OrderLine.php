@@ -16,4 +16,8 @@ class OrderLine extends Model
     public function membership_instance(){
         return $this->hasOne(MembershipInstances::class,'membership_id','membership_instance_id');
     }
+
+    public function membership_transaction(){
+        return $this->hasOne(MembershipTransaction::class,'membership_transactions_id','transaction_id');
+    }
 }

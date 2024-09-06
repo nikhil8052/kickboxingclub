@@ -23,6 +23,8 @@ use App\Models\MembershipTrial;
 use App\Models\Group;
 use App\Models\EmployeeGroup;
 use App\Models\Employees;
+use Cache;
+
 
 class MembershipController extends Controller
 {
@@ -559,6 +561,24 @@ class MembershipController extends Controller
         return view('admin_dashboard.billing_stats.index',compact('dates'));
     }
 
+    // public function getBillingStats(Request $request){
+    //     $month = $request->month ?? Carbon::now()->format('Y-m');
+    //     $date = Carbon::createFromFormat('Y-m', $month);
+    //     $year = $date->year;
+    //     $month = $date->month;
+    
+    //     $cacheKey = "billing_stats_{$year}_{$month}";
+        
+    //     $dates = Cache::remember($cacheKey, 60 * 60, function () use ($year, $month) {
+    //         $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
+    //         return collect(range(1, $daysInMonth))->map(function ($day) use ($year, $month) {
+    //             return Carbon::createFromDate($year, $month, $day);
+    //         });
+    //     });
+    
+    //     return view('admin_dashboard.billing_stats.index', compact('dates'));
+    // }
+    
     public function getBillingStats(Request $request){
         $month = $request->month;
         $date = Carbon::createFromFormat('Y-m', $month);

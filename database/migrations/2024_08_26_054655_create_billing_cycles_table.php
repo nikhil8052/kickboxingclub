@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('billing_cycles', function (Blueprint $table) {
             $table->id();
             $table->string('billing_id')->nullable();
+            $table->string('billing_type')->nullable();
             $table->string('membership_instance_id')->nullable();
             $table->string('location_id')->nullable();
             $table->string('start_datetime')->nullable();

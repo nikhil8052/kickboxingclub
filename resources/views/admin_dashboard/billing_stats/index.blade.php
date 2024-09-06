@@ -62,7 +62,7 @@
                                                        ?>
                                                        <td>{{ $current_date ?? '' }}</td>
                                                        <?php
-                                                            $membershipInstanceIds = App\Models\MembershipInstances::where('billing_type','bill_on_start')->pluck('membership_id');
+                                                            $membershipInstanceIds = App\Models\MembershipInstances::where('billing_type','bill_on_purchase')->whereIn('status',['done','active'])->pluck('membership_id');
                                                             $orders = App\Models\Orders::where('date_created_copy',$current_date)
                                                                       ->whereHas('orderlines', function($query) use ($membershipInstanceIds) {
                                                                            $query->whereIn('membership_instance_id', $membershipInstanceIds);

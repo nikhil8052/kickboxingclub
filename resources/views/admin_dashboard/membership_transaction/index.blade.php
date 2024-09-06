@@ -80,8 +80,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var start = moment().startOf("month");
-        var end = moment().endOf("month");
+        var start = moment().subtract(29, "days");
+        var end = moment();
         $("#date-range-picker").daterangepicker(
             {
                 opens: "left",
@@ -232,7 +232,7 @@ $(document).ready(function () {
     });
 
 
-    transactionFilter('', moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
+    transactionFilter('',moment().subtract(29, "days").format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
 });
 </script>
 

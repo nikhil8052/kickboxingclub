@@ -50,7 +50,7 @@
                                                   <th class="nk-tb-col"><span class="sub-text"></span>Name</th>
                                                   <th class="nk-tb-col"><span class="sub-text"></span>Email</th>
                                                   <th class="nk-tb-col"><span class="sub-text"></span>Phone</th>
-                                                  <th class="nk-tb-col"><span class="sub-text"></span>Trail</th>
+                                                  <th class="nk-tb-col"><span class="sub-text"></span>Trial</th>
                                                   <th class="nk-tb-col"><span class="sub-text"></span>Date</th>
                                              </tr>
                                         </thead>

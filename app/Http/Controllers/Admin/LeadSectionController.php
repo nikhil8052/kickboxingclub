@@ -135,7 +135,7 @@ class LeadSectionController extends Controller
         if($startDate && $endDate){
             $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
-    
+
             $membership_instance->whereBetween('purchase_date_copy', [$start, $end]);
         }
 
@@ -144,25 +144,80 @@ class LeadSectionController extends Controller
                 $q->where('location_id', $location);
             });
         }
-        
-        $membershipstrail = MembershipTrial::where('status',1)->get();
+
+        $membershipstrail = MembershipTrial::where('status', 1)->get();
 
         $membershipstrailnames = [];
-        foreach($membershipstrail as $trial) {
+        foreach ($membershipstrail as $trial) {
             $membershipstrailnames[] = $trial->name;
         }
 
-        $membership_instance->where(function ($query) use ($membershipstrailnames) {
-            foreach ($membershipstrailnames as $trialName) {
-                $query->orWhere('membership_name', 'LIKE', "%$trialName%");
-            }
-        });
-    
-        $completedTrials = $membership_instance->where('status','done')->with('user')->get();
-    
+        $completedTrials = $membership_instance
+            ->where(function ($query) use ($membershipstrailnames) {
+                foreach ($membershipstrailnames as $trialName) {
+                    $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+                }
+            })
+            ->where('status','done')
+            ->with('user') 
+            ->get();
+
+        $completedTrialUserIds = $completedTrials->pluck('user_id')->toArray();
+
+        $usersWithActiveMemberships = MembershipInstances::whereIn('user_id', $completedTrialUserIds)
+            ->whereNotIn('membership_name', $membershipstrailnames) 
+            ->where('status', 'active')
+            ->pluck('user_id')
+            ->toArray();
+
+        $filteredTrials = $membership_instance
+            ->whereIn('user_id', $completedTrials->pluck('user_id'))
+            ->whereNotIn('user_id', $usersWithActiveMemberships)
+            ->with('user')
+            ->get();
+
         return response()->json([
-            'data' => $completedTrials
+            'data' => $filteredTrials
         ]);
     }
+
+    // public function getCompleteTrial(Request $request){
+    //     $startDate = $request->start_date;
+    //     $endDate = $request->end_date;
+    //     $location = $request->location_id;
+    //     $membership_instance = MembershipInstances::query();
+
+    //     if($startDate && $endDate){
+    //         $start = Carbon::parse($startDate);
+    //         $end = Carbon::parse($endDate);
+    
+    //         $membership_instance->whereBetween('purchase_date_copy', [$start, $end]);
+    //     }
+
+    //     if($location != null){
+    //         $membership_instance->whereHas('user.location', function ($q) use ($location) {
+    //             $q->where('location_id', $location);
+    //         });
+    //     }
+        
+    //     $membershipstrail = MembershipTrial::where('status',1)->get();
+
+    //     $membershipstrailnames = [];
+    //     foreach($membershipstrail as $trial) {
+    //         $membershipstrailnames[] = $trial->name;
+    //     }
+
+    //     $membership_instance->where(function ($query) use ($membershipstrailnames) {
+    //         foreach ($membershipstrailnames as $trialName) {
+    //             $query->orWhere('membership_name', 'LIKE', "%$trialName%");
+    //         }
+    //     });
+    
+    //     $completedTrials = $membership_instance->where('status','done')->with('user')->get();
+    
+    //     return response()->json([
+    //         'data' => $completedTrials
+    //     ]);
+    // }
 
 }

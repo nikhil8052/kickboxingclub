@@ -125,10 +125,6 @@
                var dates = dateRange.split(" - ");
                startDate = dates[0];
                endDate = dates[1];
-
-               console.log(startDate);
-               console.log(endDate);
-
                var location = $('#location').val();
 
                activeTrialsFilter(location, startDate, endDate);
@@ -199,7 +195,7 @@
                csvContent += headers.join(',') + "\n";
 
                table.rows({ search: 'applied' }).every(function () {
-                    var rowData = this.data(); // Get row data
+                    var rowData = this.data(); 
                     var csvRow = rowData.map(function(cell) {
                          return typeof cell === 'string' ? cell.replace(/,/g, "") : cell;
                     });

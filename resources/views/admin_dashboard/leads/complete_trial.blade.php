@@ -170,7 +170,6 @@
                          trial,
                          date
                     ]);
-                
                });
 
                table.rows.add(rows); 
@@ -184,7 +183,7 @@
                var headers = [];
                $('#complete_trials thead tr th').each(function () {
                     var headerText = $(this).text().trim();
-                    if (headerText !== '') { 
+                    if(headerText !== ''){ 
                          headers.push(headerText.replace(/,/g, "")); 
                     }
                });
@@ -192,7 +191,7 @@
                csvContent += headers.join(',') + "\n";
 
                table.rows({ search: 'applied' }).every(function () {
-                    var rowData = this.data(); // Get row data
+                    var rowData = this.data(); 
                     var csvRow = rowData.map(function(cell) {
                          return typeof cell === 'string' ? cell.replace(/,/g, "") : cell;
                     });

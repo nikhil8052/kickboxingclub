@@ -144,7 +144,6 @@ class OrdersController extends Controller
 
         $allorders =  collect(array_merge($orderswL->toArray(), $orderrefunds->toArray()));
 
-
         $masterArray = [
             'totalcompletedSale' => formatCurrency($totalcompletedSale - $totalRefunds),
             'totalRefunds' => formatCurrency($totalRefunds),
@@ -195,14 +194,4 @@ class OrdersController extends Controller
         return response()->json($allorders);
     }
   
-    public function Instances()
-    {
-        return view('admin_dashboard.memberships_instances.index');
-    }
-
-    public function GetInstances(Request $request)
-    {
-        $allinstances = MembershipInstances::where('type','membership_instances')->with('user')->get();
-        return response()->json($allinstances);
-    }
 }

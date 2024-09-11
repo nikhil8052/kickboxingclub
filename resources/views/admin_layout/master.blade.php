@@ -184,7 +184,7 @@
                                 @endif
                                 <li class="nk-menu-item has-sub main-li">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
-                                        <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                        <span class="nk-menu-icon"><i class="icon ni ni-users-fill"></i></span>
                                         <span class="nk-menu-text">Lead</span>
                                     </a>
                                     <ul class="nk-menu-sub ul-sub">
@@ -202,7 +202,7 @@
                                 @if (Auth::user()->hasPermission('6')) 
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
-                                            <span class="nk-menu-icon"><i class="fa-solid fa-briefcase"></i></span>
+                                            <span class="nk-menu-icon"><i class="fa fa-user-circle"></i></span>
                                             <span class="nk-menu-text">Employees</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 
@@ -231,7 +231,7 @@
                                 @if(Auth::user()->hasPermission('2'))
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
-                                            <span class="nk-menu-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+                                            <span class="nk-menu-icon"><i class="icon ni ni-coins"></i></span>
                                             <span class="nk-menu-text">Payroll</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 
@@ -263,7 +263,7 @@
                                 @if(Auth::user()->isAdmin())
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
-                                            <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                            <span class="nk-menu-icon"><i class="fa fa-user-plus"></i></span>
                                             <span class="nk-menu-text">Users</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 
@@ -274,7 +274,7 @@
                                     </li>
                                     <li class="nk-menu-item has-sub main-li">
                                         <a href="#" class="nk-menu-link nk-menu-toggle">
-                                            <span class="nk-menu-icon"><i class="fa-solid fa-users"></i></span>
+                                            <span class="nk-menu-icon"><i class="fa-solid fa-ribbon"></i></span>
                                             <span class="nk-menu-text">Memberships tracking</span>
                                         </a>
                                         <ul class="nk-menu-sub ul-sub"> 

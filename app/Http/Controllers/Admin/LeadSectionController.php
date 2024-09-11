@@ -53,13 +53,21 @@ class LeadSectionController extends Controller
         });
 
         $membership_instance->where('status','pending_customer_activation');
-        $alluser = $membership_instance->with('user')->get();
-    
+        $pendinguser = $membership_instance->with('user')->get();
+
+        // $userIds = $pendinguser->pluck('user_id')->toArray();
+
+        // $others = MembershipInstances::whereIn('user_id',$userIds)->whereNotIn('membership_name',$membershipstrailnames)->get();
+        // $othersIds = $others->pluck('user_id')->toArray();
+
+        // $members = $membership_instance->whereNotIn('user_id',$othersIds)->whereIn('user_id',$userIds)->count();
+        // return $members;
+
         return response()->json([
-            'data' => $alluser
+            'data' => $pendinguser
         ]);
     }
-    
+        
 
     public function activeTrails(){
         $locations = Locations::all();
@@ -87,7 +95,7 @@ class LeadSectionController extends Controller
         }
 
         $membershipstrail = MembershipTrial::where('status',1)->get();
-       
+
         $membershipstrailnames = [];
         foreach($membershipstrail as $trial) {
             $membershipstrailnames[] = $trial->name;
@@ -99,19 +107,6 @@ class LeadSectionController extends Controller
             }
         });
 
-        // $activeMemberships = ActiveMember::where('status',1)->get();
-
-        // $activeMembershipsNames = [];
-        // foreach($activeMembershipsNames as $active){
-        //     $activeMembershipsNames[] = $active->name;
-        // }
-
-        // $membership_instance->where(function($query) use ($activeMembershipsNames){
-        //     foreach($activeMembershipsNames as $name){
-        //         $query->orWhere('membership_name', 'LIKE', "%$name%");
-        //     }
-        // });
-        
         $membership_instance->where('status','active');
         $activetrials = $membership_instance->with('user')->get();
 

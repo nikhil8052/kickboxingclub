@@ -198,6 +198,7 @@
             ].join(':');
         }
 
+        membershipFilter('', moment().startOf("month").format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD'));
     });
 
 </script>

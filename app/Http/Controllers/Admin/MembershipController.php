@@ -25,82 +25,81 @@ use App\Models\EmployeeGroup;
 use App\Models\Employees;
 use Cache;
 
-
 class MembershipController extends Controller
 {
     // Dump Into the Db 
     public function dumpToDatabase(){     
 
-        $client = new Client();
-        // $url="https://kbxf.marianatek.com/api/membership_transactions";
-        // $url = "https://kbxf.marianatek.com/api/memberships";
-        // $url = "https://kbxf.marianatek.com/api/credits";
-        // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
+        // $client = new Client();
+        // // $url="https://kbxf.marianatek.com/api/membership_transactions";
+        // // $url = "https://kbxf.marianatek.com/api/memberships";
+        // // $url = "https://kbxf.marianatek.com/api/credits";
+        // // $url = "https://kbxf.marianatek.com/api/time_clock_shifts";
 
-        $url = "https://kbxf.marianatek.com/api/employees";
+        // $url = "https://kbxf.marianatek.com/api/employees";
 
-        // $url = "https://kbxf.marianatek.com/api/users";
-        // $url = "https://kbxf.marianatek.com/api/membership_instances";
+        // // $url = "https://kbxf.marianatek.com/api/users";
+        // // $url = "https://kbxf.marianatek.com/api/membership_instances";
 
-        // $url = "https://kbxf.marianatek.com/api/groups";
-        $bearerToken = env('API_ACCESS_TOKEN');
+        // // $url = "https://kbxf.marianatek.com/api/groups";
+        // $bearerToken = env('API_ACCESS_TOKEN');
 
-        $currentPage = 1;
-        $pageSize = 100;
-        $hasMorePages = true;
+        // $currentPage = 1;
+        // $pageSize = 100;
+        // $hasMorePages = true;
 
-        while ($hasMorePages) {
-            $response = $client->request('GET', $url, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $bearerToken,
-                ],
-                'query' => [
-                    'page' => $currentPage,
-                    'page_size' => $pageSize,
-                ],
-            ]);
+        // while ($hasMorePages) {
+        //     $response = $client->request('GET', $url, [
+        //         'headers' => [
+        //             'Authorization' => 'Bearer ' . $bearerToken,
+        //         ],
+        //         'query' => [
+        //             'page' => $currentPage,
+        //             'page_size' => $pageSize,
+        //         ],
+        //     ]);
 
-            $statuscode = $response->getStatusCode();
+        //     $statuscode = $response->getStatusCode();
 
-            if ($statuscode == 200) {
-                $body = $response->getBody()->getContents();
-                $data = json_decode($body, true);
+        //     if ($statuscode == 200) {
+        //         $body = $response->getBody()->getContents();
+        //         $data = json_decode($body, true);
 
-                // $savedMemberships = $this->saveMemberships($data['data']);
-                // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
+        //         // $savedMemberships = $this->saveMemberships($data['data']);
+        //         // $saveTimeShifts = $this->saveTimeClockShift($data['data']);
 
-                // $saveCredits = $this->saveCredits($data['data']);
-                // dd($data['data']);
+        //         // $saveCredits = $this->saveCredits($data['data']);
+        //         // dd($data['data']);
 
-                // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
+        //         // $saveTransaction = $this->saveMembershipsTransaction($data['data']);
 
-                // $saveUsers = $this->saveUsersdata($data['data']);
-                // $saveMembershipsBilling = $this->saveBillingCycle($data['data']);
+        //         // $saveUsers = $this->saveUsersdata($data['data']);
+        //         // $saveMembershipsBilling = $this->saveBillingCycle($data['data']);
 
-                // $saveInstance = $this->saveMembership($data['data']);
+        //         // $saveInstance = $this->saveMembership($data['data']);
 
-                // $saveGroups = $this->saveGroups($data['data']);
-                $saveEmployeewithGroup = $this->saveEmployeeGroups($data['data']);
+        //         // $saveGroups = $this->saveGroups($data['data']);
+        //         $saveEmployeewithGroup = $this->saveEmployeeGroups($data['data']);
 
-                if($saveEmployeewithGroup) {
-                    $totalPages = $data['meta']['pagination']['pages'] ?? 0;
-                    if ($currentPage >= $totalPages) {
-                        $hasMorePages = false;
-                    } else {
-                        $hasMorePages = false;
-                        $currentPage++;
-                    }
-                } else {
+        //         if($saveEmployeewithGroup) {
+        //             $totalPages = $data['meta']['pagination']['pages'] ?? 0;
+        //             if ($currentPage >= $totalPages) {
+        //                 $hasMorePages = false;
+        //             } else {
+        //                 $hasMorePages = false;
+        //                 $currentPage++;
+        //             }
+        //         } else {
                     
-                    die();
-                }
+        //             die();
+        //         }
                 
-            } else {
-                $hasMorePages = false;
-            }
-        } 
+        //     } else {
+        //         $hasMorePages = false;
+        //     }
+        // } 
 
-        return response()->json(['Memberships saved into database']);
+        // return response()->json(['Memberships saved into database']);
     }
 
     public function saveEmployeeGroups($employeeGroups){
@@ -110,23 +109,23 @@ class MembershipController extends Controller
                 $attributes = $data['attributes'] ?? [];
                 $relationships = $data['relationships'] ?? [];
 
-                $employee = new Employees;
-                $employee->type = $data['type'];
-                $employee->employee_id = $employee_id;
-                $employee->payroll_id = $attributes['payroll_id'] ?? null;
-                $employee->is_active = $attributes['is_active'] ?? null;
-                $employee->can_chat = $attributes['can_chat'] ?? null;
-                $employee->is_beta_user = $attributes['is_beta_user'] ?? null;
-                $employee->relationships = json_encode($relationships) ?? null;
-                $employee->user_type = $relationships['user']['data']['type'] ?? null;
-                $employee->user_id = $relationships['user']['data']['id'] ?? null;
-                $employee->recent_location_type = $relationships['recent_location']['data']['type'] ?? null;
-                $employee->recent_location_id = $relationships['recent_location']['data']['id'] ?? null;
-                $employee->public_profile_type = $relationships['public_profile']['data']['type'] ?? null;
-                $employee->public_profile_id = $relationships['public_profile']['data']['id'] ?? null;
-                $employee->groups = json_encode($relationships['groups']['data']) ?? null;
-                $employee->turfs = json_encode($relationships['turfs']['data']) ?? null;
-                $employee->save();
+                // $employee = new Employees;
+                // $employee->type = $data['type'];
+                // $employee->employee_id = $employee_id;
+                // $employee->payroll_id = $attributes['payroll_id'] ?? null;
+                // $employee->is_active = $attributes['is_active'] ?? null;
+                // $employee->can_chat = $attributes['can_chat'] ?? null;
+                // $employee->is_beta_user = $attributes['is_beta_user'] ?? null;
+                // $employee->relationships = json_encode($relationships) ?? null;
+                // $employee->user_type = $relationships['user']['data']['type'] ?? null;
+                // $employee->user_id = $relationships['user']['data']['id'] ?? null;
+                // $employee->recent_location_type = $relationships['recent_location']['data']['type'] ?? null;
+                // $employee->recent_location_id = $relationships['recent_location']['data']['id'] ?? null;
+                // $employee->public_profile_type = $relationships['public_profile']['data']['type'] ?? null;
+                // $employee->public_profile_id = $relationships['public_profile']['data']['id'] ?? null;
+                // $employee->groups = json_encode($relationships['groups']['data']) ?? null;
+                // $employee->turfs = json_encode($relationships['turfs']['data']) ?? null;
+                // $employee->save();
 
                 $groups = $relationships['groups']['data'];
 
@@ -507,12 +506,7 @@ class MembershipController extends Controller
 
     public function MembershipsTransaction(){
         $locations = Locations::all();
-        $membershipTransaction = MembershipTransaction::where('type','membership_transactions')
-                                ->select('membership_name',DB::raw('count(*) as total_count'))
-                                ->groupBy('membership_name')
-                                ->get();
-                        
-        return view('admin_dashboard.membership_transaction.index',compact('locations','membershipTransaction'));
+        return view('admin_dashboard.membership_transaction.index',compact('locations'));
     }
 
     public function getMembershipsTransaction(Request $request) {
@@ -522,20 +516,23 @@ class MembershipController extends Controller
         $endDate = $request->end_date;
         $location = $request->location_id;
     
-        if ($startDate && $endDate) {
+        if($startDate && $endDate){
             $start = Carbon::parse($startDate);
             $end = Carbon::parse($endDate);
             $query->whereBetween('transaction_date', [$start, $end]);
         }
 
-        if ($location) {
+        if($location){
             $query->whereHas('membership_instance', function ($query) use ($location) {
                 $query->where('purchase_location_id', $location);
             });
         }
 
-        $query->select('membership_name', DB::raw('count(membership_name) as total_count'))
-            ->groupBy('membership_name');
+        // $query->select('membership_name', DB::raw('count(membership_name) as total_count'))
+        //     ->groupBy('membership_name');
+
+        $query->select('membership_name', DB::raw('count(DISTINCT user_id) as total_count'))
+        ->groupBy('membership_name');
     
         $membershipTransaction = $query->get();
     
@@ -555,30 +552,11 @@ class MembershipController extends Controller
 
         for($day = 1; $day <= $daysInMonth; $day++){
             $dates[] = Carbon::createFromDate($year, $month, $day);
-            
         }
 
         return view('admin_dashboard.billing_stats.index',compact('dates'));
     }
 
-    // public function getBillingStats(Request $request){
-    //     $month = $request->month ?? Carbon::now()->format('Y-m');
-    //     $date = Carbon::createFromFormat('Y-m', $month);
-    //     $year = $date->year;
-    //     $month = $date->month;
-    
-    //     $cacheKey = "billing_stats_{$year}_{$month}";
-        
-    //     $dates = Cache::remember($cacheKey, 60 * 60, function () use ($year, $month) {
-    //         $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
-    //         return collect(range(1, $daysInMonth))->map(function ($day) use ($year, $month) {
-    //             return Carbon::createFromDate($year, $month, $day);
-    //         });
-    //     });
-    
-    //     return view('admin_dashboard.billing_stats.index', compact('dates'));
-    // }
-    
     public function getBillingStats(Request $request){
         $month = $request->month;
         $date = Carbon::createFromFormat('Y-m', $month);
@@ -598,11 +576,8 @@ class MembershipController extends Controller
         return view('admin_dashboard.billing_stats.index',compact('dates'));
     }
 
-
     public function Instances(){
         $locations = Locations::all();
-        // $allinstances = MembershipInstances::where('type','membership_instances')->with('user.location')->get();
-        
         $allinstances = null;
 
         return view('admin_dashboard.memberships_instances.index',compact('locations','allinstances'));
@@ -626,7 +601,6 @@ class MembershipController extends Controller
             $query->whereHas('user.location', function ($q) use ($location) {
                 $q->where('location_id', $location);
             });
-            //  $query->whereBetween('purchase_date_copy', [$start, $end]);
         }
     
         $membershipexclud = ActiveMember::all();

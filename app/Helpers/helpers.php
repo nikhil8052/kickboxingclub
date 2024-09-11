@@ -6,8 +6,6 @@ use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Http;
 
-
-
     function HttpRequest($url, $params=[] ){
               
         $res=[];

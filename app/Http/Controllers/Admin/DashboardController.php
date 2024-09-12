@@ -49,7 +49,7 @@ class DashboardController extends Controller
             $queryCancelMemberships = MembershipInstances::query();
             $TrialSoldMemberships = MembershipInstances::query();
             $visitorsdata = AllUsers::query();
-
+            $totalcompletedSale = 0;
 
             
             if ($startDate && $endDate) {
@@ -91,6 +91,7 @@ class DashboardController extends Controller
 
             $totalcompletedSale  = $TotalsalesCompleted->whereIn('status',['Completed','Refunded','Partially Refunded'])->sum('total');
             $GetORderunitamount  = $TotalsalesCompleted->whereIn('status',['Refunded','Partially Refunded'])->sum('total');
+           
             $totaloverAllsales = number_format($totalcompletedSale - $GetORderunitamount);
 
             $orderswL = $orderlineQuery->with('orderlines')->get();

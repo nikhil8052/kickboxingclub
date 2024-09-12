@@ -40,8 +40,8 @@ class DashboardController extends Controller
             $TotalsalesRefunded = Orders::query();
             $orderlineQuery= Orders::query();
 
-            $userquery = AllUsers::query();
-            // $userquery = MembershipInstances::query();
+            // $userquery = AllUsers::query();
+            $userquery = MembershipInstances::query();
 
             $queryOrders = Orders::query();
             $queryMemberships = MembershipInstances::query();
@@ -64,8 +64,8 @@ class DashboardController extends Controller
                 $TrialSoldMemberships->whereBetween('purchase_date_copy', [$startDate, $endDate]);
                 $visitorsdata->whereBetween(DB::raw('STR_TO_DATE(date_joined, "%Y-%m-%d")'), [$startDate, $endDate]);
 
-                $userquery->whereBetween('date_joined', [$startDate, $endDate]);
-                // $userquery->whereBetween('purchase_date_copy',[$startDate, $endDate]);
+                // $userquery->whereBetween('date_joined', [$startDate, $endDate]);
+                $userquery->whereBetween('purchase_date_copy',[$startDate, $endDate]);
             }
 
             if($location) {
@@ -80,18 +80,17 @@ class DashboardController extends Controller
                 $TrialSoldMemberships->where('purchase_location_id', $location->location_id);
                 $visitorsdata->where('home_location_id', $location->location_id);
 
-                $userquery->whereHas('location', function ($q) use ($location) {
-                    $q->where('location_id', $location->location_id);
-                });
-
-                // $userquery->whereHas('user.location', function ($q) use ($location) {
+                // $userquery->whereHas('location', function ($q) use ($location) {
                 //     $q->where('location_id', $location->location_id);
                 // });
+
+                $userquery->whereHas('user.location', function ($q) use ($location) {
+                    $q->where('location_id', $location->location_id);
+                });
             }
 
             $totalcompletedSale  = $TotalsalesCompleted->whereIn('status',['Completed','Refunded','Partially Refunded'])->sum('total');
             $GetORderunitamount  = $TotalsalesCompleted->whereIn('status',['Refunded','Partially Refunded'])->sum('total');
-
             $totaloverAllsales = number_format($totalcompletedSale - $GetORderunitamount);
 
             $orderswL = $orderlineQuery->with('orderlines')->get();
@@ -160,10 +159,10 @@ class DashboardController extends Controller
             $cancelledMemberships = $queryCancelMemberships->whereIn('status', ['active','cancelled', 'terminated','payment_failure','ding_failure'])->count();
 
         
-            $activeMembers = $userquery->whereHas('memberships', function ($query) {
-                $query->where('status','active');
-            })->count();
-            // $activeMembers = $userquery->where('status','active')->count();
+            // $activeMembers = $userquery->whereHas('memberships', function ($query) {
+            //     $query->where('status','active');
+            // })->count();
+            $activeMembers = $userquery->where('status','active')->count();
 
             $membershipstrail = MembershipTrial::all();
             $membershipstrailnames = [];
@@ -179,7 +178,7 @@ class DashboardController extends Controller
             
             $allvisitors = $visitorsdata->count();
             
-            // Forcasted sales counts 
+            // Forecasted sales counts 
             $forcastedSales->where(function ($qy) use ($membershipstrailnames) {
                     foreach ($membershipstrailnames as $trialName) {
                         $qy->orWhere('membership_name', 'NOT LIKE', "%$trialName%");
@@ -202,9 +201,9 @@ class DashboardController extends Controller
                 // 'totalMembershipSales' => $totalMembershipSales,
                 // 'totalcreditSales' => $totalcreditSales,
                 'totaloverAllsales' => $totaloverAllsales,
-                'forcastedSales'=>$forcastedSales,
-                'membershipbilling' => $membershipbilling,
-                'overthecounter' => $overthecounter,
+                'forcastedSales'=> number_format($forcastedSales),
+                'membershipbilling' => number_format($membershipbilling),
+                'overthecounter' => number_format($overthecounter),
                 'activeMembers' => $activeMembers
             ]);
         }

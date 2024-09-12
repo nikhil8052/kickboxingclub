@@ -49,7 +49,7 @@ class UpdateUser extends Command
         $accessToken = env('API_ACCESS_TOKEN');
 
         $currentPage = 1;
-        $pageSize = 100;
+        $pageSize = 1000;
         $hasMorePages = true;
 
         while ($hasMorePages) {

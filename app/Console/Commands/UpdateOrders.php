@@ -105,6 +105,7 @@ class UpdateOrders extends Command
                 $olddata = Orders::where('order_id',$order['id'])->first();
                 if(!$olddata){
 
+                    $location = $order['attributes']['location'] ?? null;
                     $or = new Orders();
                     $or->type = $order['type'] ?? null;
                     $or->order_id = $order['id'] ?? null;
@@ -119,7 +120,15 @@ class UpdateOrders extends Command
                     $or->date_placed = $order['attributes']['date_placed'] ? Carbon::parse($order['attributes']['date_placed']) : null;
 
                     $placeddate =  isset( $order['attributes']['date_placed'])  ? Carbon::parse( $order['attributes']['date_placed']) : null;
+                    
 
+                    // if($location == 'Lakewood'){
+                    //     $or->date_placed_copy = convertToAmericaTimezone($placeddate);
+                    // }elseif($location == 'Torrance'){
+                    //     $or->date_placed_copy = convertToUSPacificTimezone($placeddate);
+                    // }elseif($location == 'Orange'){
+                    //     $or->date_placed_copy = convertToAmericaTimezone($placeddate);
+                    // }
                     $or->date_placed_copy = convertToUSATimezone($placeddate);
 
                     $or->discounts = json_encode($order['attributes']['discounts']) ?? null;
@@ -145,6 +154,15 @@ class UpdateOrders extends Command
                         $or->amount_refunded = $refundSource['amount_refunded'] ?? null;
                         $refunddate = isset($refundSource['date_created']) ? Carbon::parse($refundSource['date_created']) : null;
                         $or->refund_date_created = $refunddate ;
+
+                        // if($location == 'Lakewood'){
+                        //     $or->refund_date_created_copy = convertToAmericaTimezone($placeddate);
+                        // }elseif($location == 'Torrance'){
+                        //     $or->refund_date_created_copy = convertToUSPacificTimezone($placeddate);
+                        // }elseif($location == 'Orange'){
+                        //     $or->refund_date_created_copy = convertToAmericaTimezone($placeddate);
+                        // }
+
                         $or->refund_date_created_copy = convertToUSATimezone($refunddate);
                     } else {
                         $or->refund_label = null;
@@ -161,6 +179,16 @@ class UpdateOrders extends Command
                         $or->amount_allocated = $paymentSource['amount_allocated'] ?? null;
                         $payementdate =  isset($paymentSource['date_created']) ? Carbon::parse($paymentSource['date_created'])  : null;
                         $or->date_created = $payementdate;
+
+                        // if($location == 'Lakewood'){
+                        //     $or->date_created_copy = convertToAmericaTimezone($placeddate);
+                        // }elseif($location == 'Torrance'){
+                        //     $or->date_created_copy = convertToUSPacificTimezone($placeddate);
+                        // }elseif($location == 'Orange'){
+                        //     $or->date_created_copy = convertToAmericaTimezone($placeddate);
+                        // }
+
+
                         $or->date_created_copy = convertToUSATimezone($payementdate);
                         
                     } else {

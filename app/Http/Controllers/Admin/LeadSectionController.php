@@ -147,29 +147,32 @@ class LeadSectionController extends Controller
             $membershipstrailnames[] = $trial->name;
         }
 
-        $completedTrials = $membership_instance
-            ->where(function ($query) use ($membershipstrailnames) {
+        /**
+         * Get all the members who have completed the trial.
+         */
+        $completedTrials = $membership_instance->where(function ($query) use ($membershipstrailnames) {
                 foreach ($membershipstrailnames as $trialName) {
                     $query->orWhere('membership_name', 'LIKE', "%$trialName%");
                 }
             })
-            ->where('status','done')
-            ->with('user') 
-            ->get();
+        ->where('status','done')
+        ->with('user') 
+        ->get();
 
+        // get the user id of the trial completed users 
         $completedTrialUserIds = $completedTrials->pluck('user_id')->toArray();
 
+        // get all members who have active membership
         $usersWithActiveMemberships = MembershipInstances::whereIn('user_id', $completedTrialUserIds)
-            ->whereNotIn('membership_name', $membershipstrailnames) 
-            ->where('status', 'active')
-            ->pluck('user_id')
-            ->toArray();
+                                    ->whereNotIn('membership_name', $membershipstrailnames) 
+                                    ->where('status', 'active')
+                                    ->pluck('user_id')
+                                    ->toArray();
 
-        $filteredTrials = $membership_instance
-            ->whereIn('user_id', $completedTrials->pluck('user_id'))
-            ->whereNotIn('user_id', $usersWithActiveMemberships)
-            ->with('user')
-            ->get();
+        $filteredTrials = MembershipInstances::whereIn('id', $completedTrials->pluck('id'))
+                        ->whereNotIn('user_id', $usersWithActiveMemberships)
+                        ->with('user')
+                        ->get();
 
         return response()->json([
             'data' => $filteredTrials

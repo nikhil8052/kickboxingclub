@@ -93,6 +93,30 @@ use Illuminate\Support\Facades\Http;
     }
 
 
+    function convertToAmericaTimezone($utcDate){
+        if (!$utcDate) {
+            return null;
+        }
+    
+        $date = Carbon::parse($utcDate);
+    
+        // Convert to America/Los_Angeles timezone
+        $usaDate = $date->setTimezone('America/Los_Angeles');
+    
+        return $usaDate->toDateTimeString();
+    }
 
+    function convertToUSPacificTimezone($utcDate){
+        if (!$utcDate) {
+            return null;
+        }
+    
+        $date = Carbon::parse($utcDate);
+    
+        // Convert to America/Los_Angeles timezone
+        $usaDate = $date->setTimezone('US/Pacific');
+    
+        return $usaDate->toDateTimeString();
+    }
 
 ?>
